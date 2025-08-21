@@ -5,15 +5,8 @@ import { redirect } from "next/navigation"
 
 export async function createGame(prevState: any, formData: FormData) {
   const supabase = await createServerClient()
-
-  // Get current user
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  if (!user) {
-    return { error: "You must be logged in to create a game" }
-  }
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: "You must be logged in to create a game" }
 
   const gameName = formData.get("gameName") as string
   const gameDescription = formData.get("gameDescription") as string
@@ -21,9 +14,7 @@ export async function createGame(prevState: any, formData: FormData) {
   const cardSetsJson = formData.get("cardSets") as string
   const mapDataJson = formData.get("mapData") as string
 
-  if (!gameName?.trim()) {
-    return { error: "Game name is required" }
-  }
+  if (!gameName?.trim()) return { error: "Game name is required" }
 
   try {
     const players = JSON.parse(playersJson || "[]")
@@ -41,9 +32,7 @@ export async function createGame(prevState: any, formData: FormData) {
       .select()
       .single()
 
-    if (gameError) {
-      return { error: "Failed to create game: " + gameError.message }
-    }
+    if (gameError) return { error: "Failed to create game: " + gameError.message }
 
     // Add creator as first player
     await supabase.from("game_players").insert({

@@ -9,7 +9,6 @@ export const isSupabaseConfigured =
 
 export async function createClient() {
   const cookieStore = await cookies()
-
   return createSupabaseServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,

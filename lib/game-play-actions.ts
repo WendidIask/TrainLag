@@ -1,26 +1,15 @@
 "use server"
 
 import { createServerClient } from "@/lib/supabase/server"
-import { cookies } from "next/headers"
 
 export async function moveToNode(gameId: string, newNode: string) {
   const supabase = await createServerClient()
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  if (!user) {
-    return { error: "You must be logged in" }
-  }
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: "You must be logged in" }
 
   try {
-    // Get current game state
     const { data: gameState } = await supabase.from("game_state").select("*").eq("game_id", gameId).single()
-
-    if (!gameState) {
-      return { error: "Game state not found" }
-    }
+    if (!gameState) return { error: "Game state not found" }
 
     // Update game state
     const updatedState = {
@@ -72,22 +61,15 @@ export async function moveToNode(gameId: string, newNode: string) {
 
 export async function playCard(gameId: string, cardId: string, targetPlayer?: string) {
   const supabase = await createServerClient()
+  const { data: { user } } = await supabase.auth.getUser()
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  if (!user) {
-    return { error: "You must be logged in" }
-  }
+  if (!user) return { error: "You must be logged in" }
 
   try {
     // Get current game state
     const { data: gameState } = await supabase.from("game_state").select("*").eq("game_id", gameId).single()
 
-    if (!gameState) {
-      return { error: "Game state not found" }
-    }
+    if (!gameState) return { error: "Game state not found" }
 
     const currentHands = gameState.seeker_hands || {}
     const playerHand = currentHands[user.id] || []
@@ -136,14 +118,8 @@ export async function playCard(gameId: string, cardId: string, targetPlayer?: st
 
 export async function endRun(gameId: string) {
   const supabase = await createServerClient()
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  if (!user) {
-    return { error: "You must be logged in" }
-  }
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: "You must be logged in" }
 
   try {
     // Get current game

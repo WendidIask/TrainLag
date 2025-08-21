@@ -1,26 +1,11 @@
-import { createServerClientR, isSupabaseConfigured } from "@/lib/supabase/server"
+import { createServerClientR } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
 import DashboardContent from "@/components/dashboard-content"
 
 export default async function Dashboard() {
-  // If Supabase is not configured, show setup message directly
-  if (!isSupabaseConfigured) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50">
-        <h1 className="text-2xl font-bold mb-4 text-gray-900">Connect Supabase to get started</h1>
-      </div>
-    )
-  }
-
   const supabase = await createServerClientR()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  // If no user, redirect to login
-  if (!user) {
-    redirect("/")
-  }
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) redirect("/")
 
   // Get user's games from database
   const { data: games } = await supabase

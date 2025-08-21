@@ -5,7 +5,6 @@ export async function updateSession(req: NextRequest) {
   const res = NextResponse.next()
 
   const supabase = await createServerClientR()
-
   const { data: { user } } = await supabase.auth.getUser()
 
   const isProtectedRoute =
