@@ -1,4 +1,4 @@
-import { createClient, isSupabaseConfigured } from "@/lib/supabase/server"
+import { createServerClientR, isSupabaseConfigured } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
 import CreateGameForm from "@/components/create-game-form"
 
@@ -13,7 +13,7 @@ export default async function CreateGame() {
   }
 
   // Get the user from the server
-  const supabase = createClient()
+  const supabase = await createServerClientR()
   const {
     data: { user },
   } = await supabase.auth.getUser()

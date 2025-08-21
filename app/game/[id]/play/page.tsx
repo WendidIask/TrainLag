@@ -1,4 +1,4 @@
-import { createClient, isSupabaseConfigured } from "@/lib/supabase/server"
+import { createServerClientR, isSupabaseConfigured } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
 import GamePlayContent from "@/components/game-play-content"
 
@@ -12,7 +12,7 @@ export default async function GamePlay({ params }: { params: { id: string } }) {
     )
   }
 
-  const supabase = createClient()
+  const supabase = await createServerClientR()
   const {
     data: { user },
   } = await supabase.auth.getUser()
