@@ -18,7 +18,7 @@ export async function signIn(prevState: any, formData: FormData) {
   redirect('/dashboard')
 }
 
-export async function signUp(formData: FormData) {
+export async function signUp(prevState: any, formData: FormData) {
   const supabase = await createClient()
 
   const email = formData.get('email') as string
