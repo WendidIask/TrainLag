@@ -5,8 +5,8 @@ import { GeistMono } from "geist/font/mono"
 import "./globals.css"
 
 export const metadata: Metadata = {
-  title: "GameRunner - Multiplayer Chase Game",
-  description: "The ultimate multiplayer chase game platform",
+  title: "Train Lag - The Game",
+  description: "A game about praying your bus doesn't derail",
   generator: "v0.app",
 }
 
