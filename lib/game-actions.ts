@@ -42,13 +42,15 @@ export async function createGame(prevState: any, formData: FormData) {
 
     // Add other players (for now, we'll just store usernames - in a real app, you'd look up user IDs)
     for (const player of players) {
+      console.log("Adding player:", player)
       // Try to find user by email/username
       const { data: playerProfile } = await supabase
         .from("profiles")
         .select("id")
         .or(`email.eq.${player.username},username.eq.${player.username}`)
         .single()
-
+      console.log(playerProfile)
+    
       if (playerProfile) {
         await supabase.from("game_players").insert({
           game_id: game.id,
