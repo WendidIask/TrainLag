@@ -41,23 +41,55 @@ export async function createGame(prevState: any, formData: FormData) {
     })
 
     // Add other players (for now, we'll just store usernames - in a real app, you'd look up user IDs)
-    for (const player of players) {
-      console.log("Adding player:", player)
-      // Try to find user by email/username
-      const { data: playerProfile } = await supabase
-        .from("profiles")
-        .select("id")
-        .or(`email.eq.${player.username},username.eq.${player.username}`)
-        .single()
-      console.log(playerProfile)
-    
-      if (playerProfile) {
-        await supabase.from("game_players").insert({
-          game_id: game.id,
-          player_id: playerProfile.id,
-        })
-      }
-    }
+    // Add other players (look up by email or username)
+for (const player of players) {
+  console.log("Adding player:", player);
+
+  // Look up user by email or username
+  const { data: playerProfile, error: lookupError } = await supabase
+    .from("profiles")
+    .select("id")
+    .or(`email.eq.${player.username},username.eq.${player.username}`)
+    .maybeSingle();
+
+  if (lookupError) {
+    console.error(`Error finding player ${player.username}:`, lookupError);
+    continue; // Skip this player if the lookup failed
+  }
+
+  if (!playerProfile) {
+    console.warn(`Player not found: ${player.username}`);
+    continue;
+  }
+
+  // Check if this player is already in the game
+  const { data: existingPlayer } = await supabase
+    .from("game_players")
+    .select("id")
+    .eq("game_id", game.id)
+    .eq("player_id", playerProfile.id)
+    .maybeSingle();
+
+  if (existingPlayer) {
+    console.log(`Player ${player.username} already in game, skipping.`);
+    continue;
+  }
+
+  // Insert into game_players
+  const { error: insertError } = await supabase
+    .from("game_players")
+    .insert({
+      game_id: game.id,
+      player_id: playerProfile.id,
+    });
+
+  if (insertError) {
+    console.error(`Error adding player ${player.username}:`, insertError);
+  } else {
+    console.log(`Player ${player.username} added to game.`);
+  }
+}
+
 
     // Add card sets with defaults if none provided
     const finalCardSets =

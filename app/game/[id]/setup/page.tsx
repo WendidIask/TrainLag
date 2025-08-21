@@ -2,12 +2,12 @@ import { createServerClientR } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
 import GameSetupContent from "@/components/game-setup-content"
 
-export default async function GameSetup({ params }: { params: { id: string } }) {
+export default async function GameSetup({ params }: { params: Promise<{ id: string }> }) {
+  const resolvedParams = await params
   const supabase = await createServerClientR()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect("/")
 
-  // Get game data with all related information
   const { data: game } = await supabase
     .from("games")
     .select(`
@@ -19,12 +19,10 @@ export default async function GameSetup({ params }: { params: { id: string } }) 
       card_sets(*),
       maps(*)
     `)
-    .eq("id", params.id)
+    .eq("id", resolvedParams.id)
     .single()
 
-  if (!game) {
-    redirect("/dashboard")
-  }
+  if (!game) redirect("/dashboard")
 
   return <GameSetupContent game={game} user={user} />
 }

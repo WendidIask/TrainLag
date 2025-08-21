@@ -1,8 +1,7 @@
 "use client"
 
 import type React from "react"
-
-import { useState, useActionState } from "react"
+import { useState, useActionState, useEffect, startTransition } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -12,8 +11,6 @@ import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
 import { ArrowLeft, Plus, X, Upload, Users, Loader2 } from "lucide-react"
 import { createGame } from "@/lib/game-actions"
-import { useFormStatus } from "react-dom"
-import { useEffect } from "react"
 
 interface Player {
   id: string
@@ -33,11 +30,20 @@ interface MapData {
   edges: { from: string; to: string }[]
 }
 
-function SubmitButton() {
-  const { pending } = useFormStatus()
+interface SubmitButtonProps {
+  handleClick: () => void
+  pending?: boolean
+}
 
+export function SubmitButton({ handleClick, pending }: SubmitButtonProps) {
   return (
-    <Button type="submit" disabled={pending} size="lg" className="bg-blue-600 hover:bg-blue-700">
+    <Button
+      type="button"
+      disabled={pending}
+      size="lg"
+      className="bg-blue-600 hover:bg-blue-700"
+      onClick={handleClick}
+    >
       {pending ? (
         <>
           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -59,38 +65,76 @@ export default function CreateGameForm({ user }: CreateGameFormProps) {
   const [gameDescription, setGameDescription] = useState("")
   const [players, setPlayers] = useState<Player[]>([])
   const [newPlayerUsername, setNewPlayerUsername] = useState("")
+  const [playerCheckLoading, setPlayerCheckLoading] = useState(false)
+  const [playerCheckError, setPlayerCheckError] = useState<string | null>(null)
+
   const [cardSets, setCardSets] = useState<CardSet[]>([])
   const [mapData, setMapData] = useState<MapData | null>(null)
   const router = useRouter()
 
   const [state, formAction] = useActionState(createGame, null)
+  const [pending, setPending] = useState(false)
 
-  // Handle successful game creation
+  // Redirect after game creation
   useEffect(() => {
     if (state?.success && state?.gameId) {
       router.push(`/game/${state.gameId}/setup`)
     }
   }, [state, router])
 
-  const handleSubmit = (formData: FormData) => {
-    // Add our state data to the form
+  /** ---------------------------
+   ** Submit Handler
+   ** --------------------------- */
+  const handleClickSubmit = async () => {
+    setPending(true)
+    const formData = new FormData()
     formData.append("gameName", gameName)
     formData.append("gameDescription", gameDescription)
     formData.append("players", JSON.stringify(players))
     formData.append("cardSets", JSON.stringify(cardSets))
     formData.append("mapData", JSON.stringify(mapData))
 
-    formAction(formData)
+    startTransition(() => {
+      formAction(formData)
+      setPending(false)
+    })
   }
 
-  const addPlayer = () => {
-    if (newPlayerUsername.trim()) {
-      const newPlayer: Player = {
-        id: Date.now().toString(),
-        username: newPlayerUsername.trim(),
+  /** ---------------------------
+   ** Player Validation
+   ** --------------------------- */
+  const addPlayer = async () => {
+    const username = newPlayerUsername.trim()
+    if (!username) return
+
+    setPlayerCheckLoading(true)
+    setPlayerCheckError(null)
+
+    try {
+      const res = await fetch("/api/setup/check", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username }),
+      })
+
+      const { exists, player } = await res.json()
+
+      if (!exists) {
+        setPlayerCheckError("No player found with that username or email.")
+        return
       }
-      setPlayers([...players, newPlayer])
+
+      if (players.find((p) => p.username === player.username)) {
+        setPlayerCheckError("This player is already added.")
+        return
+      }
+
+      setPlayers((prev) => [...prev, player])
       setNewPlayerUsername("")
+    } catch {
+      setPlayerCheckError("Error checking player. Please try again.")
+    } finally {
+      setPlayerCheckLoading(false)
     }
   }
 
@@ -98,6 +142,9 @@ export default function CreateGameForm({ user }: CreateGameFormProps) {
     setPlayers(players.filter((p) => p.id !== playerId))
   }
 
+  /** ---------------------------
+   ** Card Set Upload
+   ** --------------------------- */
   const handleCardSetUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (file) {
@@ -106,8 +153,6 @@ export default function CreateGameForm({ user }: CreateGameFormProps) {
         try {
           const content = e.target?.result as string
           const lines = content.split("\n").filter((line) => line.trim())
-
-          // Assume first line is the set name and type (format: "SetName:type")
           const [nameAndType] = lines
           const [name, type] = nameAndType.split(":")
 
@@ -117,9 +162,8 @@ export default function CreateGameForm({ user }: CreateGameFormProps) {
             type: (type?.trim() as CardSet["type"]) || "utility",
             cards: lines.slice(1).map((line) => line.trim()),
           }
-
           setCardSets([...cardSets, newCardSet])
-        } catch (error) {
+        } catch {
           alert("Error parsing card set file. Please check the format.")
         }
       }
@@ -127,6 +171,13 @@ export default function CreateGameForm({ user }: CreateGameFormProps) {
     }
   }
 
+  const removeCardSet = (setId: string) => {
+    setCardSets(cardSets.filter((set) => set.id !== setId))
+  }
+
+  /** ---------------------------
+   ** Map Upload
+   ** --------------------------- */
   const handleMapUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (file) {
@@ -136,16 +187,12 @@ export default function CreateGameForm({ user }: CreateGameFormProps) {
           const content = e.target?.result as string
           const data = JSON.parse(content)
           setMapData(data)
-        } catch (error) {
+        } catch {
           alert("Error parsing map file. Please ensure it's valid JSON.")
         }
       }
       reader.readAsText(file)
     }
-  }
-
-  const removeCardSet = (setId: string) => {
-    setCardSets(cardSets.filter((set) => set.id !== setId))
   }
 
   const getCardTypeColor = (type: CardSet["type"]) => {
@@ -178,7 +225,7 @@ export default function CreateGameForm({ user }: CreateGameFormProps) {
       </header>
 
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <form action={handleSubmit} className="space-y-8">
+        <form className="space-y-8" onKeyDown={(e) => e.key === "Enter" && e.preventDefault()}>
           {state?.error && (
             <div className="bg-red-500/10 border border-red-500/50 text-red-700 px-4 py-3 rounded">{state.error}</div>
           )}
@@ -230,15 +277,25 @@ export default function CreateGameForm({ user }: CreateGameFormProps) {
               <CardDescription>Invite other players to join your game</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex space-x-2">
-                <Input
-                  value={newPlayerUsername}
-                  onChange={(e) => setNewPlayerUsername(e.target.value)}
-                  placeholder="Enter player email or username"
-                  onKeyPress={(e) => e.key === "Enter" && addPlayer()}
-                />
-                <Button type="button" onClick={addPlayer}>
-                  <Plus className="w-4 h-4 mr-2" />
+              <div className="flex space-x-2 items-start">
+                <div className="flex-1">
+                  <Input
+                    value={newPlayerUsername}
+                    onChange={(e) => setNewPlayerUsername(e.target.value)}
+                    placeholder="Enter player email or username"
+                    onKeyPress={(e) => e.key === "Enter" && addPlayer()}
+                    disabled={playerCheckLoading}
+                  />
+                  {playerCheckError && (
+                    <p className="text-sm text-red-600 mt-1">{playerCheckError}</p>
+                  )}
+                </div>
+                <Button type="button" onClick={addPlayer} disabled={playerCheckLoading}>
+                  {playerCheckLoading ? (
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  ) : (
+                    <Plus className="w-4 h-4 mr-2" />
+                  )}
                   Add
                 </Button>
               </div>
@@ -295,8 +352,7 @@ export default function CreateGameForm({ user }: CreateGameFormProps) {
                   className="cursor-pointer"
                 />
                 <p className="text-sm text-gray-500 mt-1">
-                  Format: First line should be "SetName:type" (battle/roadblock/curse/utility), followed by one card per
-                  line. Default cards will be used if none uploaded.
+                  Format: First line should be "SetName:type" (battle/roadblock/curse/utility), followed by one card per line.
                 </p>
               </div>
 
@@ -346,8 +402,7 @@ export default function CreateGameForm({ user }: CreateGameFormProps) {
                   className="cursor-pointer"
                 />
                 <p className="text-sm text-gray-500 mt-1">
-                  JSON format with "name", "nodes" array, and "edges" array with "from"/"to" properties. Default map
-                  will be used if none uploaded.
+                  JSON format with "name", "nodes" array, and "edges" array with "from"/"to" properties.
                 </p>
               </div>
 
@@ -369,7 +424,7 @@ export default function CreateGameForm({ user }: CreateGameFormProps) {
 
           {/* Create Game Button */}
           <div className="flex justify-end">
-            <SubmitButton />
+            <SubmitButton handleClick={handleClickSubmit} pending={pending} />
           </div>
         </form>
       </main>
