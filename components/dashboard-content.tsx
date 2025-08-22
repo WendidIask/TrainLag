@@ -59,7 +59,7 @@ export default function DashboardContent({ user, games }: DashboardContentProps)
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
               <h1 className="text-2xl font-bold text-gray-900">
-                <a href="/">GameRunner</a>
+                <a href="/">Train Lag</a>
               </h1>
             </div>
             <div className="flex items-center space-x-4">
@@ -96,7 +96,7 @@ export default function DashboardContent({ user, games }: DashboardContentProps)
               <div className="text-gray-500 mb-4">
                 <Play className="w-16 h-16 mx-auto mb-4 opacity-50" />
                 <h3 className="text-xl font-semibold mb-2">No games yet</h3>
-                <p>Create your first game to get started with GameRunner</p>
+                <p>Create your first game to get started!</p>
               </div>
               <Button onClick={createNewGame} className="bg-blue-600 hover:bg-blue-700">
                 <Plus className="w-4 h-4 mr-2" />

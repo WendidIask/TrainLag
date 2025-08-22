@@ -187,7 +187,7 @@ export async function endRun(gameId: string) {
                     runner_points: 0, // Reset points for new runner
                     cards_in_hand: currentHands,
                     active_effects: [], // Clear active effects
-                    updated_at: new Date().toISOString(),
+                    start_time: new Date().toISOString(),
                 })
                 .eq("game_id", gameId);
 

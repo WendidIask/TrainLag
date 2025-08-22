@@ -23,18 +23,26 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
   const [targetPlayer, setTargetPlayer] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
   const [elapsedTime, setElapsedTime] = useState(0);
+  const [runTime, setRunTime] = useState(0);
   const router = useRouter();
 
   useEffect(() => {
-    if (game.start_time || game.created_at) {
-      const startTime = new Date(game.game_state.update_time || game.created_at).getTime();
-      const interval = setInterval(() => {
-        setElapsedTime(Math.floor((Date.now() - startTime) / 1000));
-      }, 1000);
+    const startTime = new Date(game.game_state.created_at).getTime();
+    const interval = setInterval(() => {
+      setElapsedTime(Math.floor((Date.now() - startTime) / 1000));
+    }, 1000);
 
-      return () => clearInterval(interval);
-    }
-  }, [game.start_time, game.created_at]);
+    return () => clearInterval(interval);
+  });
+
+  useEffect(() => {
+    const startTime = new Date(game.game_state.start_time).getTime();
+    const interval = setInterval(() => { 
+      setRunTime(Math.floor((Date.now() - startTime) / 1000));
+    }, 1000);
+
+    return () => clearInterval(interval);
+  });
 
   useEffect(() => {
     const interval = setInterval(async () => {
@@ -61,7 +69,7 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
   const availableDestinations =
     mapInfo?.edges?.filter((edge: any) => edge.from === gameState.current_node)?.map((edge: any) => edge.to) || [];
 
-  const currentPlayerHand = gameState.seeker_hands?.[user.id] || [];
+  const currentPlayerHand = gameState.cards_in_hand?.[user.id] || [];
   const activeEffects = gameState.active_effects || [];
   const usedCards = gameState.used_cards || [];
 
@@ -180,7 +188,7 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
               <CardContent>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   <div className="text-center">
-                    <p className="text-2xl font-bold text-blue-600">{formatTime(elapsedTime)}</p>
+                    <p className="text-2xl font-bold text-blue-600">{formatTime(runTime)}</p>
                     <p className="text-sm text-gray-600">Run Time</p>
                   </div>
                   <div className="text-center">
@@ -482,7 +490,7 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">Cards in Play:</span>
-                    <span className="font-medium">{Object.values(gameState.seeker_hands || {}).flat().length}</span>
+                    <span className="font-medium">{Object.values(gameState.cards_in_hand || {}).flat().length}</span>
                   </div>
                 </div>
               </CardContent>
