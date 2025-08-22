@@ -394,7 +394,7 @@ export default function CreateGameForm({ user }: CreateGameFormProps) {
                   className="cursor-pointer"
                 />
                 <p className="text-sm text-gray-500 mt-1">
-                  JSON format with "name", "nodes" array, and "edges" array with "from"/"to" properties.
+                  JSON format with "name", "nodes" array, and "edges" array with "from"/"to" properties
                 </p>
               </div>
 

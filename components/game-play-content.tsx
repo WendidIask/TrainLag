@@ -26,13 +26,14 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
   const router = useRouter();
 
   useEffect(() => {
-    if (!game.start_time || !game.created_at) return;
-    const startTime = new Date(game.game_state.update_time || game.created_at).getTime();
-    const interval = setInterval(() => {
-      setElapsedTime(Math.floor((Date.now() - startTime) / 1000));
-    }, 1000);
+    if (game.start_time || game.created_at) {
+      const startTime = new Date(game.game_state.update_time || game.created_at).getTime();
+      const interval = setInterval(() => {
+        setElapsedTime(Math.floor((Date.now() - startTime) / 1000));
+      }, 1000);
 
-    return () => clearInterval(interval);
+      return () => clearInterval(interval);
+    }
   }, [game.start_time, game.created_at]);
 
   useEffect(() => {
