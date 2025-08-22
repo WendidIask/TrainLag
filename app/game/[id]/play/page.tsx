@@ -2,7 +2,8 @@ import { createServerClientR } from "@/lib/supabase/server"
 import { redirect } from "next/navigation"
 import GamePlayContent from "@/components/game-play-content"
 
-export default async function GamePlay({ params }: { params: { id: string } }) {
+export default async function GamePlay({ params }: { params: Promise<{ id: string }> }) {
+  const resolvedParams = await params
   const supabase = await createServerClientR()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect("/")
@@ -20,7 +21,7 @@ export default async function GamePlay({ params }: { params: { id: string } }) {
       maps(*),
       game_state(*)
     `)
-    .eq("id", params.id)
+    .eq("id", resolvedParams.id)
     .single()
 
   if (!game || game.status !== "active") redirect("/dashboard")

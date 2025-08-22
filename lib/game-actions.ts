@@ -178,13 +178,13 @@ export async function startGame(gameId: string) {
     // Randomize player order
     const shuffledPlayers = [...players].sort(() => Math.random() - 0.5)
     const playerOrder = shuffledPlayers.map((p) => p.player_id)
+    console.log("Player order:", playerOrder)
 
     // Update game status and set first player as runner
     const { error: updateError } = await supabase
       .from("games")
       .update({
         status: "active",
-        current_runner_id: playerOrder[0],
         player_order: playerOrder,
         start_time: new Date().toISOString(),
       })
@@ -197,6 +197,7 @@ export async function startGame(gameId: string) {
     // Initialize game state
     await supabase.from("game_state").insert({
       game_id: gameId,
+      current_runner_id: playerOrder[0],
       current_node: "Start",
       runner_points: 0,
       seeker_hands: {},
