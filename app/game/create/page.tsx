@@ -6,7 +6,6 @@ export default async function CreateGame() {
     const supabase = await createServerClientReadOnly();
     const { data } = await supabase.auth.getUser();
     const { user } = data;
-    console.log(user);
     if (!user) redirect("/");
 
     return <CreateGameForm user={user} />;

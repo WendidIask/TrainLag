@@ -159,11 +159,13 @@ export default function GameSetupContent({ game, user }: GameSetupContentProps) 
             </CardHeader>
             <CardContent>
               <div className="space-y-2 text-sm">
-                <p>• Player order will be randomized when the game starts</p>
-                <p>• The first player becomes the Runner, others are Seekers</p>
-                <p>• Seekers start with 2 cards and draw 1 card each time they move to a new node</p>
-                <p>• When the Runner is caught, they become a Seeker and the next player becomes the Runner</p>
-                <p>• Use cards strategically to help catch the Runner or hinder other players</p>
+                <p>
+                  • Player order will be randomized when the game starts
+                  <br />• The first player becomes the Runner, others are Seekers
+                  <br />• Seekers start with 2 cards and draw 1 card each time they move to a new node
+                  <br />• When the Runner is caught, they become a Seeker and the next player becomes the Runner
+                  <br />• Use cards strategically to help catch the Runner or hinder other players
+                </p>
               </div>
             </CardContent>
           </Card>

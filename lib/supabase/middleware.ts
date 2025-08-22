@@ -11,9 +11,11 @@ export async function updateSession(req: NextRequest) {
     const pathname = req.nextUrl.pathname.match(/\/(.*)\//);
     const protectedRoutes = new Set(["dashboard", "game", "create-game"]);
 
-    if (!pathname || (protectedRoutes.has(pathname[1]) && !user)) return response;
+    if (pathname && protectedRoutes.has(pathname[1]) && !user) {
+        const url = req.nextUrl.clone();
+        url.pathname = "/";
+        return NextResponse.redirect(url);
+    }
 
-    const url = req.nextUrl.clone();
-    url.pathname = "/";
-    return NextResponse.redirect(url);
+    return response;
 }
