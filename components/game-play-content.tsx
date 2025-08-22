@@ -29,7 +29,20 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
   const [showEndRunDialog, setShowEndRunDialog] = useState(false)
   const [targetPlayer, setTargetPlayer] = useState<string>("")
   const [isLoading, setIsLoading] = useState(false)
+  const [elapsedTime, setElapsedTime] = useState(0)
   const router = useRouter()
+
+  useEffect(() => {
+    if (game.start_time || game.created_at) {
+      const startTime = new Date(game.game_state.update_time || game.created_at).getTime()
+      const interval = setInterval(() => {
+        setElapsedTime(Math.floor((Date.now() - startTime) / 1000))
+      }, 1000)
+
+      return () => clearInterval(interval)
+    }
+  }, [game.start_time, game.created_at])
+
 
   useEffect(() => {
     const interval = setInterval(async () => {
@@ -51,7 +64,7 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
     return <div className="min-h-screen bg-gray-50 flex items-center justify-center">Loading game state...</div>
   }
 
-  const isRunner = user.id === game.current_runner_id
+  const isRunner = user.id === game.game_state.current_runner_id
   const mapInfo = game.maps?.[0]
   const availableDestinations =
     mapInfo?.edges?.filter((edge: any) => edge.from === gameState.current_node)?.map((edge: any) => edge.to) || []
@@ -104,12 +117,12 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
     setShowEndRunDialog(false)
   }
 
-  const formatTime = (timestamp: string) => {
-    const seconds = Math.floor((Date.now() - new Date(timestamp).getTime()) / 1000)
+  const formatTime = (seconds: number) => {
     const minutes = Math.floor(seconds / 60)
     const remainingSeconds = seconds % 60
     return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`
   }
+
 
   const getCardTypeIcon = (type: string) => {
     switch (type) {
@@ -142,7 +155,7 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
   }
 
   // Find current runner's profile
-  const currentRunnerProfile = game.game_players.find((gp: any) => gp.player_id === game.current_runner_id)?.profiles
+  const currentRunnerProfile = game.game_players.find((gp: any) => gp.player_id === game.game_state.current_runner_id)?.profiles
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -183,7 +196,7 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
               <CardContent>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   <div className="text-center">
-                    <p className="text-2xl font-bold text-blue-600">{formatTime(game.start_time || game.created_at)}</p>
+                    <p className="text-2xl font-bold text-blue-600">{formatTime(elapsedTime)}</p>
                     <p className="text-sm text-gray-600">Run Time</p>
                   </div>
                   <div className="text-center">
@@ -286,7 +299,7 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
                 <CardContent>
                   <Dialog open={showEndRunDialog} onOpenChange={setShowEndRunDialog}>
                     <DialogTrigger asChild>
-                      <Button variant="destructive" disabled={isLoading}>
+                      <Button variant="destructive" disabled={isLoading} className="text-white">
                         End Run
                       </Button>
                     </DialogTrigger>
@@ -302,7 +315,7 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
                         <Button variant="outline" onClick={() => setShowEndRunDialog(false)}>
                           Cancel
                         </Button>
-                        <Button variant="destructive" onClick={handleEndRun} disabled={isLoading}>
+                        <Button variant="destructive" onClick={handleEndRun} disabled={isLoading} className="text-white">
                           {isLoading ? "Ending..." : "End Run"}
                         </Button>
                       </DialogFooter>
@@ -471,7 +484,7 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
                     <span className="text-gray-600">Total Game Time:</span>
-                    <span className="font-medium">{formatTime(game.start_time || game.created_at)}</span>
+                    <span className="font-medium">{formatTime(elapsedTime)}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">Players:</span>

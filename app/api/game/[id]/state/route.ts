@@ -9,6 +9,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
 
   try {
     // Get current game state
+    console.log(resolvedParams.id)
     const { data: gameState, error } = await supabase.from("game_state").select("*").eq("game_id", resolvedParams.id).single()
     if (error) return NextResponse.json({ error: error.message }, { status: 500 })
     return NextResponse.json(gameState)

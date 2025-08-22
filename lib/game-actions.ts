@@ -180,13 +180,11 @@ export async function startGame(gameId: string) {
     const playerOrder = shuffledPlayers.map((p) => p.player_id)
     console.log("Player order:", playerOrder)
 
-    // Update game status and set first player as runner
-    const { error: updateError } = await supabase
-      .from("games")
+    // Update game status
+    const { error: updateError } = await supabase.from("games")
       .update({
         status: "active",
         player_order: playerOrder,
-        start_time: new Date().toISOString(),
       })
       .eq("id", gameId)
 
@@ -194,17 +192,21 @@ export async function startGame(gameId: string) {
       return { error: "Failed to start game: " + updateError.message }
     }
 
-    // Initialize game state
-    await supabase.from("game_state").insert({
+    // Initialize game state and set first player as runner
+    const { error: initError } = await supabase.from("game_state").insert({
       game_id: gameId,
       current_runner_id: playerOrder[0],
       current_node: "Start",
       runner_points: 0,
-      seeker_hands: {},
-      used_cards: [],
+      available_cards: {},
+      discard_pile: [],
       active_effects: [],
       game_log: [],
+      start_time: new Date().toISOString(),
     })
+    if (initError) {
+      return { error: "Failed to insert player: " + initError.message }
+    }
 
     return { success: true }
   } catch (error) {

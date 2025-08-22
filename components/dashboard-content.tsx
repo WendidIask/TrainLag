@@ -21,6 +21,25 @@ interface DashboardContentProps {
   games: Game[]
 }
 
+import { useState, useEffect } from "react";
+
+export function GameDate({ dateString }: { dateString: string }) {
+  const [formattedDate, setFormattedDate] = useState<string | null>(null);
+
+  useEffect(() => {
+    setFormattedDate(new Date(dateString).toLocaleDateString());
+  }, [dateString]);
+
+  if (!formattedDate) return null;
+
+  return (
+    <span className="flex items-center">
+      <Clock className="w-4 h-4 mr-1" />
+      {formattedDate}
+    </span>
+  );
+}
+
 export default function DashboardContent({ user, games }: DashboardContentProps) {
   const router = useRouter()
 
@@ -28,10 +47,11 @@ export default function DashboardContent({ user, games }: DashboardContentProps)
     router.push("/game/create")
   }
 
-  const joinGame = (gameId: string) => {
-    router.push(`/game/${gameId}`)
+  const joinGame = (gameId: string, active: boolean) => {
+    if (active) router.push(`/game/${gameId}/play`)
+    else router.push(`/game/${gameId}/setup`)
   }
-
+  
   return (
     <div className="min-h-screen bg-gray-50">
       <header className="bg-white shadow-sm border-b">
@@ -100,7 +120,7 @@ export default function DashboardContent({ user, games }: DashboardContentProps)
                       </span>
                       <span className="flex items-center">
                         <Clock className="w-4 h-4 mr-1" />
-                        {new Date(game.created_at).toLocaleDateString()}
+                        <GameDate dateString={game.created_at} />
                       </span>
                     </div>
                   </CardDescription>
@@ -109,7 +129,7 @@ export default function DashboardContent({ user, games }: DashboardContentProps)
                   <div className="space-y-2">
                     <p className="text-sm text-gray-600">Created by: {game.profiles.username}</p>
                     <Button
-                      onClick={() => joinGame(game.id)}
+                      onClick={() => joinGame(game.id, game.status === "active")}
                       className="w-full"
                       variant={game.status === "active" ? "default" : "outline"}
                     >
