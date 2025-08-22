@@ -5,7 +5,6 @@ import AuthForm from "@/components/auth-form"
 export default async function HomePage() {
   const supabase = await createServerClientR()
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect("/")
 
   // Only redirect if session is present
   if (user) redirect("/dashboard")
