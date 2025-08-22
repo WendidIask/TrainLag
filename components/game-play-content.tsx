@@ -1,161 +1,144 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { ArrowLeft, Clock, MapPin, Target, Users, Zap, AlertTriangle, Play, Trash2 } from "lucide-react"
-import { moveToNode, playCard, endRun } from "@/lib/game-play-actions"
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+// prettier-ignore
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { ArrowLeft, Clock, MapPin, Target, Users, Zap, AlertTriangle, Play, Trash2 } from "lucide-react";
+import { moveToNode, playCard, endRun } from "@/lib/game-play-actions";
 
 interface GamePlayContentProps {
-  game: any
-  user: { id: string; email?: string }
+  game: any;
+  user: { id: string; email?: string };
 }
 
 export default function GamePlayContent({ game, user }: GamePlayContentProps) {
-  const [gameState, setGameState] = useState(game.game_state?.[0] || null)
-  const [selectedDestination, setSelectedDestination] = useState<string>("")
-  const [showEndRunDialog, setShowEndRunDialog] = useState(false)
-  const [targetPlayer, setTargetPlayer] = useState<string>("")
-  const [isLoading, setIsLoading] = useState(false)
-  const [elapsedTime, setElapsedTime] = useState(0)
-  const router = useRouter()
+  const [gameState, setGameState] = useState(game.game_state?.[0] || null);
+  const [selectedDestination, setSelectedDestination] = useState<string>("");
+  const [showEndRunDialog, setShowEndRunDialog] = useState(false);
+  const [targetPlayer, setTargetPlayer] = useState<string>("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [elapsedTime, setElapsedTime] = useState(0);
+  const router = useRouter();
 
   useEffect(() => {
-    if (game.start_time || game.created_at) {
-      const startTime = new Date(game.game_state.update_time || game.created_at).getTime()
-      const interval = setInterval(() => {
-        setElapsedTime(Math.floor((Date.now() - startTime) / 1000))
-      }, 1000)
+    if (!game.start_time || !game.created_at) return;
+    const startTime = new Date(game.game_state.update_time || game.created_at).getTime();
+    const interval = setInterval(() => {
+      setElapsedTime(Math.floor((Date.now() - startTime) / 1000));
+    }, 1000);
 
-      return () => clearInterval(interval)
-    }
-  }, [game.start_time, game.created_at])
-
+    return () => clearInterval(interval);
+  }, [game.start_time, game.created_at]);
 
   useEffect(() => {
     const interval = setInterval(async () => {
       try {
-        const response = await fetch(`/api/game/${game.id}/state`)
+        const response = await fetch(`/api/game/${game.id}/state`);
         if (response.ok) {
-          const data = await response.json()
-          setGameState(data)
+          const data = await response.json();
+          setGameState(data);
         }
       } catch (error) {
-        console.error("Failed to fetch game state:", error)
+        console.error("Failed to fetch game state:", error);
       }
-    }, 3000)
+    }, 5_000);
 
-    return () => clearInterval(interval)
-  }, [game.id])
+    return () => clearInterval(interval);
+  }, [game.id]);
 
   if (!gameState) {
-    return <div className="min-h-screen bg-gray-50 flex items-center justify-center">Loading game state...</div>
+    return <div className="min-h-screen bg-gray-50 flex items-center justify-center">Loading game state...</div>;
   }
 
-  const isRunner = user.id === game.game_state.current_runner_id
-  const mapInfo = game.maps?.[0]
+  const isRunner = user.id === game.game_state.current_runner_id;
+  const mapInfo = game.maps?.[0];
   const availableDestinations =
-    mapInfo?.edges?.filter((edge: any) => edge.from === gameState.current_node)?.map((edge: any) => edge.to) || []
+    mapInfo?.edges?.filter((edge: any) => edge.from === gameState.current_node)?.map((edge: any) => edge.to) || [];
 
-  const currentPlayerHand = gameState.seeker_hands?.[user.id] || []
-  const activeEffects = gameState.active_effects || []
-  const usedCards = gameState.used_cards || []
+  const currentPlayerHand = gameState.seeker_hands?.[user.id] || [];
+  const activeEffects = gameState.active_effects || [];
+  const usedCards = gameState.used_cards || [];
 
   const handleMove = async () => {
-    if (!selectedDestination) return
+    if (!selectedDestination) return;
 
-    setIsLoading(true)
-    const result = await moveToNode(game.id, selectedDestination)
+    setIsLoading(true);
+    const result = await moveToNode(game.id, selectedDestination);
 
-    if (result?.error) {
-      alert(result.error)
-    } else {
-      // Refresh game state
-      window.location.reload()
-    }
-    setIsLoading(false)
-    setSelectedDestination("")
-  }
+    if (result?.error) alert(result.error);
+    else window.location.reload();
+
+    setIsLoading(false);
+    setSelectedDestination("");
+  };
 
   const handlePlayCard = async (card: any, target?: string) => {
-    setIsLoading(true)
-    const result = await playCard(game.id, card.id, target)
+    setIsLoading(true);
+    const result = await playCard(game.id, card.id, target);
 
-    if (result?.error) {
-      alert(result.error)
-    } else {
-      // Refresh game state
-      window.location.reload()
-    }
-    setIsLoading(false)
-    setTargetPlayer("")
-  }
+    if (result?.error) alert(result.error);
+    else window.location.reload();
+
+    setIsLoading(false);
+    setTargetPlayer("");
+  };
 
   const handleEndRun = async () => {
-    setIsLoading(true)
-    const result = await endRun(game.id)
+    setIsLoading(true);
+    const result = await endRun(game.id);
 
-    if (result?.error) {
-      alert(result.error)
-    } else {
-      // Refresh game state
-      window.location.reload()
-    }
-    setIsLoading(false)
-    setShowEndRunDialog(false)
-  }
+    if (result?.error) alert(result.error);
+    else window.location.reload();
+
+    setIsLoading(false);
+    setShowEndRunDialog(false);
+  };
 
   const formatTime = (seconds: number) => {
-    const minutes = Math.floor(seconds / 60)
-    const remainingSeconds = seconds % 60
-    return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`
-  }
-
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
+  };
 
   const getCardTypeIcon = (type: string) => {
     switch (type) {
       case "battle":
-        return <Target className="w-4 h-4" />
+        return <Target className="w-4 h-4" />;
       case "roadblock":
-        return <AlertTriangle className="w-4 h-4" />
+        return <AlertTriangle className="w-4 h-4" />;
       case "curse":
-        return <Zap className="w-4 h-4" />
+        return <Zap className="w-4 h-4" />;
       case "utility":
-        return <Users className="w-4 h-4" />
+        return <Users className="w-4 h-4" />;
       default:
-        return <Users className="w-4 h-4" />
+        return <Users className="w-4 h-4" />;
     }
-  }
+  };
 
   const getCardTypeColor = (type: string) => {
     switch (type) {
       case "battle":
-        return "bg-red-100 text-red-800 border-red-200"
+        return "bg-red-100 text-red-800 border-red-200";
       case "roadblock":
-        return "bg-yellow-100 text-yellow-800 border-yellow-200"
+        return "bg-yellow-100 text-yellow-800 border-yellow-200";
       case "curse":
-        return "bg-purple-100 text-purple-800 border-purple-200"
+        return "bg-purple-100 text-purple-800 border-purple-200";
       case "utility":
-        return "bg-blue-100 text-blue-800 border-blue-200"
+        return "bg-blue-100 text-blue-800 border-blue-200";
       default:
-        return "bg-gray-100 text-gray-800 border-gray-200"
+        return "bg-gray-100 text-gray-800 border-gray-200";
     }
-  }
+  };
 
   // Find current runner's profile
-  const currentRunnerProfile = game.game_players.find((gp: any) => gp.player_id === game.game_state.current_runner_id)?.profiles
+  const currentRunnerProfile = game.game_players.find(
+    (gp: any) => gp.player_id === game.game_state.current_runner_id,
+  )?.profiles;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -229,8 +212,7 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
                     {activeEffects.map((effect: any, index: number) => (
                       <div
                         key={index}
-                        className="flex items-center justify-between p-2 bg-yellow-50 border border-yellow-200 rounded"
-                      >
+                        className="flex items-center justify-between p-2 bg-yellow-50 border border-yellow-200 rounded">
                         <span className="text-sm font-medium">{effect.effect}</span>
                         <Badge variant="outline" className="text-xs">
                           Active
@@ -315,7 +297,11 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
                         <Button variant="outline" onClick={() => setShowEndRunDialog(false)}>
                           Cancel
                         </Button>
-                        <Button variant="destructive" onClick={handleEndRun} disabled={isLoading} className="text-white">
+                        <Button
+                          variant="destructive"
+                          onClick={handleEndRun}
+                          disabled={isLoading}
+                          className="text-white">
                           {isLoading ? "Ending..." : "End Run"}
                         </Button>
                       </DialogFooter>
@@ -454,12 +440,11 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
                       .map((card: any, index: number) => {
                         const playerProfile = game.game_players.find(
                           (gp: any) => gp.player_id === card.usedBy,
-                        )?.profiles
+                        )?.profiles;
                         return (
                           <div
                             key={index}
-                            className="flex items-center justify-between p-2 bg-gray-50 border rounded text-sm"
-                          >
+                            className="flex items-center justify-between p-2 bg-gray-50 border rounded text-sm">
                             <div className="flex items-center space-x-2">
                               {getCardTypeIcon(card.type)}
                               <span className="font-medium">{card.name}</span>
@@ -468,7 +453,7 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
                               {playerProfile?.username || playerProfile?.email}
                             </Badge>
                           </div>
-                        )
+                        );
                       })}
                   </div>
                 </CardContent>
@@ -505,5 +490,5 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
         </div>
       </main>
     </div>
-  )
+  );
 }

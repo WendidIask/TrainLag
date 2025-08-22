@@ -1,28 +1,30 @@
-import { createServerClientR } from "@/lib/supabase/server"
-import { redirect } from "next/navigation"
-import GameSetupContent from "@/components/game-setup-content"
+import { createServerClientReadOnly } from "@/lib/supabase/server";
+import { redirect } from "next/navigation";
+import GameSetupContent from "@/components/game-setup-content";
 
 export default async function GameSetup({ params }: { params: Promise<{ id: string }> }) {
-  const resolvedParams = await params
-  const supabase = await createServerClientR()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect("/")
+    const resolvedParams = await params;
 
-  const { data: game } = await supabase
-    .from("games")
-    .select(`
-      *,
-      game_players(
-        player_id,
-        profiles(username, email)
-      ),
-      card_sets(*),
-      maps(*)
-    `)
-    .eq("id", resolvedParams.id)
-    .single()
+    const supabase = await createServerClientReadOnly();
+    const { data } = await supabase.auth.getUser();
+    const { user } = data;
+    if (!user) redirect("/");
 
-  if (!game) redirect("/dashboard")
+    const { data: game } = await supabase
+        .from("games")
+        .select(
+            `*,
+            game_players(
+                player_id,
+                profiles(username, email)
+            ),
+            card_sets(*),
+            maps(*)`,
+        )
+        .eq("id", resolvedParams.id)
+        .single();
 
-  return <GameSetupContent game={game} user={user} />
+    if (!game) redirect("/dashboard");
+
+    return <GameSetupContent game={game} user={user} />;
 }

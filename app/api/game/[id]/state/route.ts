@@ -1,20 +1,24 @@
-import { createServerClientR } from "@/lib/supabase/server"
-import { NextResponse } from "next/server"
+import { createServerClientReadOnly } from "@/lib/supabase/server";
+import { NextResponse } from "next/server";
 
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
-  const resolvedParams = await params
-  const supabase = await createServerClientR()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    const { id } = await params;
 
-  try {
-    // Get current game state
-    console.log(resolvedParams.id)
-    const { data: gameState, error } = await supabase.from("game_state").select("*").eq("game_id", resolvedParams.id).single()
-    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
-    return NextResponse.json(gameState)
-  } catch (error) {
-    console.error("API error:", error)
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
-  }
+    const supabase = await createServerClientReadOnly();
+    const { data } = await supabase.auth.getUser();
+    const { user } = data;
+    if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+    try {
+        const { data: gameState, error } = await supabase
+            .from("game_state")
+            .select("*")
+            .eq("game_id", id)
+            .single();
+        if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+        return NextResponse.json(gameState);
+    } catch (error) {
+        console.error("API error:", error);
+        return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    }
 }

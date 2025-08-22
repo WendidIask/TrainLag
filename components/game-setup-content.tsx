@@ -1,36 +1,36 @@
-"use client"
+"use client";
 
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { ArrowLeft, Play, Users, Map, Layers } from "lucide-react"
-import { useRouter } from "next/navigation"
-import { startGame } from "@/lib/game-actions"
-import { useState } from "react"
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { ArrowLeft, Play, Users, Map, Layers } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { startGame } from "@/lib/game-actions";
+import { useState } from "react";
 
 interface GameSetupContentProps {
-  game: any
-  user: { id: string; email?: string }
+  game: any;
+  user: { id: string; email?: string };
 }
 
 export default function GameSetupContent({ game, user }: GameSetupContentProps) {
-  const [isStarting, setIsStarting] = useState(false)
-  const router = useRouter()
+  const [isStarting, setIsStarting] = useState(false);
+  const router = useRouter();
 
   const handleStartGame = async () => {
-    setIsStarting(true)
-    const result = await startGame(game.id)
+    setIsStarting(true);
+    const result = await startGame(game.id);
 
     if (result?.error) {
-      alert(result.error)
-      setIsStarting(false)
+      alert(result.error);
+      setIsStarting(false);
     } else {
-      router.push(`/game/${game.id}/play`)
+      router.push(`/game/${game.id}/play`);
     }
-  }
+  };
 
-  const totalCards = game.card_sets?.reduce((sum: number, set: any) => sum + (set.cards?.length || 0), 0) || 0
-  const mapInfo = game.maps?.[0] || null
+  const totalCards = game.card_sets?.reduce((sum: number, set: any) => sum + (set.cards?.length || 0), 0) || 0;
+  const mapInfo = game.maps?.[0] || null;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -96,8 +96,7 @@ export default function GameSetupContent({ game, user }: GameSetupContentProps) 
                   <Badge
                     key={gamePlayer.player_id}
                     variant={gamePlayer.player_id === game.creator_id ? "default" : "secondary"}
-                    className="text-sm py-1 px-3"
-                  >
+                    className="text-sm py-1 px-3">
                     {gamePlayer.profiles?.username || gamePlayer.profiles?.email}
                     {gamePlayer.player_id === game.creator_id && " (Host)"}
                   </Badge>
@@ -175,8 +174,7 @@ export default function GameSetupContent({ game, user }: GameSetupContentProps) 
               onClick={handleStartGame}
               disabled={isStarting}
               size="lg"
-              className="bg-green-600 hover:bg-green-700"
-            >
+              className="bg-green-600 hover:bg-green-700">
               <Play className="w-5 h-5 mr-2" />
               {isStarting ? "Starting Game..." : "Start Game"}
             </Button>
@@ -184,5 +182,5 @@ export default function GameSetupContent({ game, user }: GameSetupContentProps) 
         </div>
       </main>
     </div>
-  )
+  );
 }

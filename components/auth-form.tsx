@@ -1,19 +1,19 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useActionState } from "react"
-import { useFormStatus } from "react-dom"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Loader2 } from "lucide-react"
-import { signIn, signUp } from "@/lib/actions"
+import { useActionState } from "react";
+import { useFormStatus } from "react-dom";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Loader2 } from "lucide-react";
+import { signIn, signUp } from "@/lib/actions";
 
 function SubmitButton({ children, ...props }: { children: React.ReactNode }) {
-  const { pending } = useFormStatus()
+  const { pending } = useFormStatus();
 
   return (
     <Button type="submit" disabled={pending} className="w-full" {...props}>
@@ -26,12 +26,12 @@ function SubmitButton({ children, ...props }: { children: React.ReactNode }) {
         children
       )}
     </Button>
-  )
+  );
 }
 
 export default function AuthForm() {
-  const [loginState, loginAction] = useActionState(signIn, null)
-  const [signUpState, signUpAction] = useActionState(signUp, null)
+  const [loginState, loginAction] = useActionState(signIn, null);
+  const [signUpState, signUpAction] = useActionState(signUp, null);
 
   return (
     <Card className="shadow-xl">
@@ -74,11 +74,11 @@ export default function AuthForm() {
                 </div>
               )}
 
-              {signUpState?.success && (
+              {/* {signUpState?.success && (
                 <div className="bg-green-500/10 border border-green-500/50 text-green-700 px-4 py-3 rounded">
                   {signUpState.success}
                 </div>
-              )}
+              )} */}
 
               <div className="space-y-2">
                 <Label htmlFor="register-username">Username</Label>
@@ -98,5 +98,5 @@ export default function AuthForm() {
         </Tabs>
       </CardContent>
     </Card>
-  )
+  );
 }

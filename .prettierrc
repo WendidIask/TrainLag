@@ -1,0 +1,20 @@
+{
+    "arrowParens": "always",
+    "bracketSpacing": true,
+    "bracketSameLine": true,
+    "objectWrap": "collapse",
+    "trailingComma": "all",
+    "tabWidth": 4,
+    "useTabs": false,
+    "semi": true,
+    "singleQuote": false,
+    "jsxSingleQuote": false,
+    "printWidth": 120,
+    "htmlWhitespaceSensitivity": "ignore",
+    "overrides": [
+        {
+            "files": "components/*.tsx",
+            "options": { "tabWidth": 2 }
+        }
+    ]
+}

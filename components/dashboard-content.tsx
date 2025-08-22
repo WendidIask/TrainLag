@@ -1,24 +1,24 @@
-"use client"
+"use client";
 
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Plus, Play, Users, Clock, LogOut } from "lucide-react"
-import { useRouter } from "next/navigation"
-import { signOut } from "@/lib/actions"
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Plus, Play, Users, Clock, LogOut } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { signOut } from "@/lib/actions";
 
 interface Game {
-  id: string
-  name: string
-  status: "setup" | "active" | "completed"
-  created_at: string
-  game_players: { player_id: string }[]
-  profiles: { username: string }
+  id: string;
+  name: string;
+  status: "setup" | "active" | "completed";
+  created_at: string;
+  game_players: { player_id: string }[];
+  profiles: { username: string };
 }
 
 interface DashboardContentProps {
-  user: { id: string; email?: string }
-  games: Game[]
+  user: { id: string; email?: string };
+  games: Game[];
 }
 
 import { useState, useEffect } from "react";
@@ -41,17 +41,17 @@ export function GameDate({ dateString }: { dateString: string }) {
 }
 
 export default function DashboardContent({ user, games }: DashboardContentProps) {
-  const router = useRouter()
+  const router = useRouter();
 
   const createNewGame = () => {
-    router.push("/game/create")
-  }
+    router.push("/game/create");
+  };
 
   const joinGame = (gameId: string, active: boolean) => {
-    if (active) router.push(`/game/${gameId}/play`)
-    else router.push(`/game/${gameId}/setup`)
-  }
-  
+    if (active) router.push(`/game/${gameId}/play`);
+    else router.push(`/game/${gameId}/setup`);
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <header className="bg-white shadow-sm border-b">
@@ -62,7 +62,10 @@ export default function DashboardContent({ user, games }: DashboardContentProps)
             </div>
             <div className="flex items-center space-x-4">
               <span className="text-gray-700">Welcome, {user.email}</span>
-              <form action={signOut}>
+              <form
+                action={async (formData: FormData) => {
+                  await signOut();
+                }}>
                 <Button variant="outline" size="sm" type="submit">
                   <LogOut className="w-4 h-4 mr-2" />
                   Logout
@@ -107,8 +110,9 @@ export default function DashboardContent({ user, games }: DashboardContentProps)
                   <div className="flex justify-between items-start">
                     <CardTitle className="text-lg">{game.name}</CardTitle>
                     <Badge
-                      variant={game.status === "active" ? "default" : game.status === "setup" ? "secondary" : "outline"}
-                    >
+                      variant={
+                        game.status === "active" ? "default" : game.status === "setup" ? "secondary" : "outline"
+                      }>
                       {game.status}
                     </Badge>
                   </div>
@@ -131,13 +135,12 @@ export default function DashboardContent({ user, games }: DashboardContentProps)
                     <Button
                       onClick={() => joinGame(game.id, game.status === "active")}
                       className="w-full"
-                      variant={game.status === "active" ? "default" : "outline"}
-                    >
+                      variant={game.status === "active" ? "default" : "outline"}>
                       {game.status === "active"
                         ? "Continue Game"
                         : game.status === "setup"
-                          ? "Setup Game"
-                          : "View Game"}
+                        ? "Setup Game"
+                        : "View Game"}
                     </Button>
                   </div>
                 </CardContent>
@@ -147,5 +150,5 @@ export default function DashboardContent({ user, games }: DashboardContentProps)
         )}
       </main>
     </div>
-  )
+  );
 }

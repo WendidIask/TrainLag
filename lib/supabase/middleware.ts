@@ -1,22 +1,19 @@
-import { createServerClientR } from '@/lib/supabase/server'
-import { NextResponse, type NextRequest } from 'next/server'
+import { createServerClientReadOnly } from "@/lib/supabase/server";
+import { NextResponse, type NextRequest } from "next/server";
 
 export async function updateSession(req: NextRequest) {
-  const res = NextResponse.next()
+    const response = NextResponse.next();
 
-  const supabase = await createServerClientR()
-  const { data: { user } } = await supabase.auth.getUser()
+    const supabase = await createServerClientReadOnly();
+    const { data } = await supabase.auth.getUser();
+    const { user } = data;
 
-  const isProtectedRoute =
-    req.nextUrl.pathname.startsWith('/dashboard') ||
-    req.nextUrl.pathname.startsWith('/game') ||
-    req.nextUrl.pathname.startsWith('/create-game')
+    const pathname = req.nextUrl.pathname.match(/\/(.*)\//);
+    const protectedRoutes = new Set(["dashboard", "game", "create-game"]);
 
-  if (isProtectedRoute && !user) {
-    const url = req.nextUrl.clone()
-    url.pathname = '/'
-    return NextResponse.redirect(url)
-  }
+    if (!pathname || (protectedRoutes.has(pathname[1]) && !user)) return response;
 
-  return res
+    const url = req.nextUrl.clone();
+    url.pathname = "/";
+    return NextResponse.redirect(url);
 }

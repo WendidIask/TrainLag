@@ -1,49 +1,43 @@
-"use client"
+"use client";
 
-import type React from "react"
-import { useState, useActionState, useEffect, startTransition } from "react"
-import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Badge } from "@/components/ui/badge"
-import { ArrowLeft, Plus, X, Upload, Users, Loader2 } from "lucide-react"
-import { createGame } from "@/lib/game-actions"
+import type React from "react";
+import { useState, useActionState, useEffect, startTransition } from "react";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
+import { ArrowLeft, Plus, X, Upload, Users, Loader2 } from "lucide-react";
+import { createGame } from "@/lib/game-actions";
 
 interface Player {
-  id: string
-  username: string
+  id: string;
+  username: string;
 }
 
 interface CardSet {
-  id: string
-  name: string
-  type: "battle" | "roadblock" | "curse" | "utility"
-  cards: string[]
+  id: string;
+  name: string;
+  type: "battle" | "roadblock" | "curse" | "utility";
+  cards: string[];
 }
 
 interface MapData {
-  name: string
-  nodes: string[]
-  edges: { from: string; to: string }[]
+  name: string;
+  nodes: string[];
+  edges: { from: string; to: string }[];
 }
 
 interface SubmitButtonProps {
-  handleClick: () => void
-  pending?: boolean
+  handleClick: () => void;
+  pending?: boolean;
 }
 
 export function SubmitButton({ handleClick, pending }: SubmitButtonProps) {
   return (
-    <Button
-      type="button"
-      disabled={pending}
-      size="lg"
-      className="bg-blue-600 hover:bg-blue-700"
-      onClick={handleClick}
-    >
+    <Button type="button" disabled={pending} size="lg" className="bg-blue-600 hover:bg-blue-700" onClick={handleClick}>
       {pending ? (
         <>
           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -53,162 +47,162 @@ export function SubmitButton({ handleClick, pending }: SubmitButtonProps) {
         "Create Game"
       )}
     </Button>
-  )
+  );
 }
 
 interface CreateGameFormProps {
-  user: { id: string; email?: string }
+  user: { id: string; email?: string };
 }
 
 export default function CreateGameForm({ user }: CreateGameFormProps) {
-  const [gameName, setGameName] = useState("")
-  const [gameDescription, setGameDescription] = useState("")
-  const [players, setPlayers] = useState<Player[]>([])
-  const [newPlayerUsername, setNewPlayerUsername] = useState("")
-  const [playerCheckLoading, setPlayerCheckLoading] = useState(false)
-  const [playerCheckError, setPlayerCheckError] = useState<string | null>(null)
+  const [gameName, setGameName] = useState("");
+  const [gameDescription, setGameDescription] = useState("");
+  const [players, setPlayers] = useState<Player[]>([]);
+  const [newPlayerUsername, setNewPlayerUsername] = useState("");
+  const [playerCheckLoading, setPlayerCheckLoading] = useState(false);
+  const [playerCheckError, setPlayerCheckError] = useState<string | null>(null);
 
-  const [cardSets, setCardSets] = useState<CardSet[]>([])
-  const [mapData, setMapData] = useState<MapData | null>(null)
-  const router = useRouter()
+  const [cardSets, setCardSets] = useState<CardSet[]>([]);
+  const [mapData, setMapData] = useState<MapData | null>(null);
+  const router = useRouter();
 
-  const [state, formAction] = useActionState(createGame, null)
-  const [pending, setPending] = useState(false)
+  const [state, formAction] = useActionState(createGame, null);
+  const [pending, setPending] = useState(false);
 
   // Redirect after game creation
   useEffect(() => {
     if (state?.success && state?.gameId) {
-      router.push(`/game/${state.gameId}/setup`)
+      router.push(`/game/${state.gameId}/setup`);
     }
-  }, [state, router])
+  }, [state, router]);
 
   /** ---------------------------
    ** Submit Handler
    ** --------------------------- */
   const handleClickSubmit = async () => {
-    setPending(true)
-    const formData = new FormData()
-    formData.append("gameName", gameName)
-    formData.append("gameDescription", gameDescription)
-    formData.append("players", JSON.stringify(players))
-    formData.append("cardSets", JSON.stringify(cardSets))
-    formData.append("mapData", JSON.stringify(mapData))
+    setPending(true);
+    const formData = new FormData();
+    formData.append("gameName", gameName);
+    formData.append("gameDescription", gameDescription);
+    formData.append("players", JSON.stringify(players));
+    formData.append("cardSets", JSON.stringify(cardSets));
+    formData.append("mapData", JSON.stringify(mapData));
 
     startTransition(() => {
-      formAction(formData)
-      setPending(false)
-    })
-  }
+      formAction(formData);
+      setPending(false);
+    });
+  };
 
   /** ---------------------------
    ** Player Validation
    ** --------------------------- */
   const addPlayer = async () => {
-    const username = newPlayerUsername.trim()
-    if (!username) return
+    const username = newPlayerUsername.trim();
+    if (!username) return;
 
-    setPlayerCheckLoading(true)
-    setPlayerCheckError(null)
+    setPlayerCheckLoading(true);
+    setPlayerCheckError(null);
 
     try {
       const res = await fetch("/api/setup/check", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username }),
-      })
+      });
 
-      const { exists, player } = await res.json()
+      const { exists, player } = await res.json();
 
       if (!exists) {
-        setPlayerCheckError("No player found with that username or email.")
-        return
+        setPlayerCheckError("No player found with that username or email.");
+        return;
       }
 
       if (players.find((p) => p.username === player.username)) {
-        setPlayerCheckError("This player is already added.")
-        return
+        setPlayerCheckError("This player is already added.");
+        return;
       }
 
-      setPlayers((prev) => [...prev, player])
-      setNewPlayerUsername("")
+      setPlayers((prev) => [...prev, player]);
+      setNewPlayerUsername("");
     } catch {
-      setPlayerCheckError("Error checking player. Please try again.")
+      setPlayerCheckError("Error checking player. Please try again.");
     } finally {
-      setPlayerCheckLoading(false)
+      setPlayerCheckLoading(false);
     }
-  }
+  };
 
   const removePlayer = (playerId: string) => {
-    setPlayers(players.filter((p) => p.id !== playerId))
-  }
+    setPlayers(players.filter((p) => p.id !== playerId));
+  };
 
   /** ---------------------------
    ** Card Set Upload
    ** --------------------------- */
   const handleCardSetUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
+    const file = event.target.files?.[0];
     if (file) {
-      const reader = new FileReader()
+      const reader = new FileReader();
       reader.onload = (e) => {
         try {
-          const content = e.target?.result as string
-          const lines = content.split("\n").filter((line) => line.trim())
-          const [nameAndType] = lines
-          const [name, type] = nameAndType.split(":")
+          const content = e.target?.result as string;
+          const lines = content.split("\n").filter((line) => line.trim());
+          const [nameAndType] = lines;
+          const [name, type] = nameAndType.split(":");
 
           const newCardSet: CardSet = {
             id: Date.now().toString(),
             name: name.trim(),
             type: (type?.trim() as CardSet["type"]) || "utility",
             cards: lines.slice(1).map((line) => line.trim()),
-          }
-          setCardSets([...cardSets, newCardSet])
+          };
+          setCardSets([...cardSets, newCardSet]);
         } catch {
-          alert("Error parsing card set file. Please check the format.")
+          alert("Error parsing card set file. Please check the format.");
         }
-      }
-      reader.readAsText(file)
+      };
+      reader.readAsText(file);
     }
-  }
+  };
 
   const removeCardSet = (setId: string) => {
-    setCardSets(cardSets.filter((set) => set.id !== setId))
-  }
+    setCardSets(cardSets.filter((set) => set.id !== setId));
+  };
 
   /** ---------------------------
    ** Map Upload
    ** --------------------------- */
   const handleMapUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
+    const file = event.target.files?.[0];
     if (file) {
-      const reader = new FileReader()
+      const reader = new FileReader();
       reader.onload = (e) => {
         try {
-          const content = e.target?.result as string
-          const data = JSON.parse(content)
-          setMapData(data)
+          const content = e.target?.result as string;
+          const data = JSON.parse(content);
+          setMapData(data);
         } catch {
-          alert("Error parsing map file. Please ensure it's valid JSON.")
+          alert("Error parsing map file. Please ensure it's valid JSON.");
         }
-      }
-      reader.readAsText(file)
+      };
+      reader.readAsText(file);
     }
-  }
+  };
 
   const getCardTypeColor = (type: CardSet["type"]) => {
     switch (type) {
       case "battle":
-        return "bg-red-100 text-red-800"
+        return "bg-red-100 text-red-800";
       case "roadblock":
-        return "bg-yellow-100 text-yellow-800"
+        return "bg-yellow-100 text-yellow-800";
       case "curse":
-        return "bg-purple-100 text-purple-800"
+        return "bg-purple-100 text-purple-800";
       case "utility":
-        return "bg-blue-100 text-blue-800"
+        return "bg-blue-100 text-blue-800";
       default:
-        return "bg-gray-100 text-gray-800"
+        return "bg-gray-100 text-gray-800";
     }
-  }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -286,9 +280,7 @@ export default function CreateGameForm({ user }: CreateGameFormProps) {
                     onKeyPress={(e) => e.key === "Enter" && addPlayer()}
                     disabled={playerCheckLoading}
                   />
-                  {playerCheckError && (
-                    <p className="text-sm text-red-600 mt-1">{playerCheckError}</p>
-                  )}
+                  {playerCheckError && <p className="text-sm text-red-600 mt-1">{playerCheckError}</p>}
                 </div>
                 <Button type="button" onClick={addPlayer} disabled={playerCheckLoading}>
                   {playerCheckLoading ? (
@@ -316,8 +308,7 @@ export default function CreateGameForm({ user }: CreateGameFormProps) {
                           variant="ghost"
                           size="sm"
                           className="ml-1 h-4 w-4 p-0"
-                          onClick={() => removePlayer(player.id)}
-                        >
+                          onClick={() => removePlayer(player.id)}>
                           <X className="w-3 h-3" />
                         </Button>
                       </Badge>
@@ -352,7 +343,8 @@ export default function CreateGameForm({ user }: CreateGameFormProps) {
                   className="cursor-pointer"
                 />
                 <p className="text-sm text-gray-500 mt-1">
-                  Format: First line should be "SetName:type" (battle/roadblock/curse/utility), followed by one card per line.
+                  Format: First line should be "SetName:type" (battle/roadblock/curse/utility), followed by one card per
+                  line.
                 </p>
               </div>
 
@@ -429,5 +421,5 @@ export default function CreateGameForm({ user }: CreateGameFormProps) {
         </form>
       </main>
     </div>
-  )
+  );
 }

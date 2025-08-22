@@ -1,11 +1,13 @@
-import { createServerClientR } from "@/lib/supabase/server"
-import { redirect } from "next/navigation"
-import CreateGameForm from "@/components/create-game-form"
+import { createServerClientReadOnly } from "@/lib/supabase/server";
+import { redirect } from "next/navigation";
+import CreateGameForm from "@/components/create-game-form";
 
 export default async function CreateGame() {
-  const supabase = await createServerClientR()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect("/")
+    const supabase = await createServerClientReadOnly();
+    const { data } = await supabase.auth.getUser();
+    const { user } = data;
+    console.log(user);
+    if (!user) redirect("/");
 
-  return <CreateGameForm user={user} />
+    return <CreateGameForm user={user} />;
 }
