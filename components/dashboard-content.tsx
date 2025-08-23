@@ -63,7 +63,7 @@ export default function DashboardContent({ user, games }: DashboardContentProps)
               </h1>
             </div>
             <div className="flex items-center space-x-4">
-              <span className="text-gray-700">Welcome, {user.email}</span>
+              <span className="text-gray-700">Welcome, {user.user_metadata.username}</span>
               <form
                 action={async (formData: FormData) => {
                   await signOut();
