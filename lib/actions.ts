@@ -18,29 +18,23 @@ export async function signIn(prevState: any, formData: FormData) {
 }
 
 export async function signUp(prevState: any, formData: FormData) {
-  const supabase = await createClient()
+    const supabase = await createClient();
 
-  const email = formData.get("email") as string
-  const password = formData.get("password") as string
-  const username = formData.get("username") as string
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
+    const username = formData.get("username") as string;
 
-  if (!email || !password || !username) {
-    return { error: "Email, password, and username are required" }
-  }
+    if (!email || !password || !username) return { error: "Email, password, and username are required" };
 
-  const { data, error } = await supabase.auth.signUp({
-    email: email,
-    password: password,
-    options: {
-      data: {
-        username: username,
-      },
-    },
-  })
-  if (error) return { error: error.message };
+    const { data, error } = await supabase.auth.signUp({
+        email: email,
+        password: password,
+        options: { data: { username } },
+    });
+    if (error) return { error: error.message };
 
-  revalidatePath("/dashboard", "layout")
-  redirect("/dashboard")
+    revalidatePath("/dashboard", "layout");
+    redirect("/dashboard");
 }
 
 export async function signOut() {
