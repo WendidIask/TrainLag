@@ -17,6 +17,7 @@ interface GamePlayContentProps {
 }
 
 export default function GamePlayContent({ game, user }: GamePlayContentProps) {
+  const map = game.maps
   const [gameState, setGameState] = useState(game.game_state?.[0] || null);
   const [selectedDestination, setSelectedDestination] = useState<string>("");
   const [showEndRunDialog, setShowEndRunDialog] = useState(false);
@@ -109,9 +110,13 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
   };
 
   const formatTime = (seconds: number) => {
-    const minutes = Math.floor(seconds / 60);
+    const hours = Math.floor(seconds / 3600);
+    const remainingSecondsforMinutes = seconds % 3600;
+    const minutes = Math.floor(remainingSecondsforMinutes / 60);
     const remainingSeconds = seconds % 60;
-    return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
+
+    
+    return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${remainingSeconds.toString().padStart(2, "0")}`;
   };
 
   const getCardTypeIcon = (type: string) => {
@@ -232,6 +237,14 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
                 </CardContent>
               </Card>
             )}
+
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Map</CardTitle>
+              </CardHeader>
+
+            </Card>
 
             {/* Movement */}
             <Card>
@@ -470,6 +483,7 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
             )}
 
             {/* Game Info */}
+            
             <Card>
               <CardHeader>
                 <CardTitle>Game Info</CardTitle>
@@ -489,7 +503,7 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
                     <span className="font-medium">{mapInfo?.name || "Default Map"}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Cards in Play:</span>
+                    <span className="text-gray-600">Cards Played:</span>
                     <span className="font-medium">{Object.values(gameState.cards_in_hand || {}).flat().length}</span>
                   </div>
                 </div>
