@@ -1,7 +1,7 @@
 "use client";
 
 import type React from "react";
-import { useState, useActionState, useEffect, startTransition } from "react";
+import { useState, useActionState, useEffect, startTransition, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,7 +9,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Plus, X, Upload, Users, Loader2 } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { ArrowLeft, Plus, X, Upload, Users, Loader2, ChevronDown, ChevronUp } from "lucide-react";
 import { createGame } from "@/lib/game-actions";
 
 interface Player {
@@ -35,6 +36,8 @@ interface SubmitButtonProps {
   pending?: boolean;
 }
 
+type CardSetType = "battle" | "roadblock" | "curse" | "utility";
+
 export function SubmitButton({ handleClick, pending }: SubmitButtonProps) {
   return (
     <Button type="button" disabled={pending} size="lg" className="bg-blue-600 hover:bg-blue-700" onClick={handleClick}>
@@ -57,17 +60,25 @@ interface CreateGameFormProps {
 export default function CreateGameForm({ user }: CreateGameFormProps) {
   const [gameName, setGameName] = useState("");
   const [gameDescription, setGameDescription] = useState("");
+
   const [players, setPlayers] = useState<Player[]>([]);
   const [newPlayerUsername, setNewPlayerUsername] = useState("");
   const [playerCheckLoading, setPlayerCheckLoading] = useState(false);
   const [playerCheckError, setPlayerCheckError] = useState<string | null>(null);
 
   const [cardSets, setCardSets] = useState<CardSet[]>([]);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [selectedType, setSelectedType] = useState<CardSetType>("utility");
+  const [isOpen, setIsOpen] = useState(false);
+
+  const cardInputRef = useRef<HTMLInputElement | null>(null);
+
   const [mapData, setMapData] = useState<MapData | null>(null);
-  const router = useRouter();
 
   const [state, formAction] = useActionState(createGame, null);
   const [pending, setPending] = useState(false);
+
+  const router = useRouter();
 
   // Redirect after game creation
   useEffect(() => {
@@ -139,34 +150,50 @@ export default function CreateGameForm({ user }: CreateGameFormProps) {
   /** ---------------------------
    ** Card Set Upload
    ** --------------------------- */
-  const handleCardSetUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        try {
-          const content = e.target?.result as string;
-          const lines = content.split("\n").filter((line) => line.trim());
-          const [nameAndType] = lines;
-          const [name, type] = nameAndType.split(":");
-
-          const newCardSet: CardSet = {
-            id: Date.now().toString(),
-            name: name.trim(),
-            type: (type?.trim() as CardSet["type"]) || "utility",
-            cards: lines.slice(1).map((line) => line.trim()),
-          };
-          setCardSets([...cardSets, newCardSet]);
-        } catch {
-          alert("Error parsing card set file. Please check the format.");
-        }
-      };
-      reader.readAsText(file);
+      setSelectedFile(file);
     }
   };
 
-  const removeCardSet = (setId: string) => {
-    setCardSets(cardSets.filter((set) => set.id !== setId));
+  const handleSubmit = (e?: React.FormEvent) => {
+    e?.preventDefault();
+    if (!selectedFile) {
+      alert("Please upload a card set file first.");
+      return;
+    }
+    else {
+      setSelectedFile(null);
+    }
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const content = e.target?.result as string;
+        const lines = content.split("\n").filter((line) => line.trim());
+
+        const name = selectedFile.name.replace(/\.[^/.]+$/, ""); // strip file extension
+        const newCardSet: CardSet = {
+          id: crypto.randomUUID(),
+          name,
+          type: selectedType,
+          cards: lines.map((line) => line.trim()),
+        };
+
+        setCardSets((prev) => [...prev, newCardSet]);
+        setSelectedFile(null);
+        if (cardInputRef.current) cardInputRef.current.value = "";
+      } catch (error){
+        alert("Error parsing card set file. Please check the format.");
+        console.error(error);
+      }
+    };
+    reader.readAsText(selectedFile);
+  };
+
+  const removeCardSet = (id: string) => {
+    setCardSets((prev) => prev.filter((set) => set.id !== id));
   };
 
   /** ---------------------------
@@ -277,7 +304,7 @@ export default function CreateGameForm({ user }: CreateGameFormProps) {
                     value={newPlayerUsername}
                     onChange={(e) => setNewPlayerUsername(e.target.value)}
                     placeholder="Enter player email or username"
-                    onKeyPress={(e) => e.key === "Enter" && addPlayer()}
+                    onKeyDown={(e) => e.key === "Enter" && addPlayer()}
                     disabled={playerCheckLoading}
                   />
                   {playerCheckError && <p className="text-sm text-red-600 mt-1">{playerCheckError}</p>}
@@ -333,20 +360,52 @@ export default function CreateGameForm({ user }: CreateGameFormProps) {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div>
-                <Label htmlFor="card-upload">Upload Card Set (Optional)</Label>
-                <Input
-                  id="card-upload"
-                  type="file"
-                  accept=".txt,.csv"
-                  onChange={handleCardSetUpload}
-                  className="cursor-pointer"
-                />
-                <p className="text-sm text-gray-500 mt-1">
-                  Format: First line should be "SetName:type" (battle/roadblock/curse/utility), followed by one card per
-                  line.
-                </p>
+            <Label htmlFor="card-upload">Upload Card Set (Optional)</Label>
+              <div className="flex space-x-2 items-start">
+                <div className="flex-1">
+                  <Input
+                    id="card-upload"
+                    type="file"
+                    accept=".txt,.csv"
+                    onChange={handleFileSelect}
+                    className="cursor-pointer"
+                    ref={cardInputRef}
+                  />
+                </div>
+                <DropdownMenu onOpenChange={(open) => setIsOpen(open)}>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" className="w-32 capitalize flex items-center justify-between">
+                      {selectedType}
+                      <span className="ml-auto">
+                        {isOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                      </span>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-32">
+                    <DropdownMenuItem onClick={() => setSelectedType("battle")}>
+                      Battle
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setSelectedType("roadblock")}>
+                      Roadblock
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setSelectedType("curse")}>
+                      Curse
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setSelectedType("utility")}>
+                      Utility
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+                {selectedFile && (
+                  <Button type="button" variant="default" onClick={handleSubmit}>
+                    <Plus className="w-4 h-4 mr-2" /> Add
+                  </Button>
+                )}
               </div>
+              <p className="text-sm text-gray-500 mt-1">
+                Format: First line should be "SetName:type" (battle/roadblock/curse/utility), followed by one card per
+                line.
+              </p>
 
               {cardSets.length > 0 && (
                 <div className="space-y-2">
@@ -385,7 +444,7 @@ export default function CreateGameForm({ user }: CreateGameFormProps) {
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <Label htmlFor="map-upload">Upload Map File (Optional)</Label>
+                <Label htmlFor="map-upload">Upload Map File</Label>
                 <Input
                   id="map-upload"
                   type="file"

@@ -8,7 +8,10 @@ import { Badge } from "@/components/ui/badge";
 // prettier-ignore
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, Clock, MapPin, Target, Users, Zap, AlertTriangle, Play, Trash2 } from "lucide-react";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { Slider } from "@/components/ui/slider";
+import { ArrowLeft, Clock, MapPin, Target, Users, Zap, AlertTriangle, Play, Trash2, Maximize2, Minimize2, ZoomIn, ZoomOut } from "lucide-react";
+import { motion } from "framer-motion";
 import { moveToNode, playCard, endRun } from "@/lib/game-play-actions";
 
 interface GamePlayContentProps {
@@ -26,6 +29,49 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
   const [elapsedTime, setElapsedTime] = useState(0);
   const [runTime, setRunTime] = useState(0);
   const router = useRouter();
+
+  const [scale, setScale] = useState(1);
+  const viewportRef = useRef<HTMLDivElement | null>(null);
+
+
+  // Optional: Ctrl/Cmd + Wheel to zoom
+  useEffect(() => {
+  const el = viewportRef.current;
+  if (!el) return;
+
+
+  function onWheel(e: WheelEvent) {
+  const isZoomGesture = e.ctrlKey || e.metaKey;
+  if (!isZoomGesture) return;
+  e.preventDefault();
+  setScale((prev) => {
+  const next = clamp(prev * (e.deltaY > 0 ? 0.9 : 1.1), 0.25, 4);
+  return Math.round(next * 100) / 100;
+  });
+  }
+
+
+  el.addEventListener("wheel", onWheel, { passive: false });
+  return () => el.removeEventListener("wheel", onWheel as any);
+  }, []);
+
+
+  function clamp(n: number, min: number, max: number) {
+  return Math.max(min, Math.min(max, n));
+  }
+
+
+  const fitToWidth = () => {
+  const wrap = viewportRef.current;
+  if (!wrap) return;
+  // Fit based on wrapper width to the intrinsic SVG width (1200)
+  const containerW = wrap.clientWidth;
+  const next = clamp(containerW / 1200, 0.25, 4);
+  setScale(parseFloat(next.toFixed(2)));
+  };
+
+
+  const reset = () => setScale(1);
 
   useEffect(() => {
     const startTime = new Date(game.game_state.created_at).getTime();
@@ -242,8 +288,95 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
             <Card>
               <CardHeader>
                 <CardTitle>Map</CardTitle>
-              </CardHeader>
+                <div className="w-full space-y-3">
+                  <Slider
+                  className="w-48"
+                  min={0.25}
+                  max={4}
+                  step={0.05}
+                  value={[scale]}
+                  onValueChange={(v) => setScale(v[0])}
+                  />
+                  <Button variant="secondary" size="icon" onClick={() => setScale((s) => clamp(parseFloat((s * 1.1).toFixed(2)), 0.25, 4))}>
+                  <ZoomIn className="w-4 h-4" />
+                  </Button>
+                  <span className="text-sm tabular-nums w-10 text-center">{Math.round(scale * 100)}%</span>
+                  </div>
+                  <div className="ml-auto flex items-center gap-2">
+                  <Button variant="outline" size="sm" onClick={fitToWidth}>
+                  <Maximize2 className="w-4 h-4 mr-2" /> Fit width
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={reset}>
+                  <Minimize2 className="w-4 h-4 mr-2" /> 100%
+                  </Button>
+                  </div>
+                  </div>
 
+
+                  {/* Scrollable area */}
+                  <ScrollArea className="w-full h-[540px] rounded-2xl border bg-background/50 shadow-sm">
+                  <div ref={viewportRef} className="relative p-6">
+                  {/* The inner surface is larger than the viewport; ScrollArea provides both bars */}
+                  <motion.div
+                  className="origin-top-left"
+                  style={{ width: 1200, height: 800 }}
+                  animate={{ scale }}
+                  transition={{ type: "spring", stiffness: 260, damping: 30 }}
+                  >
+                  {/* Replace this demo SVG with your own "struct" */}
+                  <svg
+                  width={1200}
+                  height={800}
+                  viewBox="0 0 1200 800"
+                  className="block"
+                  xmlns="http://www.w3.org/2000/svg"
+                  >
+                  <defs>
+                  <marker id="arrow" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+                  <path d="M 0 0 L 10 5 L 0 10 z" />
+                  </marker>
+                  </defs>
+
+                  {/* Grid background */}
+                  <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+                  <path d="M 40 0 L 0 0 0 40" strokeWidth="1" />
+                  </pattern>
+                  <rect width="1200" height="800" fill="url(#grid)" />
+
+                  {/* Example nodes */}
+                  {[
+                  { x: 120, y: 100, label: "Start" },
+                  { x: 420, y: 140, label: "Process A" },
+                  { x: 740, y: 260, label: "Process B" },
+                  { x: 960, y: 500, label: "End" },
+                  ].map((n, i) => (
+                  <g key={i}>
+                  <rect x={n.x} y={n.y} rx={16} ry={16} width={180} height={90} />
+                  <text x={n.x + 90} y={n.y + 50} dominantBaseline="middle" textAnchor="middle" fontSize="16">
+                  {n.label}
+                  </text>
+                  </g>
+                  ))}
+
+
+                  {/* Example connectors */}
+                  <path d="M 300 145 C 350 145 370 145 420 185" strokeWidth="2" fill="none" markerEnd="url(#arrow)" />
+                  <path d="M 600 185 C 650 215 700 235 740 305" strokeWidth="2" fill="none" markerEnd="url(#arrow)" />
+                  <path d="M 920 305 C 960 355 980 405 1000 500" strokeWidth="2" fill="none" markerEnd="url(#arrow)" />
+                  </svg>
+                  </motion.div>
+                  </div>
+                  <ScrollBar orientation="horizontal" />
+                  <ScrollBar orientation="vertical" />
+                  </ScrollArea>
+
+
+                  {/* Tips */}
+                  <p className="text-sm text-muted-foreground">
+                  Pro tip: hold <kbd className="px-1 py-0.5 rounded border">Ctrl</kbd>/<kbd className="px-1 py-0.5 rounded border">⌘</kbd> and scroll to zoom. Use the scrollbars (or trackpad) to pan.
+                  </p>
+                  </div>
+              </CardHeader>
             </Card>
 
             {/* Movement */}

@@ -37,7 +37,9 @@ export async function createGame(prevState: any, formData: FormData) {
     const cardSetsJson = formData.get("cardSets") as string;
     const mapDataJson = formData.get("mapData") as string;
 
-    if (!gameName) return { error: "A game name is required" };
+    if (!gameName) return { error: "A game name is required." };
+    if (!cardSetsJson) return { error: "At least one card set is required." };
+    if (!mapDataJson) return { error: "A map is required." };
 
     function tryParseJSON<T>(json: string, fb: T): T {
         if (!json) return fb;
@@ -52,38 +54,8 @@ export async function createGame(prevState: any, formData: FormData) {
 
     try {
         const players = tryParseJSON<User[]>(playersJson, []);
-        const mapData = tryParseJSON<MapData>(mapDataJson, {
-            name: "Default Map",
-            nodes: ["Start", "Center", "North", "South", "East", "West", "End"],
-            edges: [
-                { from: "Start", to: "Center" },
-                { from: "Center", to: "North" },
-                { from: "Center", to: "South" },
-                { from: "Center", to: "East" },
-                { from: "Center", to: "West" },
-                { from: "North", to: "End" },
-                { from: "South", to: "End" },
-                { from: "East", to: "End" },
-                { from: "West", to: "End" },
-            ],
-        });
-        const cardSets = tryParseJSON<CardSet[]>(cardSetsJson, [
-            {
-                name: "Default Battle Cards",
-                type: "battle",
-                cards: ["Quick Strike", "Power Attack", "Defensive Stance"],
-            },
-            {
-                name: "Default Utility Cards",
-                type: "utility",
-                cards: ["Extra Move", "Peek Ahead", "Double Points"],
-            },
-            {
-                name: "Default Roadblock Cards",
-                type: "roadblock",
-                cards: ["Block Path", "Slow Down", "Detour Required"],
-            },
-        ]);
+        const mapData = tryParseJSON<MapData>(mapDataJson, []);
+        const cardSets = tryParseJSON<CardSet[]>(cardSetsJson, []);
 
         const { data: game, error: gameError } = await supabase
             .from("games")
@@ -137,8 +109,16 @@ export async function createGame(prevState: any, formData: FormData) {
             if (insertError) console.error(`Error adding player ${player.username}:`, insertError);
             else console.log(`Player ${player.username} added to game.`);
         }
+        
+        console.log("Inserting card sets and map data:", cardSets, mapData, game.id);
+        for (const cardSet of cardSets) {
+            const { data, error } = await supabase
+                .from("card_sets")
+                .insert({ game_id: game.id, ...cardSet })
+                .select();
 
-        for (const cardSet of cardSets) await supabase.from("card_sets").insert({ game_id: game.id, ...cardSet });
+                console.log("Insert result:", { data, error });
+        }
         await supabase.from("maps").insert({ game_id: game.id, ...mapData });
 
         return { success: true, gameId: game.id };
