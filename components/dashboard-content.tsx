@@ -17,7 +17,7 @@ interface Game {
 }
 
 interface DashboardContentProps {
-  user: { id: string; email?: string };
+  user: { id: string; email?: string; user_metadata: { username: string } };
   games: Game[];
 }
 
@@ -65,7 +65,8 @@ export default function DashboardContent({ user, games }: DashboardContentProps)
             <div className="flex items-center space-x-4">
               <span className="text-gray-700">Welcome, {user.user_metadata.username}</span>
               <form
-                action={async (formData: FormData) => {
+                onSubmit={async (e) => {
+                  e.preventDefault();
                   await signOut();
                 }}>
                 <Button variant="outline" size="sm" type="submit">

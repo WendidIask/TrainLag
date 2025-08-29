@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ArrowLeft, Clock, MapPin, Target, Users, Zap, AlertTriangle, Play, Trash2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { moveToNode, playCard, endRun } from "@/lib/game-play-actions";
-import MapSvg from './GameMap.svg';
+import MapSvg from "./GameMap.svg";
 
 interface GamePlayContentProps {
   game: any;
@@ -19,7 +19,7 @@ interface GamePlayContentProps {
 }
 
 export default function GamePlayContent({ game, user }: GamePlayContentProps) {
-  const map = game.maps
+  const map = game.maps;
   const [gameState, setGameState] = useState(game.game_state?.[0] || null);
   const [selectedDestination, setSelectedDestination] = useState<string>("");
   const [showEndRunDialog, setShowEndRunDialog] = useState(false);
@@ -38,37 +38,57 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
   const [svgSize, setSvgSize] = useState({ width: 0, height: 0 });
   const [viewportSize, setViewportSize] = useState({ width: 0, height: 0 });
 
+  // Refs for SVG and viewport
+  // Measure sizes after mount
+  function updateContainerSizes(): void {
+    if (!viewportRef.current || !svgRef.current) return;
+    const vpRect = viewportRef.current.getBoundingClientRect();
+    const svgRect = svgRef.current.getBoundingClientRect();
+    setViewportSize({ width: vpRect.width, height: vpRect.height });
+    setSvgSize({ width: svgRect.width, height: svgRect.height });
+  }
+
+  useEffect(updateContainerSizes, [scale, offset]);
+
+  // ******************************************************************************
+  // FIX: Clamping for the right and the bottom will begin to fail when you zoom in
+  // ******************************************************************************
+
   // Helper to clamp a value between min and max
   function clamp(value: number, min: number, max: number) {
     return Math.min(Math.max(value, min), max);
   }
 
-  // Refs for SVG and viewport
-
-  // Measure sizes after mount
-  useEffect(() => {
-    if (svgRef.current && viewportRef.current) {
-      const svgRect = svgRef.current.getBoundingClientRect();
-      const vpRect = viewportRef.current.getBoundingClientRect();
-      setSvgSize({ width: svgRect.width, height: svgRect.height });
-      setViewportSize({ width: vpRect.width, height: vpRect.height });
-    }
-  }, []);
-
   // Clamp pan based on SVG and viewport size
-  function clampOffset(value: number, svgLength: number, viewportLength: number, scale: number) {
+  function clampOffset(value: number, svgSize: number, viewportSize: number, scale: number) {
+    const minOffset = Math.min(viewportSize - svgSize * scale, 0);
     const maxOffset = 0;
-    const minOffset = Math.min(viewportLength - svgLength * scale, 0);
     return clamp(value, minOffset, maxOffset);
   }
 
+  // ******************************************************************************
+  // FIX: Zooming in zooms with the top left as the origin, rather than around the
+  //      point that the user is hovering over
+  // ******************************************************************************
+
   // Apply zoom dynamically
   const applyZoom = (newScale: number, originX: number, originY: number) => {
+    console.log("APPLY ZOOM");
     const clampedScale = clamp(newScale, 0.25, 4);
 
     setOffset((prev) => ({
-      x: clampOffset(originX - (originX - prev.x) * (clampedScale / scale), svgSize.width, viewportSize.width, clampedScale),
-      y: clampOffset(originY - (originY - prev.y) * (clampedScale / scale), svgSize.height, viewportSize.height, clampedScale),
+      x: clampOffset(
+        originX - (originX - prev.x) * (clampedScale / scale),
+        svgSize.width,
+        viewportSize.width,
+        clampedScale,
+      ),
+      y: clampOffset(
+        originY - (originY - prev.y) * (clampedScale / scale),
+        svgSize.height,
+        viewportSize.height,
+        clampedScale,
+      ),
     }));
 
     setScale(clampedScale);
@@ -92,7 +112,9 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
     lastPointer.current = { x: e.clientX, y: e.clientY };
   };
 
-  const handlePointerUp = () => { lastPointer.current = null; };
+  const handlePointerUp = () => {
+    lastPointer.current = null;
+  };
 
   // Convert client coordinates to local SVG coordinates
   const getLocalPosition = (clientX: number, clientY: number) => {
@@ -104,7 +126,8 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
   };
 
   // Touch pinch zoom
-  const handleTouchMove = (e: TouchEvent) => {
+  const handleTouchMove = (e: React.TouchEvent) => {
+    // console.log("TOUCH MOVE");
     if (e.touches.length === 2) {
       e.preventDefault();
       const [t1, t2] = [e.touches[0], e.touches[1]];
@@ -122,18 +145,32 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
     }
   };
 
-  const handleTouchEnd = () => { lastDistance.current = null; };
+  const handleTouchEnd = () => {
+    // console.log("TOUCH END");
+    lastDistance.current = null;
+  };
 
   // Wheel zoom (desktop)
-  const handleWheel = (e: React.WheelEvent) => {
+  const handleWheel = (e: WheelEvent) => {
     if (!e.ctrlKey && !e.metaKey) return; // zoom only with ctrl/meta
     e.preventDefault();
+    e.stopPropagation();
     const localX = e.clientX - viewportRef.current!.getBoundingClientRect().left - offset.x;
     const localY = e.clientY - viewportRef.current!.getBoundingClientRect().top - offset.y;
     const zoomFactor = 1 - e.deltaY * 0.002;
     const newScale = clamp(scale * zoomFactor, 0.25, 4);
     applyZoom(newScale, localX, localY);
   };
+
+  // Prevent the full page from zooming when you try to zoom on the map
+  useEffect(() => {
+    const viewport = viewportRef.current;
+    if (!viewport) return;
+    viewport.addEventListener("wheel", handleWheel, { passive: false });
+    return () => {
+      viewport.removeEventListener("wheel", handleWheel);
+    };
+  });
 
   // Prevent default 2-finger scroll on mobile
   useEffect(() => {
@@ -159,7 +196,7 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
 
   useEffect(() => {
     const startTime = new Date(game.game_state.start_time).getTime();
-    const interval = setInterval(() => { 
+    const interval = setInterval(() => {
       setRunTime(Math.floor((Date.now() - startTime) / 1000));
     }, 1000);
 
@@ -191,7 +228,6 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
       clearInterval(interval);
     };
   }, [game.id, user]);
-
 
   if (!gameState) {
     return <div className="min-h-screen bg-gray-50 flex items-center justify-center">Loading game state...</div>;
@@ -247,8 +283,9 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
     const minutes = Math.floor(remainingSecondsforMinutes / 60);
     const remainingSeconds = seconds % 60;
 
-    
-    return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${remainingSeconds.toString().padStart(2, "0")}`;
+    return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${remainingSeconds
+      .toString()
+      .padStart(2, "0")}`;
   };
 
   const getCardTypeIcon = (type: string) => {
@@ -370,7 +407,6 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
               </Card>
             )}
 
-
             <Card>
               <CardHeader>
                 <CardTitle>Map</CardTitle>
@@ -379,21 +415,19 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
                 <div
                   ref={viewportRef}
                   className="relative w-full h-[540px] bg-gray-100 touch-none overflow-hidden"
-                  onWheel={handleWheel}      // zoom with ctrl+wheel
+                  // onWheel={handleWheel} // zoom with ctrl+wheel
                   onPointerDown={handlePointerDown} // start drag
                   onPointerMove={handlePointerMove} // dragging
-                  onPointerUp={handlePointerUp}     // stop drag
-                  onPointerLeave={handlePointerUp}  // stop drag if finger leaves
-                  onTouchMove={handleTouchMove}     // pinch zoom
-                  onTouchEnd={handleTouchEnd}
-                >
+                  onPointerUp={handlePointerUp} // stop drag
+                  onPointerLeave={handlePointerUp} // stop drag if finger leaves
+                  onTouchMove={handleTouchMove} // pinch zoom
+                  onTouchEnd={handleTouchEnd}>
                   <motion.div
                     className="origin-top-left"
                     style={{ scale, x: offset.x, y: offset.y }}
                     animate={{ scale, x: offset.x, y: offset.y }}
-                    transition={{ type: "spring", stiffness: 260, damping: 30 }}
-                  >
-                    <MapSvg />
+                    transition={{ type: "spring", stiffness: 260, damping: 30 }}>
+                    <MapSvg ref={svgRef} />
                   </motion.div>
                 </div>
               </CardContent>
@@ -636,7 +670,7 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
             )}
 
             {/* Game Info */}
-            
+
             <Card>
               <CardHeader>
                 <CardTitle>Game Info</CardTitle>
