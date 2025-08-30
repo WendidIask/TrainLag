@@ -61,16 +61,13 @@ export async function moveToNode(gameId: string, newNode: string) {
 
 export async function playCard(gameId: string, cardId: string, targetPlayer?: string) {
     const supabase = await createServerClient();
-    const {
-        data: { user },
-    } = await supabase.auth.getUser();
-
+    const { data } = await supabase.auth.getUser();
+    const { user } = data;
     if (!user) return { error: "You must be logged in" };
 
     try {
         // Get current game state
         const { data: gameState } = await supabase.from("game_state").select("*").eq("game_id", gameId).single();
-
         if (!gameState) return { error: "Game state not found" };
 
         const currentHands = gameState.cards_in_hand || {};
@@ -78,11 +75,7 @@ export async function playCard(gameId: string, cardId: string, targetPlayer?: st
 
         // Find the card to play
         const cardToPlay = playerHand.find((card: any) => card.id === cardId);
-        if (!cardToPlay) {
-            return { error: "Card not found in your hand" };
-        }
-
-        // Remove card from player's hand
+        if (!cardToPlay) return { error: "Card not found in your hand" };
         currentHands[user.id] = playerHand.filter((card: any) => card.id !== cardId);
 
         // Add to used cards
@@ -101,16 +94,10 @@ export async function playCard(gameId: string, cardId: string, targetPlayer?: st
             discard_pile: usedCards,
             updated_at: new Date().toISOString(),
         };
-
-        // Apply specific card effects
         applyCardEffect(updatedState, cardToPlay, user.id, targetPlayer);
 
         const { error } = await supabase.from("game_state").update(updatedState).eq("game_id", gameId);
-
-        if (error) {
-            return { error: "Failed to play card: " + error.message };
-        }
-
+        if (error) return { error: "Failed to play card: " + error.message };
         return { success: true };
     } catch (error) {
         console.error("Play card error:", error);

@@ -628,7 +628,7 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
                       <p className="text-gray-500 text-center py-4">No cards in hand</p>
                     )}
                   </div>
-                </CardContent>
+                </CardContent> 
               </Card>
             )}
 
