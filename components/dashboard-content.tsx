@@ -17,7 +17,7 @@ interface Game {
 }
 
 interface DashboardContentProps {
-  user: { id: string; email?: string; user_metadata: { username: string } };
+  user: { id: string; email?: string; user_metadata: { username?: string } };
   games: Game[];
 }
 

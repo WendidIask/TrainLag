@@ -1,0 +1,446 @@
+[
+  {
+    "cx": 180,
+    "cy": 110,
+    "name": "BONDI BEACH",
+    "id": "path4-2"
+  },
+  {
+    "cx": 170,
+    "cy": 120,
+    "name": "RANDWICK",
+    "id": "path4-0-2"
+  },
+  {
+    "cx": 150,
+    "cy": 120,
+    "name": "NEWTOWN",
+    "id": "path4-0-2-3"
+  },
+  {
+    "cx": 170,
+    "cy": 70,
+    "name": "CASTLECRAG",
+    "id": "path4-0-2-3-95"
+  },
+  {
+    "cx": 150,
+    "cy": 100,
+    "name": "BALMAIN",
+    "id": "path4-0-2-3-9"
+  },
+  {
+    "cx": 110,
+    "cy": 50,
+    "name": "DURAL",
+    "id": "path4-0-2-3-9-5"
+  },
+  {
+    "cx": 100,
+    "cy": 60,
+    "name": "CASTLE HILL",
+    "id": "path4-0-2-3-9-5-1"
+  },
+  {
+    "cx": 110,
+    "cy": 70,
+    "name": "CARLINGFORD",
+    "id": "path4-0-2-3-9-5-1-3"
+  },
+  {
+    "cx": 160,
+    "cy": 90,
+    "name": "CROWS NEST",
+    "id": "path4-0-2-3-9-0"
+  },
+  {
+    "cx": 170,
+    "cy": 60,
+    "name": "FORESTVILLE",
+    "id": "path4-0-2-3-9-0-6"
+  },
+  {
+    "cx": 180,
+    "cy": 80,
+    "name": "MANLY",
+    "id": "path4-0-2-3-9-0-4"
+  },
+  {
+    "cx": 180,
+    "cy": 60,
+    "name": "BROOKVALE",
+    "id": "path4-0-2-3-9-0-7-4"
+  },
+  {
+    "cx": 180,
+    "cy": 40,
+    "name": "MONA VALE",
+    "id": "path4-0-2-3-9-0-7-4-9"
+  },
+  {
+    "cx": 170,
+    "cy": 50,
+    "name": "BELROSE",
+    "id": "path4-0-2-3-9-0-7-4-3"
+  },
+  {
+    "cx": 120,
+    "cy": 180,
+    "name": "SUTHERLAND",
+    "id": "path4-0-6-9-6-4-2-2"
+  },
+  {
+    "cx": 100,
+    "cy": 170,
+    "name": "MENAI",
+    "id": "path4-0-6-9-6-4-2-2-0"
+  },
+  {
+    "cx": 110,
+    "cy": 160,
+    "name": "LUGARNO",
+    "id": "path4-0-6-9-6-4-2-2-0-2"
+  },
+  {
+    "cx": 50,
+    "cy": 60,
+    "name": "EMERTON",
+    "id": "path4-0-6-9-6-4-2-2-0-4"
+  },
+  {
+    "cx": 30,
+    "cy": 70,
+    "name": "PENRITH",
+    "id": "path4-0-6-9-6-4-2-2-0-4-2"
+  },
+  {
+    "cx": 30,
+    "cy": 20,
+    "name": "RICHMOND",
+    "id": "path4-0-6-9-6-4-2-2-0-4-2-3"
+  },
+  {
+    "cx": 60,
+    "cy": 50,
+    "name": "MARSDEN PARK",
+    "id": "path4-0-6-9-6-4-2-2-0-4-1"
+  },
+  {
+    "cx": 160,
+    "cy": 80,
+    "name": "CHATSWOOD",
+    "id": "path4-0-6-9-6-4-2-2-0-1-0"
+  },
+  {
+    "cx": 80,
+    "cy": 90,
+    "name": "PEMULWUY",
+    "id": "path4-0-6-9-6-4-2-2-0-1-0-7"
+  },
+  {
+    "cx": 120,
+    "cy": 110,
+    "name": "BURWOOD",
+    "id": "path4-0-6-9-6-4-2-2-0-1-0-7-45"
+  },
+  {
+    "cx": 150,
+    "cy": 90,
+    "name": "LANE COVE",
+    "id": "path4-0-6-9-6-4-2-2-0-1-0-7-5"
+  },
+  {
+    "cx": 60,
+    "cy": 110,
+    "name": "WETHERILL PARK",
+    "id": "path4-0-6-9-6-4-2-2-0-1-0-7-4"
+  },
+  {
+    "cx": 90,
+    "cy": 130,
+    "name": "GEORGES HALL",
+    "id": "path4-0-6-9-6-4-2-2-0-1-0-7-4-24"
+  },
+  {
+    "cx": 50,
+    "cy": 120,
+    "name": "BONNYRIGG",
+    "id": "path4-0-6-9-6-4-2-2-0-1-0-7-4-2"
+  },
+  {
+    "cx": 100,
+    "cy": 70,
+    "name": "BAULKHAM HILLS",
+    "id": "path4-0-6-9-6-4-2-2-0-1-0-7-29"
+  },
+  {
+    "cx": 130,
+    "cy": 50,
+    "name": "HORNSBY",
+    "id": "path4-0-6-9-6-4-2-2-0-1-0-7-29-9"
+  },
+  {
+    "cx": 50,
+    "cy": 140,
+    "name": "CARNES HILL",
+    "id": "path4-0-6-9-6-4-2-2-0-1-0-7-2"
+  },
+  {
+    "cx": 40,
+    "cy": 150,
+    "name": "LEPPINGTON",
+    "id": "path4-0-6-9-6-4-2-2-0-1-0-7-2-8"
+  },
+  {
+    "cx": 20,
+    "cy": 170,
+    "name": "ORAN PARK",
+    "id": "path4-0-6-9-6-4-2-2-0-1-0-7-2-8-4"
+  },
+  {
+    "cx": 20,
+    "cy": 180,
+    "name": "NARELLAN",
+    "id": "path4-0-6-9-6-4-2-2-0-1-0-7-2-8-4-9"
+  },
+  {
+    "cx": 170,
+    "cy": 140,
+    "name": "MAROUBRA BEACH",
+    "id": "path4-0-6-5"
+  },
+  {
+    "cx": 160,
+    "cy": 150,
+    "name": "LA PEROUSE",
+    "id": "path4-0-6"
+  },
+  {
+    "cx": 140,
+    "cy": 150,
+    "name": "BRIGHTON-LE-SANDS",
+    "id": "path4-0-6-2"
+  },
+  {
+    "cx": 140,
+    "cy": 170,
+    "name": "RAMSGATE",
+    "id": "path4-0-6-9-6"
+  },
+  {
+    "cx": 130,
+    "cy": 180,
+    "name": "MIRANDA",
+    "id": "path4-0-6-9-6-4-2"
+  },
+  {
+    "cx": 50,
+    "cy": 70,
+    "name": "MOUNT DRUITT",
+    "id": "path4-0-6-9-6-4-2-29"
+  },
+  {
+    "cx": 130,
+    "cy": 110,
+    "name": "FIVE DOCK",
+    "id": "path4-0-6-9-6-4-2-8"
+  },
+  {
+    "cx": 140,
+    "cy": 110,
+    "name": "LEICHHARDT",
+    "id": "path4-0-6-9-6-4-2-8-0"
+  },
+  {
+    "cx": 180,
+    "cy": 100,
+    "name": "WATSONS BAY",
+    "id": "path4-2-3"
+  },
+  {
+    "cx": 140,
+    "cy": 130,
+    "name": "MARRICKVILLE",
+    "id": "path4-0-6-4"
+  },
+  {
+    "cx": 130,
+    "cy": 140,
+    "name": "EARLWOOD",
+    "id": "path4-0-2-3-7"
+  },
+  {
+    "cx": 120,
+    "cy": 130,
+    "name": "CAMPSIE",
+    "id": "path4-0-2-3-7-8"
+  },
+  {
+    "cx": 100,
+    "cy": 130,
+    "name": "BANKSTOWN",
+    "id": "path4-0-2-3-7-8-5"
+  },
+  {
+    "cx": 110,
+    "cy": 140,
+    "name": "ROSELANDS",
+    "id": "path4-0-2-3-7-0"
+  },
+  {
+    "cx": 120,
+    "cy": 90,
+    "name": "RHODES",
+    "id": "path4-0-2-3-7-0-1"
+  },
+  {
+    "cx": 100,
+    "cy": 90,
+    "name": "PARRAMATTA",
+    "id": "path4-0-2-3-7-0-1-0"
+  },
+  {
+    "cx": 70,
+    "cy": 70,
+    "name": "BLACKTOWN",
+    "id": "path4-0-2-3-7-0-1-0-9"
+  },
+  {
+    "cx": 80,
+    "cy": 60,
+    "name": "PARKLEA",
+    "id": "path4-0-2-3-7-0-1-0-9-8"
+  },
+  {
+    "cx": 60,
+    "cy": 60,
+    "name": "PLUMPTON",
+    "id": "path4-0-2-3-7-0-1-0-9-8-8"
+  },
+  {
+    "cx": 80,
+    "cy": 50,
+    "name": "ROUSE HILL",
+    "id": "path4-0-2-3-7-0-1-0-9-8-4"
+  },
+  {
+    "cx": 70,
+    "cy": 40,
+    "name": "RIVERSTONE",
+    "id": "path4-0-2-3-7-0-1-0-9-8-4-3"
+  },
+  {
+    "cx": 50,
+    "cy": 20,
+    "name": "WINDSOR",
+    "id": "path4-0-2-3-7-0-1-0-9-8-4-3-3"
+  },
+  {
+    "cx": 110,
+    "cy": 100,
+    "name": "AUBURN",
+    "id": "path4-0-2-3-7-0-1-7"
+  },
+  {
+    "cx": 130,
+    "cy": 100,
+    "name": "CONCORD",
+    "id": "path4-0-2-3-7-0-1-7-0"
+  },
+  {
+    "cx": 90,
+    "cy": 120,
+    "name": "CHESTER HILL",
+    "id": "path4-0-2-3-7-0-1-7-5"
+  },
+  {
+    "cx": 80,
+    "cy": 110,
+    "name": "FAIRFIELD",
+    "id": "path4-0-2-3-7-0-1-7-5-7"
+  },
+  {
+    "cx": 70,
+    "cy": 140,
+    "name": "LIVERPOOL",
+    "id": "path4-0-2-3-7-0-1-7-5-2"
+  },
+  {
+    "cx": 50,
+    "cy": 170,
+    "name": "MINTO",
+    "id": "path4-0-2-3-7-0-1-7-5-2-6"
+  },
+  {
+    "cx": 40,
+    "cy": 180,
+    "name": "CAMPBELLTOWN",
+    "id": "path4-0-2-3-7-0-1-7-5-2-6-8"
+  },
+  {
+    "cx": 100,
+    "cy": 150,
+    "name": "REVESBY",
+    "id": "path4-0-2-3-7-0-1-7-5-4-8"
+  },
+  {
+    "cx": 70,
+    "cy": 150,
+    "name": "GLENFIELD",
+    "id": "path4-0-2-3-7-0-1-7-5-4-8-3"
+  },
+  {
+    "cx": 130,
+    "cy": 70,
+    "name": "MACQUARIE PARK",
+    "id": "path4-0-2-3-7-0-1-2"
+  },
+  {
+    "cx": 120,
+    "cy": 60,
+    "name": "PENNANT HILLS",
+    "id": "path4-0-2-3-7-0-1-2-3"
+  },
+  {
+    "cx": 120,
+    "cy": 70,
+    "name": "EASTWOOD",
+    "id": "path4-0-2-3-7-0-1-4"
+  },
+  {
+    "cx": 150,
+    "cy": 50,
+    "name": "ST IVES",
+    "id": "path4-0-2-3-7-0-1-4-9"
+  },
+  {
+    "cx": 160,
+    "cy": 130,
+    "name": "EASTLAKES",
+    "id": "path4-0"
+  },
+  {
+    "cx": 130,
+    "cy": 170,
+    "name": "SYLVANIA",
+    "id": "path4-0-6-9-6-4"
+  },
+  {
+    "cx": 130,
+    "cy": 160,
+    "name": "HURSTVILLE",
+    "id": "path4-0-6-9"
+  },
+  {
+    "cx": 160,
+    "cy": 110,
+    "name": "SYDNEY CBD",
+    "id": "path4"
+  },
+  {
+    "cx": 110,
+    "cy": 150,
+    "name": "RIVERWOOD",
+    "id": "path4-0-6-9-3"
+  }
+]

@@ -2,6 +2,7 @@
 
 import { createServerClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import mapPaths from "../components/data/map-paths.json";
 
 type node = "Start" | "Center" | "North" | "South" | "East" | "West" | "End";
 type edge = { from: node; to: node };
@@ -19,6 +20,8 @@ interface MapData {
     edges: edge[];
 }
 
+//Have to reformat MapData to fit the json format returned by extract-map.
+
 interface CardSet {
     name: string;
     type: "battle" | "utility" | "roadblock";
@@ -32,10 +35,11 @@ export async function createGame(prevState: any, formData: FormData) {
     if (!user) return { error: "You must be logged in to create a game" };
 
     const gameName = (formData.get("gameName") as string)?.trim();
-    const gameDescription = formData.get("gameDescription") as string;
+
     const playersJson = formData.get("players") as string;
     const cardSetsJson = formData.get("cardSets") as string;
-    const mapDataJson = formData.get("mapData") as string;
+    const mapDataJson = JSON.stringify(mapPaths);
+    console.log(mapDataJson)
 
     if (!gameName) return { error: "A game name is required." };
     if (!cardSetsJson) return { error: "At least one card set is required." };
@@ -54,9 +58,8 @@ export async function createGame(prevState: any, formData: FormData) {
 
     try {
         const players = tryParseJSON<User[]>(playersJson, []);
-        const mapData = tryParseJSON<MapData>(mapDataJson, []);
+        const mapData = tryParseJSON<MapData[]>(mapDataJson, []);
         const cardSets = tryParseJSON<CardSet[]>(cardSetsJson, []);
-
         const { data: game, error: gameError } = await supabase
             .from("games")
             .insert({
@@ -119,7 +122,8 @@ export async function createGame(prevState: any, formData: FormData) {
 
                 console.log("Insert result:", { data, error });
         }
-        await supabase.from("maps").insert({ game_id: game.id, ...mapData });
+        const { data, error } = await supabase.from("maps").insert({ game_id: game.id, ...mapData });
+        console.log("Insert result:", { data, error });
 
         return { success: true, gameId: game.id };
     } catch (error) {
@@ -161,7 +165,7 @@ export async function startGame(gameId: string) {
         const { error: initError } = await supabase.from("game_state").insert({
             game_id: gameId,
             current_runner_id: playerOrder[0],
-            current_node: "Start",
+            current_node: "Sydney CBD",
             runner_points: 0,
             available_cards: {},
             discard_pile: [],

@@ -17,7 +17,8 @@ export default async function Dashboard() {
         )
         .or(`creator_id.eq.${user.id}`);
       
-
+    
+    
     // Fix by also showing games where the user is a player. Its bugged.
     return <DashboardContent user={user} games={games || []} />;
 }

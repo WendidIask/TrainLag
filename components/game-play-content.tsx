@@ -11,7 +11,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ArrowLeft, Clock, MapPin, Target, Users, Zap, AlertTriangle, Play, Trash2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { moveToNode, playCard, endRun } from "@/lib/game-play-actions";
-import MapSvg from "./GameMap.svg";
+import MapSvg from "./data/GameMap.svg";
+import mapNodes from "./data/map-nodes.json";
 
 interface GamePlayContentProps {
   game: any;
@@ -35,8 +36,63 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
   const lastDistance = useRef<number | null>(null);
   const lastPointer = useRef<{ x: number; y: number } | null>(null);
   const svgRef = useRef<SVGSVGElement | null>(null);
-  const [svgSize, setSvgSize] = useState({ width: 0, height: 0 });
-  const [viewportSize, setViewportSize] = useState({ width: 0, height: 0 });
+  const [svgSize, setSvgSize] = useState({ width: 400, height: 400 });
+  const [viewportSize, setViewportSize] = useState({ width: 400, height: 400 });
+
+  const [roadblocks, setRoadblocks] = useState([]);
+
+  useEffect(() => {
+    if (svgRef.current) {
+      const bbox = svgRef.current.getBBox();
+      console.log("SVG BBOX:", bbox);
+      setSvgSize({ width: bbox.width, height: bbox.height });
+      // Or, if you want the viewBox or attributes:
+      // const width = mapSvgElementRef.current.width.baseVal.value;
+      // const height = mapSvgElementRef.current.height.baseVal.value;
+      // setSvgSize({ width, height });
+    }
+  }, []);
+
+  // Add roadblocks to the fetch function
+  useEffect(() => {
+      let isMounted = true;
+      let userRef: { id: string } | null = user;
+
+      const fetchGameData = async () => {
+          if (!userRef) return;
+          try {
+              // Fetch game state
+              const stateResponse = await fetch(`/api/game/${game.id}/state`);
+              if (stateResponse.ok) {
+                  const stateData = await stateResponse.json();
+                  if (isMounted) setGameState(stateData);
+              }
+
+              // Fetch active roadblocks
+              const roadblocksResponse = await fetch(`/api/game/${game.id}/roadblocks`);
+              if (roadblocksResponse.ok) {
+                  const roadblocksData = await roadblocksResponse.json();
+                  if (isMounted) setRoadblocks(roadblocksData);
+              }
+          } catch (err) {
+              console.error("Failed to fetch game data:", err);
+          }
+      };
+
+      fetchGameData();
+      const interval = setInterval(fetchGameData, 5000);
+
+      return () => {
+          isMounted = false;
+          clearInterval(interval);
+      };
+  }, [game.id, user]);
+
+  // Update the getNodePosition function
+  const getNodePosition = (nodeName: string) => {
+      const node = mapNodes.find(n => n.name.toLowerCase() === nodeName.toLowerCase());
+      return node ? { x: node.cx, y: node.cy } : { x: 0, y: 0 };
+  };
 
   // Refs for SVG and viewport
   // Measure sizes after mount
@@ -236,7 +292,7 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
   const isRunner = user.id === game.game_state.current_runner_id;
   const mapInfo = game.maps?.[0];
   const availableDestinations =
-    mapInfo?.edges?.filter((edge: any) => edge.from === gameState.current_node)?.map((edge: any) => edge.to) || [];
+    mapInfo?.edges?.filter((edge: any) => edge.from.toLowerCase() === gameState.current_node.toLowerCase())?.map((edge: any) => edge.to) || [];
 
   const currentPlayerHand = gameState.cards_in_hand?.[user.id] || [];
   const activeEffects = gameState.active_effects || [];
@@ -423,11 +479,60 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
                   onTouchMove={handleTouchMove} // pinch zoom
                   onTouchEnd={handleTouchEnd}>
                   <motion.div
-                    className="origin-top-left"
-                    style={{ scale, x: offset.x, y: offset.y }}
+                    style={{
+                      scale,
+                      x: offset.x,
+                      y: offset.y,
+                      transformOrigin: "center center",
+                    }}
                     animate={{ scale, x: offset.x, y: offset.y }}
-                    transition={{ type: "spring", stiffness: 260, damping: 30 }}>
-                    <MapSvg ref={svgRef} />
+                    transition={{ type: "spring", stiffness: 260, damping: 30 }}
+                  >
+                    <svg viewBox="0 0 200 200" width={800} height={800}>
+                      <MapSvg width={200} height={200} viewBox="0 0 200 200" />
+                      <circle
+                        cx={400}
+                        cy={400}
+                        r={12}
+                        fill="#3b82f6"
+                        stroke="#fff"
+                        strokeWidth={2}
+                        style={{ filter: "drop-shadow(0 2px 6px rgba(0,0,0,0.15))" }}
+                      />
+                      {/* Roadblock indicators */}
+                      {roadblocks.map((roadblock: any) => {
+                        const nodePos = getNodePosition(roadblock.node_name);
+                        return (
+                          <g key={roadblock.id}>
+                            <circle
+                              cx={nodePos.x}
+                              cy={nodePos.y}
+                              r={1}
+                              fill="rgba(239, 68, 68, 0.8)"
+                              stroke="#b91c1c"
+                              strokeWidth={0.2}
+                            />
+                          </g>
+                        );
+                      })}
+
+                      {/* Current player position */}
+                      {gameState.current_node && (() => {
+                        const nodePos = getNodePosition(gameState.current_node);
+                        console.log(nodePos);
+                        return (
+                          <circle
+                            cx={nodePos.x}
+                            cy={nodePos.y}
+                            r={1}
+                            fill="#3b82f6"
+                            stroke="#fff"
+                            strokeWidth={0.2}
+                            style={{ filter: "drop-shadow(0 2px 6px rgba(0,0,0,0.15))" }}
+                          />
+                        );
+                      })()}
+                    </svg>
                   </motion.div>
                 </div>
               </CardContent>

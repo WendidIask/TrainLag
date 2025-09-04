@@ -155,6 +155,12 @@ importers:
       sonner:
         specifier: ^1.7.4
         version: 1.7.4(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+      svg-path-parser:
+        specifier: ^1.1.0
+        version: 1.1.0
+      svg-path-properties:
+        specifier: ^2.0.0
+        version: 2.0.0
       tailwind-merge:
         specifier: ^3.3.1
         version: 3.3.1
@@ -164,6 +170,12 @@ importers:
       vaul:
         specifier: ^0.9.9
         version: 0.9.9(@types/react-dom@18.3.7(@types/react@18.3.24))(@types/react@18.3.24)(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+      xmldom:
+        specifier: ^0.6.0
+        version: 0.6.0
+      xpath:
+        specifier: ^0.0.34
+        version: 0.0.34
       zod:
         specifier: 3.25.67
         version: 3.25.67
@@ -2604,6 +2616,13 @@ packages:
   svg-parser@2.0.4:
     resolution: {integrity: sha512-e4hG1hRwoOdRb37cIMSgzNsxyzKfayW6VOflrwvR+/bzrkyxY/31WkbgnQpgtrNp1SdpJvpUAGTa/ZoiPNDuRQ==}
 
+  svg-path-parser@1.1.0:
+    resolution: {integrity: sha512-jGCUqcQyXpfe38R7RFfhrMyfXcBmpMNJI/B+4CE9/Unkh98UporAc461GTthv+TVDuZXsBx7/WiwJb1Oh4tt4A==}
+
+  svg-path-properties@2.0.0:
+    resolution: {integrity: sha512-7+zZ4gQB8/aOnNOMy+tqCO1b1oju5umaiiNX2KuXihUX9IwFctOiCXAetpyk2if/q+YZB9qiKbo2Q/klgpfuSQ==}
+    engines: {node: '>=22.0.0'}
+
   svgo@3.3.2:
     resolution: {integrity: sha512-OoohrmuUlBs8B8o6MB2Aevn+pRIH9zDALSR+6hhqVfa6fRwG/Qw9VUMSMW9VNg2CFc/MTIfabtdOVl9ODIJjpw==}
     engines: {node: '>=14.0.0'}
@@ -2721,6 +2740,14 @@ packages:
         optional: true
       utf-8-validate:
         optional: true
+
+  xmldom@0.6.0:
+    resolution: {integrity: sha512-iAcin401y58LckRZ0TkI4k0VSM1Qg0KGSc3i8rU+xrxe19A/BN1zHyVSJY7uoutVlaTSzYyk/v5AmkewAP7jtg==}
+    engines: {node: '>=10.0.0'}
+
+  xpath@0.0.34:
+    resolution: {integrity: sha512-FxF6+rkr1rNSQrhUNYrAFJpRXNzlDoMxeXN5qI84939ylEv3qqPFKa85Oxr6tDaJKqwW6KKyo2v26TSv3k6LeA==}
+    engines: {node: '>=0.6.0'}
 
   yallist@3.1.1:
     resolution: {integrity: sha512-a4UGQaWPH59mOXUYnAG2ewncQS4i4F43Tv3JoAM+s2VDAmS9NsK8GpDMLrCHPksFT7h3K6TOoUNn2pb7RoXx4g==}
@@ -5270,6 +5297,10 @@ snapshots:
 
   svg-parser@2.0.4: {}
 
+  svg-path-parser@1.1.0: {}
+
+  svg-path-properties@2.0.0: {}
+
   svgo@3.3.2:
     dependencies:
       '@trysound/sax': 0.2.0
@@ -5381,6 +5412,10 @@ snapshots:
       webidl-conversions: 3.0.1
 
   ws@8.18.3: {}
+
+  xmldom@0.6.0: {}
+
+  xpath@0.0.34: {}
 
   yallist@3.1.1: {}
 

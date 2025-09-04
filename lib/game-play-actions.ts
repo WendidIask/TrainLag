@@ -87,21 +87,113 @@ export async function playCard(gameId: string, cardId: string, targetPlayer?: st
             targetPlayer,
         });
 
-        // Apply card effect
+        // Initialize updated state
         const updatedState = {
             ...gameState,
             cards_in_hand: currentHands,
             discard_pile: usedCards,
             updated_at: new Date().toISOString(),
         };
-        applyCardEffect(updatedState, cardToPlay, user.id, targetPlayer);
 
+        // Apply card effects based on type
+        const activeEffects = updatedState.active_effects || [];
+
+        switch (cardToPlay.type) {
+            case "battle":
+                activeEffects.push({
+                    cardId: cardToPlay.id,
+                    effect: "Runner location revealed",
+                    player: user.id,
+                    targetPlayer,
+                    expiresAt: Date.now() + 60000, // 1 minute
+                });
+                break;
+
+            case "roadblock":
+                // Insert roadblock into dedicated table
+                const expiresAt = new Date(Date.now() + 120000); // 2 minutes from now
+                
+                const { error: roadblockError } = await supabase
+                    .from("roadblocks")
+                    .insert({
+                        game_id: gameId,
+                        node_name: updatedState.current_node,
+                        placed_by: user.id,
+                        expires_at: expiresAt.toISOString(),
+                    });
+                    
+                if (roadblockError) {
+                    return { error: "Failed to place roadblock: " + roadblockError.message };
+                }
+                break;
+
+            case "curse":
+                // Reduce runner's points
+                updatedState.runner_points = Math.max(0, updatedState.runner_points - 20);
+                activeEffects.push({
+                    cardId: cardToPlay.id,
+                    effect: "Runner cursed (-20 points)",
+                    player: user.id,
+                    targetPlayer,
+                    expiresAt: Date.now() + 90000, // 1.5 minutes
+                });
+                break;
+
+            case "utility":
+                // For utility cards, player draws 2 additional cards
+                const { data: cardSets } = await supabase.from("card_sets").select("*").eq("game_id", gameId);
+
+                if (cardSets && cardSets.length > 0) {
+                    const newCards = [];
+                    for (let i = 0; i < 2; i++) {
+                        const randomSet = cardSets[Math.floor(Math.random() * cardSets.length)];
+                        const randomCard = randomSet.cards[Math.floor(Math.random() * randomSet.cards.length)];
+                        newCards.push({
+                            id: `${randomSet.id}_${Date.now()}_${i}_${Math.random()}`,
+                            name: randomCard,
+                            type: randomSet.type,
+                            description: `${
+                                randomSet.type.charAt(0).toUpperCase() + randomSet.type.slice(1)
+                            } card: ${randomCard}`,
+                            effect: generateCardEffect(randomSet.type, randomCard),
+                        });
+                    }
+                    currentHands[user.id] = [...(currentHands[user.id] || []), ...newCards];
+                    updatedState.cards_in_hand = currentHands;
+                }
+                break;
+
+            default:
+                // Unknown card type - no effect
+                break;
+        }
+
+        // Update active effects
+        updatedState.active_effects = activeEffects;
+
+        // Save updated game state
         const { error } = await supabase.from("game_state").update(updatedState).eq("game_id", gameId);
         if (error) return { error: "Failed to play card: " + error.message };
+        
         return { success: true };
     } catch (error) {
         console.error("Play card error:", error);
         return { error: "An unexpected error occurred" };
+    }
+}
+
+function generateCardEffect(type: string, cardName: string): string {
+    switch (type) {
+        case "battle":
+            return "Force the runner to reveal their current location and next possible moves";
+        case "roadblock":
+            return "Block a specific path for the runner for 2 turns";
+        case "curse":
+            return "Reduce runner's points by 20 and slow their next move";
+        case "utility":
+            return "Draw 2 additional cards or peek at runner's hand";
+        default:
+            return "Special effect varies by card";
     }
 }
 
@@ -188,56 +280,4 @@ export async function endRun(gameId: string) {
         console.error("End run error:", error);
         return { error: "An unexpected error occurred" };
     }
-}
-
-function generateCardEffect(type: string, cardName: string): string {
-    switch (type) {
-        case "battle":
-            return "Force the runner to reveal their current location and next possible moves";
-        case "roadblock":
-            return "Block a specific path for the runner for 2 turns";
-        case "curse":
-            return "Reduce runner's points by 20 and slow their next move";
-        case "utility":
-            return "Draw 2 additional cards or peek at runner's hand";
-        default:
-            return "Special effect varies by card";
-    }
-}
-
-function applyCardEffect(gameState: any, card: any, playerId: string, targetPlayer?: string) {
-    const activeEffects = gameState.active_effects || [];
-
-    switch (card.type) {
-        case "battle":
-            activeEffects.push({
-                cardId: card.id,
-                effect: "Runner location revealed",
-                player: playerId,
-                expiresAt: Date.now() + 60000, // 1 minute
-            });
-            break;
-        case "roadblock":
-            activeEffects.push({
-                cardId: card.id,
-                effect: "Path blocked",
-                player: playerId,
-                expiresAt: Date.now() + 120000, // 2 minutes
-            });
-            break;
-        case "curse":
-            gameState.runner_points = Math.max(0, gameState.runner_points - 20);
-            activeEffects.push({
-                cardId: card.id,
-                effect: "Runner cursed (-20 points)",
-                player: playerId,
-                expiresAt: Date.now() + 90000, // 1.5 minutes
-            });
-            break;
-        case "utility":
-            // Draw additional cards - handled in the main function
-            break;
-    }
-
-    gameState.active_effects = activeEffects;
 }
