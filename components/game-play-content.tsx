@@ -74,6 +74,7 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
                   const roadblocksData = await roadblocksResponse.json();
                   if (isMounted) setRoadblocks(roadblocksData);
               }
+              
           } catch (err) {
               console.error("Failed to fetch game data:", err);
           }
@@ -292,9 +293,9 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
   const isRunner = user.id === game.game_state.current_runner_id;
   const mapInfo = game.maps?.[0];
   const availableDestinations =
-    mapInfo?.edges?.filter((edge: any) => edge.from.toLowerCase() === gameState.current_node.toLowerCase())?.map((edge: any) => edge.to) || [];
+    mapInfo?.edges?.filter((edge: any) => edge.from.toLowerCase() === gameState.runner_node.toLowerCase())?.map((edge: any) => edge.to) || [];
 
-  const currentPlayerHand = gameState.cards_in_hand?.[user.id] || [];
+  const currentPlayerHand = gameState.cards_in_hand || [];
   const activeEffects = gameState.active_effects || [];
   const usedCards = gameState.used_cards || [];
 
@@ -426,7 +427,7 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
                     <p className="text-sm text-gray-600">Points</p>
                   </div>
                   <div className="text-center">
-                    <p className="text-2xl font-bold text-purple-600">{gameState.current_node || "Start"}</p>
+                    <p className="text-2xl font-bold text-purple-600">{gameState.runner_node || "Start"}</p>
                     <p className="text-sm text-gray-600">Current Node</p>
                   </div>
                   <div className="text-center">
@@ -517,15 +518,31 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
                       })}
 
                       {/* Current player position */}
-                      {gameState.current_node && (() => {
-                        const nodePos = getNodePosition(gameState.current_node);
-                        console.log(nodePos);
+                      {gameState.runner_node && (() => {
+                        const nodePos = getNodePosition(gameState.runner_node);
                         return (
                           <circle
                             cx={nodePos.x}
                             cy={nodePos.y}
                             r={1}
                             fill="#3b82f6"
+                            stroke="#fff"
+                            strokeWidth={0.2}
+                            style={{ filter: "drop-shadow(0 2px 6px rgba(0,0,0,0.15))" }}
+                          />
+                        );
+                      })()}
+
+                      {/* Current seeker position */}
+                      {gameState.seeker_node && (() => {
+                        const nodePos = getNodePosition(gameState.seeker_node);
+                        console.log(nodePos);
+                        return (
+                          <circle
+                            cx={nodePos.x}
+                            cy={nodePos.y}
+                            r={1}
+                            fill="#f6923bff"
                             stroke="#fff"
                             strokeWidth={0.2}
                             style={{ filter: "drop-shadow(0 2px 6px rgba(0,0,0,0.15))" }}

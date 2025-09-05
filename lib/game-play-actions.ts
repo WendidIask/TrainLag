@@ -12,23 +12,31 @@ export async function moveToNode(gameId: string, newNode: string) {
         const { data: gameState } = await supabase.from("game_state").select("*").eq("game_id", gameId).single();
         if (!gameState) return { error: "Game state not found" };
 
-        // Update game state
+        const { data: game } = await supabase.from("games").select("current_runner_id").eq("id", gameId).single();
+        if (!game) return { error: "Game not found" };
+
         const updatedState = {
             ...gameState,
-            current_node: newNode,
-            runner_points: gameState.runner_points + 10, // Award points for moving
             updated_at: new Date().toISOString(),
         };
 
-        // Check if user is a seeker - they draw a card when moving
-        const { data: game } = await supabase.from("games").select("current_runner_id").eq("id", gameId).single();
+        if (user.id === game.current_runner_id) {
+            // Runner moves
+            updatedState.runner_node = newNode;
+            updatedState.runner_points = (gameState.runner_points || 0) + 10;
+        } else {
+            // Seeker moves → track movement
+            const seekerMovements = gameState.seeker_node || [];
+            seekerMovements.push({
+                userId: user.id,
+                node: newNode,
+                movedAt: new Date().toISOString(),
+            });
+            updatedState.seeker_node = seekerMovements;
 
-        if (game && user.id !== game.current_runner_id) {
-            // Generate a random card for the seeker
+            // Draw card into shared seeker hand
             const { data: cardSets } = await supabase.from("card_sets").select("*").eq("game_id", gameId);
-
             if (cardSets && cardSets.length > 0) {
-                // Pick a random card from available sets
                 const randomSet = cardSets[Math.floor(Math.random() * cardSets.length)];
                 const randomCard = randomSet.cards[Math.floor(Math.random() * randomSet.cards.length)];
 
@@ -36,16 +44,12 @@ export async function moveToNode(gameId: string, newNode: string) {
                     id: `${randomSet.id}_${Date.now()}_${Math.random()}`,
                     name: randomCard,
                     type: randomSet.type,
-                    description: `${
-                        randomSet.type.charAt(0).toUpperCase() + randomSet.type.slice(1)
-                    } card: ${randomCard}`,
+                    description: `${randomSet.type.charAt(0).toUpperCase() + randomSet.type.slice(1)} card: ${randomCard}`,
                     effect: generateCardEffect(randomSet.type, randomCard),
                 };
 
-                // Add card to seeker's hand
                 const currentHands = gameState.cards_in_hand || {};
-                currentHands[user.id] = [...(currentHands[user.id] || []), newCard];
-                updatedState.cards_in_hand = currentHands;
+                updatedState.cards_in_hand = [...(currentHands || []), newCard];
             }
         }
 
@@ -70,13 +74,12 @@ export async function playCard(gameId: string, cardId: string, targetPlayer?: st
         const { data: gameState } = await supabase.from("game_state").select("*").eq("game_id", gameId).single();
         if (!gameState) return { error: "Game state not found" };
 
-        const currentHands = gameState.cards_in_hand || {};
-        const playerHand = currentHands[user.id] || [];
+        const playerHand = gameState.cards_in_hand || {};
 
         // Find the card to play
         const cardToPlay = playerHand.find((card: any) => card.id === cardId);
         if (!cardToPlay) return { error: "Card not found in your hand" };
-        currentHands[user.id] = playerHand.filter((card: any) => card.id !== cardId);
+        const updatedHand = playerHand.filter((card: any) => card.id !== cardId);
 
         // Add to used cards
         const usedCards = gameState.discard_pile || [];
@@ -90,7 +93,7 @@ export async function playCard(gameId: string, cardId: string, targetPlayer?: st
         // Initialize updated state
         const updatedState = {
             ...gameState,
-            cards_in_hand: currentHands,
+            cards_in_hand: updatedHand,
             discard_pile: usedCards,
             updated_at: new Date().toISOString(),
         };
@@ -117,7 +120,7 @@ export async function playCard(gameId: string, cardId: string, targetPlayer?: st
                     .from("roadblocks")
                     .insert({
                         game_id: gameId,
-                        node_name: updatedState.current_node,
+                        node_name: updatedState.runner_node,
                         placed_by: user.id,
                         expires_at: expiresAt.toISOString(),
                     });
@@ -158,8 +161,7 @@ export async function playCard(gameId: string, cardId: string, targetPlayer?: st
                             effect: generateCardEffect(randomSet.type, randomCard),
                         });
                     }
-                    currentHands[user.id] = [...(currentHands[user.id] || []), ...newCards];
-                    updatedState.cards_in_hand = currentHands;
+                    updatedState.cards_in_hand =  [...(updatedHand || []), ...newCards];;
                 }
                 break;
 

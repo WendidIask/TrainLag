@@ -6,10 +6,16 @@ export default async function GamePlay({ params }: { params: Promise<{ id: strin
     const { id } = await params;
 
     const supabase = await createServerClientReadOnly();
-    const { data } = await supabase.auth.getUser();
-    const { user } = data;
+
+    // Get session (cheaper than getUser spam)
+    const {
+        data: { session },
+    } = await supabase.auth.getSession();
+
+    const user = session?.user;
     if (!user) redirect("/");
 
+    // Single query for game data
     const { data: game } = await supabase
         .from("games")
         .select(
@@ -20,7 +26,7 @@ export default async function GamePlay({ params }: { params: Promise<{ id: strin
             ),
             card_sets(*),
             maps(*),
-            game_state(*)`,
+            game_state(*)`
         )
         .eq("id", id)
         .single();
