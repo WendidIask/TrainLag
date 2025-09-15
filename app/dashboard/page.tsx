@@ -4,8 +4,8 @@ import DashboardContent from "@/components/dashboard-content";
 
 export default async function Dashboard() {
     const supabase = await createServerClientReadOnly();
-    const { data } = await supabase.auth.getUser();
-    const { user } = data;
+    const { data } = await supabase.auth.getSession();
+    const user = data?.session?.user;
     if (!user) redirect("/");
 
     const { data: games } = await supabase

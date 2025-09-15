@@ -134,8 +134,8 @@ export async function createGame(prevState: any, formData: FormData) {
 
 export async function startGame(gameId: string) {
     const supabase = await createServerClient();
-    const { data } = await supabase.auth.getUser();
-    const { user } = data;
+    const { data } = await supabase.auth.getSession();
+    const user = data?.session?.user;
     if (!user) redirect("/");
 
     try {

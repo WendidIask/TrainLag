@@ -6,8 +6,8 @@ export default async function GameSetup({ params }: { params: Promise<{ id: stri
     const resolvedParams = await params;
 
     const supabase = await createServerClientReadOnly();
-    const { data } = await supabase.auth.getUser();
-    const { user } = data;
+    const { data } = await supabase.auth.getSession();
+    const user = data?.session?.user;
     if (!user) redirect("/");
 
     const { data: game } = await supabase

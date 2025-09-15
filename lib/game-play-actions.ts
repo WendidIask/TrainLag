@@ -4,8 +4,8 @@ import { createServerClient } from "@/lib/supabase/server";
 
 export async function moveToNode(gameId: string, newNode: string) {
     const supabase = await createServerClient();
-    const { data } = await supabase.auth.getUser();
-    const { user } = data;
+    const { data } = await supabase.auth.getSession();
+    const user = data?.session?.user;
     if (!user) return { error: "You must be logged in" };
 
     try {
@@ -65,8 +65,10 @@ export async function moveToNode(gameId: string, newNode: string) {
 
 export async function playCard(gameId: string, cardId: string, targetPlayer?: string) {
     const supabase = await createServerClient();
-    const { data } = await supabase.auth.getUser();
-    const { user } = data;
+    const test = await supabase.auth.getSession();
+    await console.log(test)
+    const { data } = await supabase.auth.getSession();
+    const user = data?.session?.user;
     if (!user) return { error: "You must be logged in" };
 
     try {
@@ -201,9 +203,9 @@ function generateCardEffect(type: string, cardName: string): string {
 
 export async function endRun(gameId: string) {
     const supabase = await createServerClient();
-    const {
-        data: { user },
-    } = await supabase.auth.getUser();
+    
+    const { data } = await supabase.auth.getSession();
+    const user = data?.session?.user;
     if (!user) return { error: "You must be logged in" };
 
     try {
