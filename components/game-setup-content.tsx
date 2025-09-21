@@ -8,8 +8,38 @@ import { useRouter } from "next/navigation";
 import { startGame } from "@/lib/game-actions";
 import { useState } from "react";
 
+interface Card {
+  id: string;
+  name: string;
+  type: string;
+  description?: string;
+}
+
+interface GamePlayer {
+  player_id: string;
+  profiles?: {
+    username?: string;
+    email?: string;
+  };
+}
+
+interface MapInfo {
+  name: string;
+  nodes?: Array<any>;
+  edges?: Array<any>;
+}
+
+interface Game {
+  id: string;
+  name: string;
+  creator_id: string;
+  cards?: Card[];
+  game_players?: GamePlayer[];
+  maps?: MapInfo[];
+}
+
 interface GameSetupContentProps {
-  game: any;
+  game: Game;
   user: { id: string; email?: string };
 }
 
@@ -29,9 +59,11 @@ export default function GameSetupContent({ game, user }: GameSetupContentProps) 
     }
   };
 
-  // Group cards by type dynamically
-  const cardsByType = (game.cards || []).reduce<Record<string, any[]>>((acc, card) => {
-    if (!acc[card.type]) acc[card.type] = [];
+  // Group cards by type dynamically with proper typing
+  const cardsByType = (game.cards || []).reduce<Record<string, Card[]>>((acc, card) => {
+    if (!acc[card.type]) {
+      acc[card.type] = [];
+    }
     acc[card.type].push(card);
     return acc;
   }, {});
@@ -99,7 +131,7 @@ export default function GameSetupContent({ game, user }: GameSetupContentProps) 
             </CardHeader>
             <CardContent>
               <div className="flex flex-wrap gap-2">
-                {game.game_players?.map((gamePlayer: any) => (
+                {game.game_players?.map((gamePlayer: GamePlayer) => (
                   <Badge
                     key={gamePlayer.player_id}
                     variant={gamePlayer.player_id === game.creator_id ? "default" : "secondary"}
@@ -114,7 +146,7 @@ export default function GameSetupContent({ game, user }: GameSetupContentProps) 
           </Card>
 
           {/* Cards by Type */}
-          {Object.entries(cardsByType).map(([type, cards]) => (
+          {Object.entries(cardsByType).map(([type, cards]: [string, Card[]]) => (
             <Card key={type}>
               <CardHeader>
                 <CardTitle className="capitalize">{type} Cards</CardTitle>
@@ -122,7 +154,7 @@ export default function GameSetupContent({ game, user }: GameSetupContentProps) 
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {cards.map((card: any) => (
+                  {cards.map((card: Card) => (
                     <div key={card.id} className="p-4 border rounded-lg">
                       <h4 className="font-semibold">{card.name}</h4>
                       {card.description && <p className="text-sm text-gray-600">{card.description}</p>}
