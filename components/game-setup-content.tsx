@@ -29,7 +29,14 @@ export default function GameSetupContent({ game, user }: GameSetupContentProps) 
     }
   };
 
-  const totalCards = game.card_sets?.reduce((sum: number, set: any) => sum + (set.cards?.length || 0), 0) || 0;
+  // Group cards by type dynamically
+  const cardsByType = (game.cards || []).reduce<Record<string, any[]>>((acc, card) => {
+    if (!acc[card.type]) acc[card.type] = [];
+    acc[card.type].push(card);
+    return acc;
+  }, {});
+
+  const totalCards = game.cards?.length || 0;
   const mapInfo = game.maps?.[0] || null;
 
   return (
@@ -70,7 +77,7 @@ export default function GameSetupContent({ game, user }: GameSetupContentProps) 
                   <Layers className="w-8 h-8 text-green-600" />
                   <div>
                     <p className="font-semibold">{totalCards} Cards</p>
-                    <p className="text-sm text-gray-600">Across {game.card_sets?.length || 0} sets</p>
+                    <p className="text-sm text-gray-600">Across {Object.keys(cardsByType).length} types</p>
                   </div>
                 </div>
                 <div className="flex items-center space-x-3">
@@ -92,11 +99,12 @@ export default function GameSetupContent({ game, user }: GameSetupContentProps) 
             </CardHeader>
             <CardContent>
               <div className="flex flex-wrap gap-2">
-                {game.game_players?.map((gamePlayer: any, index: number) => (
+                {game.game_players?.map((gamePlayer: any) => (
                   <Badge
                     key={gamePlayer.player_id}
                     variant={gamePlayer.player_id === game.creator_id ? "default" : "secondary"}
-                    className="text-sm py-1 px-3">
+                    className="text-sm py-1 px-3"
+                  >
                     {gamePlayer.profiles?.username || gamePlayer.profiles?.email}
                     {gamePlayer.player_id === game.creator_id && " (Host)"}
                   </Badge>
@@ -105,28 +113,25 @@ export default function GameSetupContent({ game, user }: GameSetupContentProps) 
             </CardContent>
           </Card>
 
-          {/* Card Sets */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Card Sets</CardTitle>
-              <CardDescription>Cards that will be used during the game</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {game.card_sets?.map((set: any) => (
-                  <div key={set.id} className="p-4 border rounded-lg">
-                    <div className="flex items-center justify-between mb-2">
-                      <h4 className="font-semibold">{set.name}</h4>
-                      <Badge variant="outline" className="capitalize">
-                        {set.type}
-                      </Badge>
+          {/* Cards by Type */}
+          {Object.entries(cardsByType).map(([type, cards]) => (
+            <Card key={type}>
+              <CardHeader>
+                <CardTitle className="capitalize">{type} Cards</CardTitle>
+                <CardDescription>{cards.length} cards of this type</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {cards.map((card: any) => (
+                    <div key={card.id} className="p-4 border rounded-lg">
+                      <h4 className="font-semibold">{card.name}</h4>
+                      {card.description && <p className="text-sm text-gray-600">{card.description}</p>}
                     </div>
-                    <p className="text-sm text-gray-600">{set.cards?.length || 0} cards</p>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          ))}
 
           {/* Map Info */}
           <Card>
@@ -176,7 +181,8 @@ export default function GameSetupContent({ game, user }: GameSetupContentProps) 
               onClick={handleStartGame}
               disabled={isStarting}
               size="lg"
-              className="bg-green-600 hover:bg-green-700">
+              className="bg-green-600 hover:bg-green-700"
+            >
               <Play className="w-5 h-5 mr-2" />
               {isStarting ? "Starting Game..." : "Start Game"}
             </Button>

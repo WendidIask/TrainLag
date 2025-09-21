@@ -55,7 +55,7 @@
     "AUBURN",
     "MACQUARIE PARK",
     "CASTLECRAG",
-    "PARKLEA",
+    "KINGS LANGLEY",
     "WATSONS BAY",
     "NEWTOWN",
     "EARLWOOD",
@@ -67,6 +67,7 @@
     "MENAI",
     "RIVERWOOD",
     "BALMAIN",
+    "PARKLEA",
     "PLUMPTON",
     "MARSDEN PARK",
     "ROSELANDS",
@@ -529,6 +530,16 @@
     },
     {
       "path": "m 612.92893,159.99998 28.28429,4e-5",
+      "from": "KINGS LANGLEY",
+      "to": "PARRAMATTA"
+    },
+    {
+      "path": "m 612.92893,159.99998 28.28429,4e-5",
+      "from": "PARRAMATTA",
+      "to": "KINGS LANGLEY"
+    },
+    {
+      "path": "m 612.92893,159.99998 28.28429,4e-5",
       "from": "WINDSOR",
       "to": "RIVERSTONE"
     },
@@ -536,16 +547,6 @@
       "path": "m 612.92893,159.99998 28.28429,4e-5",
       "from": "RIVERSTONE",
       "to": "WINDSOR"
-    },
-    {
-      "path": "m 641.21322,160.00002 -26.87008,-4e-5 a 3.4142451,3.4142451 22.499899 0 1 -2.41422,-1 l -6.07098,-6.07092",
-      "from": "PARRAMATTA",
-      "to": "PARKLEA"
-    },
-    {
-      "path": "m 641.21322,160.00002 -26.87008,-4e-5 a 3.4142451,3.4142451 22.499899 0 1 -2.41422,-1 l -6.07098,-6.07092",
-      "from": "PARKLEA",
-      "to": "PARRAMATTA"
     },
     {
       "path": "m 612.92893,159.99998 28.28429,4e-5",
@@ -696,6 +697,16 @@
       "path": "m 609.3934,167.07105 6.07109,-6.07107 a 3.4141751,3.4141751 157.50006 0 1 2.41419,-0.99999 L 630.6066,160",
       "from": "SUTHERLAND",
       "to": "MENAI"
+    },
+    {
+      "path": "m 609.3934,167.07105 6.07109,-6.07107 a 3.4141751,3.4141751 157.50006 0 1 2.41419,-0.99999 L 630.6066,160",
+      "from": "KINGS LANGLEY",
+      "to": "CASTLE HILL"
+    },
+    {
+      "path": "m 609.3934,167.07105 6.07109,-6.07107 a 3.4141751,3.4141751 157.50006 0 1 2.41419,-0.99999 L 630.6066,160",
+      "from": "CASTLE HILL",
+      "to": "KINGS LANGLEY"
     },
     {
       "path": "m 609.3934,167.07105 6.07109,-6.07107 a 3.4141751,3.4141751 157.50006 0 1 2.41419,-0.99999 L 630.6066,160",
@@ -1039,6 +1050,16 @@
     },
     {
       "path": "m 610,159.99998 h 10",
+      "from": "KINGS LANGLEY",
+      "to": "BLACKTOWN"
+    },
+    {
+      "path": "m 610,159.99998 h 10",
+      "from": "BLACKTOWN",
+      "to": "KINGS LANGLEY"
+    },
+    {
+      "path": "m 610,159.99998 h 10",
       "from": "SYLVANIA",
       "to": "HURSTVILLE"
     },
@@ -1086,6 +1107,16 @@
       "path": "m 610,159.99998 h 10",
       "from": "CASTLE HILL",
       "to": "BAULKHAM HILLS"
+    },
+    {
+      "path": "m 610,159.99998 h 10",
+      "from": "KINGS LANGLEY",
+      "to": "PARKLEA"
+    },
+    {
+      "path": "m 610,159.99998 h 10",
+      "from": "PARKLEA",
+      "to": "KINGS LANGLEY"
     },
     {
       "path": "m 610,159.99998 h 10",

@@ -5,10 +5,11 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 // prettier-ignore
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, Clock, MapPin, Target, Users, Zap, AlertTriangle, Play, Trash2 } from "lucide-react";
+import { ArrowLeft, Clock, MapPin, Target, Users, Zap, AlertTriangle, Play, Trash2, Search } from "lucide-react";
 import { motion } from "framer-motion";
 import { moveToNode, playCard, endRun } from "@/lib/game-play-actions";
 import MapSvg from "./data/GameMap.svg";
@@ -20,14 +21,15 @@ interface GamePlayContentProps {
 }
 
 export default function GamePlayContent({ game, user }: GamePlayContentProps) {
-  const map = game.maps;
   const [gameState, setGameState] = useState(game.game_state?.[0] || null);
   const [selectedDestination, setSelectedDestination] = useState<string>("");
+  const [searchQuery, setSearchQuery] = useState<string>("");
   const [showEndRunDialog, setShowEndRunDialog] = useState(false);
   const [targetPlayer, setTargetPlayer] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
   const [elapsedTime, setElapsedTime] = useState(0);
   const [runTime, setRunTime] = useState(0);
+  const [roadblocks, setRoadblocks] = useState([]);
   const router = useRouter();
 
   const [scale, setScale] = useState(1);
@@ -39,197 +41,202 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
   const [svgSize, setSvgSize] = useState({ width: 400, height: 400 });
   const [viewportSize, setViewportSize] = useState({ width: 400, height: 400 });
 
-  const [roadblocks, setRoadblocks] = useState([]);
-
   useEffect(() => {
     if (svgRef.current) {
       const bbox = svgRef.current.getBBox();
-      console.log("SVG BBOX:", bbox);
       setSvgSize({ width: bbox.width, height: bbox.height });
-      // Or, if you want the viewBox or attributes:
-      // const width = mapSvgElementRef.current.width.baseVal.value;
-      // const height = mapSvgElementRef.current.height.baseVal.value;
-      // setSvgSize({ width, height });
     }
-  }, []);
 
-  // Add roadblocks to the fetch function
-  useEffect(() => {
-      let isMounted = true;
-      let userRef: { id: string } | null = user;
+    let isMounted = true;
 
-      const fetchGameData = async () => {
-          if (!userRef) return;
-          try {
-              // Fetch game state
-              const stateResponse = await fetch(`/api/game/${game.id}/state`);
-              if (stateResponse.ok) {
-                  const stateData = await stateResponse.json();
-                  if (isMounted) setGameState(stateData);
-              }
+    const fetchGameData = async () => {
+      if (!user) return;
+      try {
+        // Fetch game state
+        const stateResponse = await fetch(`/api/game/${game.id}/state`);
+        if (stateResponse.ok) {
+          const stateData = await stateResponse.json();
+          if (isMounted) setGameState(stateData);
+        }
 
-              // Fetch active roadblocks
-              const roadblocksResponse = await fetch(`/api/game/${game.id}/roadblocks`);
-              if (roadblocksResponse.ok) {
-                  const roadblocksData = await roadblocksResponse.json();
-                  if (isMounted) setRoadblocks(roadblocksData);
-              }
-              
-          } catch (err) {
-              console.error("Failed to fetch game data:", err);
-          }
-      };
+        // Fetch active roadblocks
+        const roadblocksResponse = await fetch(`/api/game/${game.id}/roadblocks`);
+        if (roadblocksResponse.ok) {
+          const roadblocksData = await roadblocksResponse.json();
+          if (isMounted) setRoadblocks(roadblocksData);
+        }
+      } catch (err) {
+        console.error("Failed to fetch game data:", err);
+      }
+    };
 
-      fetchGameData();
-      const interval = setInterval(fetchGameData, 5000);
+    fetchGameData();
+    const interval = setInterval(fetchGameData, 10000);
 
-      return () => {
-          isMounted = false;
-          clearInterval(interval);
-      };
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
   }, [game.id, user]);
 
-  // Update the getNodePosition function
   const getNodePosition = (nodeName: string) => {
-      const node = mapNodes.find(n => n.name.toLowerCase() === nodeName.toLowerCase());
-      return node ? { x: node.cx, y: node.cy } : { x: 0, y: 0 };
+    const node = mapNodes.find(n => n.name.toLowerCase() === nodeName.toLowerCase());
+    return node ? { x: node.cx, y: node.cy } : { x: 0, y: 0 };
   };
 
-  // Refs for SVG and viewport
-  // Measure sizes after mount
-  function updateContainerSizes(): void {
-    if (!viewportRef.current || !svgRef.current) return;
-    const vpRect = viewportRef.current.getBoundingClientRect();
-    const svgRect = svgRef.current.getBoundingClientRect();
-    setViewportSize({ width: vpRect.width, height: vpRect.height });
-    setSvgSize({ width: svgRect.width, height: svgRect.height });
-  }
+  // Map interaction functions - simplified and fixed
+  const [isDragging, setIsDragging] = useState(false);
 
-  useEffect(updateContainerSizes, [scale, offset]);
-
-  // ******************************************************************************
-  // FIX: Clamping for the right and the bottom will begin to fail when you zoom in
-  // ******************************************************************************
-
-  // Helper to clamp a value between min and max
   function clamp(value: number, min: number, max: number) {
     return Math.min(Math.max(value, min), max);
   }
 
-  // Clamp pan based on SVG and viewport size
-  function clampOffset(value: number, svgSize: number, viewportSize: number, scale: number) {
-    const minOffset = Math.min(viewportSize - svgSize * scale, 0);
-    const maxOffset = 0;
-    return clamp(value, minOffset, maxOffset);
-  }
-
-  // ******************************************************************************
-  // FIX: Zooming in zooms with the top left as the origin, rather than around the
-  //      point that the user is hovering over
-  // ******************************************************************************
-
-  // Apply zoom dynamically
-  const applyZoom = (newScale: number, originX: number, originY: number) => {
-    console.log("APPLY ZOOM");
-    const clampedScale = clamp(newScale, 0.25, 4);
-
-    setOffset((prev) => ({
-      x: clampOffset(
-        originX - (originX - prev.x) * (clampedScale / scale),
-        svgSize.width,
-        viewportSize.width,
-        clampedScale,
-      ),
-      y: clampOffset(
-        originY - (originY - prev.y) * (clampedScale / scale),
-        svgSize.height,
-        viewportSize.height,
-        clampedScale,
-      ),
-    }));
-
-    setScale(clampedScale);
-  };
-
-  // Panning
-  const handlePointerDown = (e: React.PointerEvent) => {
+  const handleMouseDown = (e: React.MouseEvent) => {
+    setIsDragging(true);
     lastPointer.current = { x: e.clientX, y: e.clientY };
   };
 
-  const handlePointerMove = (e: React.PointerEvent) => {
-    if (!lastPointer.current) return;
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging || !lastPointer.current) return;
+    
     const dx = e.clientX - lastPointer.current.x;
     const dy = e.clientY - lastPointer.current.y;
 
-    setOffset((prev) => ({
-      x: clampOffset(prev.x + dx, svgSize.width, viewportSize.width, scale),
-      y: clampOffset(prev.y + dy, svgSize.height, viewportSize.height, scale),
+    setOffset(prev => ({
+      x: prev.x + dx,
+      y: prev.y + dy
     }));
 
     lastPointer.current = { x: e.clientX, y: e.clientY };
   };
 
-  const handlePointerUp = () => {
+  const handleMouseUp = () => {
+    setIsDragging(false);
     lastPointer.current = null;
   };
 
-  // Convert client coordinates to local SVG coordinates
-  const getLocalPosition = (clientX: number, clientY: number) => {
-    const rect = viewportRef.current!.getBoundingClientRect();
-    return {
-      x: (clientX - rect.left - offset.x) / scale,
-      y: (clientY - rect.top - offset.y) / scale,
-    };
+  const handleWheel = (e: React.WheelEvent) => {
+    e.preventDefault();
+    
+    const rect = viewportRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+    
+    const zoomFactor = e.deltaY > 0 ? 0.9 : 1.1;
+    const newScale = clamp(scale * zoomFactor, 0.25, 4);
+    
+    const scaleRatio = newScale / scale;
+    
+    setOffset(prev => ({
+      x: mouseX - (mouseX - prev.x) * scaleRatio,
+      y: mouseY - (mouseY - prev.y) * scaleRatio
+    }));
+    
+    setScale(newScale);
   };
 
-  // Touch pinch zoom
-  const handleTouchMove = (e: React.TouchEvent) => {
-    // console.log("TOUCH MOVE");
-    if (e.touches.length === 2) {
+  // Fixed: Single wheel event listener with proper passive handling
+  useEffect(() => {
+    const viewport = viewportRef.current;
+    if (!viewport) return;
+
+    const handleWheelEvent = (e: WheelEvent) => {
       e.preventDefault();
+      
+      const rect = viewport.getBoundingClientRect();
+      const mouseX = e.clientX - rect.left;
+      const mouseY = e.clientY - rect.top;
+      
+      const zoomFactor = e.deltaY > 0 ? 0.9 : 1.1;
+      const newScale = clamp(scale * zoomFactor, 0.25, 4);
+      
+      const scaleRatio = newScale / scale;
+      
+      setOffset(prev => ({
+        x: mouseX - (mouseX - prev.x) * scaleRatio,
+        y: mouseY - (mouseY - prev.y) * scaleRatio
+      }));
+      
+      setScale(newScale);
+    };
+
+    // Key fix: explicitly set passive: false to allow preventDefault
+    viewport.addEventListener('wheel', handleWheelEvent, { passive: false });
+    
+    return () => {
+      viewport.removeEventListener('wheel', handleWheelEvent);
+    };
+  }, [scale]); // Include scale in dependencies
+
+  // Touch handling for mobile
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (e.touches.length === 1) {
+      setIsDragging(true);
+      lastPointer.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+    } else if (e.touches.length === 2) {
+      setIsDragging(false); // Stop dragging when starting pinch
       const [t1, t2] = [e.touches[0], e.touches[1]];
       const distance = Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
-      const centerX = (t1.clientX + t2.clientX) / 2;
-      const centerY = (t1.clientY + t2.clientY) / 2;
-      const local = getLocalPosition(centerX, centerY);
-
-      if (lastDistance.current) {
-        const delta = distance / lastDistance.current;
-        const newScale = clamp(scale * delta, 0.25, 4);
-        applyZoom(newScale, local.x, local.y);
-      }
       lastDistance.current = distance;
+      lastPointer.current = null; // Clear drag pointer
+    }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    e.preventDefault();
+    
+    if (e.touches.length === 1 && isDragging && lastPointer.current) {
+      const dx = e.touches[0].clientX - lastPointer.current.x;
+      const dy = e.touches[0].clientY - lastPointer.current.y;
+
+      setOffset(prev => ({
+        x: prev.x + dx,
+        y: prev.y + dy
+      }));
+
+      lastPointer.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+    } else if (e.touches.length === 2 && lastDistance.current) {
+      const [t1, t2] = [e.touches[0], e.touches[1]];
+      const currentDistance = Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
+      
+      if (Math.abs(currentDistance - lastDistance.current) < 2) return; // Ignore tiny movements
+      
+      const rect = viewportRef.current?.getBoundingClientRect();
+      if (!rect) return;
+      
+      // Get pinch center relative to viewport
+      const pinchCenterX = (t1.clientX + t2.clientX) / 2 - rect.left;
+      const pinchCenterY = (t1.clientY + t2.clientY) / 2 - rect.top;
+      
+      const zoomDelta = currentDistance / lastDistance.current;
+      const newScale = clamp(scale * zoomDelta, 0.25, 4);
+      
+      if (newScale !== scale) {
+        // Calculate what point in the content we're zooming towards
+        const contentX = (pinchCenterX - offset.x) / scale;
+        const contentY = (pinchCenterY - offset.y) / scale;
+        
+        // Calculate new offset to keep that content point under the pinch center
+        const newOffsetX = pinchCenterX - contentX * newScale;
+        const newOffsetY = pinchCenterY - contentY * newScale;
+        
+        setOffset({ x: newOffsetX, y: newOffsetY });
+        setScale(newScale);
+      }
+      
+      lastDistance.current = currentDistance;
     }
   };
 
   const handleTouchEnd = () => {
-    // console.log("TOUCH END");
+    setIsDragging(false);
+    lastPointer.current = null;
     lastDistance.current = null;
   };
 
-  // Wheel zoom (desktop)
-  const handleWheel = (e: WheelEvent) => {
-    if (!e.ctrlKey && !e.metaKey) return; // zoom only with ctrl/meta
-    e.preventDefault();
-    e.stopPropagation();
-    const localX = e.clientX - viewportRef.current!.getBoundingClientRect().left - offset.x;
-    const localY = e.clientY - viewportRef.current!.getBoundingClientRect().top - offset.y;
-    const zoomFactor = 1 - e.deltaY * 0.002;
-    const newScale = clamp(scale * zoomFactor, 0.25, 4);
-    applyZoom(newScale, localX, localY);
-  };
-
-  // Prevent the full page from zooming when you try to zoom on the map
-  useEffect(() => {
-    const viewport = viewportRef.current;
-    if (!viewport) return;
-    viewport.addEventListener("wheel", handleWheel, { passive: false });
-    return () => {
-      viewport.removeEventListener("wheel", handleWheel);
-    };
-  });
-
-  // Prevent default 2-finger scroll on mobile
+  // Fixed: Separate touch event handling for preventing scroll
   useEffect(() => {
     const viewport = viewportRef.current;
     if (!viewport) return;
@@ -238,66 +245,63 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
       if (e.touches.length === 2) e.preventDefault();
     };
 
+    // Key fix: explicitly set passive: false for touch events too
     viewport.addEventListener("touchmove", preventTouchScroll, { passive: false });
     return () => viewport.removeEventListener("touchmove", preventTouchScroll);
   }, []);
 
+  // Timer effects
   useEffect(() => {
-    const startTime = new Date(game.game_state.created_at).getTime();
+    if (!gameState?.created_at) return;
+    const startTime = new Date(gameState.created_at).getTime();
     const interval = setInterval(() => {
       setElapsedTime(Math.floor((Date.now() - startTime) / 1000));
     }, 1000);
 
     return () => clearInterval(interval);
-  });
+  }, [gameState?.created_at]);
 
   useEffect(() => {
-    const startTime = new Date(game.game_state.start_time).getTime();
+    if (!gameState?.start_time) return;
+    const startTime = new Date(gameState.start_time).getTime();
     const interval = setInterval(() => {
       setRunTime(Math.floor((Date.now() - startTime) / 1000));
     }, 1000);
 
     return () => clearInterval(interval);
-  });
-
-  useEffect(() => {
-    let isMounted = true;
-    let userRef: { id: string } | null = user;
-
-    const fetchGameState = async () => {
-      if (!userRef) return;
-      try {
-        const response = await fetch(`/api/game/${game.id}/state`);
-        if (response.ok) {
-          const data = await response.json();
-          if (isMounted) setGameState(data);
-        }
-      } catch (err) {
-        console.error("Failed to fetch game state:", err);
-      }
-    };
-
-    fetchGameState(); // initial fetch
-    const interval = setInterval(fetchGameState, 5000); // poll every 5s
-
-    return () => {
-      isMounted = false;
-      clearInterval(interval);
-    };
-  }, [game.id, user]);
+  }, [gameState?.start_time]);
 
   if (!gameState) {
     return <div className="min-h-screen bg-gray-50 flex items-center justify-center">Loading game state...</div>;
   }
 
-  const isRunner = user.id === game.game_state.current_runner_id;
+  const isRunner = user.id === gameState.current_runner_id;
   const mapInfo = game.maps?.[0];
-  const availableDestinations =
-    mapInfo?.edges?.filter((edge: any) => edge.from.toLowerCase() === gameState.runner_node.toLowerCase())?.map((edge: any) => edge.to) || [];
+  
+  // Modified: Different destination logic for runner vs seeker
+  let availableDestinations: string[] = [];
+  let filteredDestinations: string[] = [];
+  
+  if (isRunner) {
+    // Runner can only move to connected nodes
+    availableDestinations = mapInfo?.edges?.filter((edge: any) => 
+      edge.from.toLowerCase() === gameState.runner_node?.toLowerCase()
+    )?.map((edge: any) => edge.to) || [];
+    filteredDestinations = availableDestinations;
+  } else {
+    // Seeker can move to any node on the map
+    availableDestinations = mapNodes.map(node => node.name);
+    // Filter based on search query for seekers
+    filteredDestinations = searchQuery.trim() === "" 
+      ? availableDestinations
+      : availableDestinations.filter(destination => 
+          destination.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+  }
 
   const currentPlayerHand = gameState.cards_in_hand || [];
   const activeEffects = gameState.active_effects || [];
-  const usedCards = gameState.used_cards || [];
+  const discardPile = gameState.discard_pile || [];
 
   const handleMove = async () => {
     if (!selectedDestination) return;
@@ -305,8 +309,12 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
     setIsLoading(true);
     const result = await moveToNode(game.id, selectedDestination);
 
-    if (result?.error) alert(result.error);
-    else window.location.reload();
+    if (result?.error) {
+      alert(result.error);
+    } else {
+      // Refresh game state
+      window.location.reload();
+    }
 
     setIsLoading(false);
     setSelectedDestination("");
@@ -316,8 +324,11 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
     setIsLoading(true);
     const result = await playCard(game.id, card.id, target);
 
-    if (result?.error) alert(result.error);
-    else window.location.reload();
+    if (result?.error) {
+      alert(result.error);
+    } else {
+      window.location.reload();
+    }
 
     setIsLoading(false);
     setTargetPlayer("");
@@ -327,8 +338,11 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
     setIsLoading(true);
     const result = await endRun(game.id);
 
-    if (result?.error) alert(result.error);
-    else window.location.reload();
+    if (result?.error) {
+      alert(result.error);
+    } else {
+      window.location.reload();
+    }
 
     setIsLoading(false);
     setShowEndRunDialog(false);
@@ -376,8 +390,8 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
   };
 
   // Find current runner's profile
-  const currentRunnerProfile = game.game_players.find(
-    (gp: any) => gp.player_id === game.game_state.current_runner_id,
+  const currentRunnerProfile = game.game_players?.find(
+    (gp: any) => gp.player_id === gameState.current_runner_id,
   )?.profiles;
 
   return (
@@ -397,7 +411,7 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
             </div>
             <div className="flex items-center space-x-4">
               <Badge variant={isRunner ? "default" : "secondary"}>
-                Current Runner: {currentRunnerProfile?.username || currentRunnerProfile?.email}
+                Current Runner: {currentRunnerProfile?.username || currentRunnerProfile?.email || "Unknown"}
               </Badge>
             </div>
           </div>
@@ -432,7 +446,7 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
                   </div>
                   <div className="text-center">
                     <p className="text-2xl font-bold text-orange-600">{availableDestinations.length}</p>
-                    <p className="text-sm text-gray-600">Destinations</p>
+                    <p className="text-sm text-gray-600">{isRunner ? "Destinations" : "Available Nodes"}</p>
                   </div>
                 </div>
               </CardContent>
@@ -464,6 +478,7 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
               </Card>
             )}
 
+            {/* Map */}
             <Card>
               <CardHeader>
                 <CardTitle>Map</CardTitle>
@@ -471,35 +486,26 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
               <CardContent>
                 <div
                   ref={viewportRef}
-                  className="relative w-full h-[540px] bg-gray-100 touch-none overflow-hidden"
-                  // onWheel={handleWheel} // zoom with ctrl+wheel
-                  onPointerDown={handlePointerDown} // start drag
-                  onPointerMove={handlePointerMove} // dragging
-                  onPointerUp={handlePointerUp} // stop drag
-                  onPointerLeave={handlePointerUp} // stop drag if finger leaves
-                  onTouchMove={handleTouchMove} // pinch zoom
-                  onTouchEnd={handleTouchEnd}>
-                  <motion.div
+                  className="relative w-full h-[540px] bg-gray-100 cursor-move overflow-hidden select-none"
+                  onMouseDown={handleMouseDown}
+                  onMouseMove={handleMouseMove}
+                  onMouseUp={handleMouseUp}
+                  onMouseLeave={handleMouseUp}
+                  onTouchStart={handleTouchStart}
+                  onTouchMove={handleTouchMove}
+                  onTouchEnd={handleTouchEnd}
+                  style={{ touchAction: 'none' }}
+                >
+                  <div
                     style={{
-                      scale,
-                      x: offset.x,
-                      y: offset.y,
-                      transformOrigin: "center center",
+                      transform: `translate(${offset.x}px, ${offset.y}px) scale(${scale})`,
+                      transformOrigin: '0 0',
+                      transition: isDragging ? 'none' : 'transform 0.1s ease-out'
                     }}
-                    animate={{ scale, x: offset.x, y: offset.y }}
-                    transition={{ type: "spring", stiffness: 260, damping: 30 }}
                   >
-                    <svg viewBox="0 0 200 200" width={800} height={800}>
+                    <svg ref={svgRef} viewBox="0 0 200 200" width={800} height={800}>
                       <MapSvg width={200} height={200} viewBox="0 0 200 200" />
-                      <circle
-                        cx={400}
-                        cy={400}
-                        r={12}
-                        fill="#3b82f6"
-                        stroke="#fff"
-                        strokeWidth={2}
-                        style={{ filter: "drop-shadow(0 2px 6px rgba(0,0,0,0.15))" }}
-                      />
+                      
                       {/* Roadblock indicators */}
                       {roadblocks.map((roadblock: any) => {
                         const nodePos = getNodePosition(roadblock.node_name);
@@ -517,7 +523,7 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
                         );
                       })}
 
-                      {/* Current player position */}
+                      {/* Current runner position */}
                       {gameState.runner_node && (() => {
                         const nodePos = getNodePosition(gameState.runner_node);
                         return (
@@ -532,25 +538,42 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
                           />
                         );
                       })()}
-
-                      {/* Current seeker position */}
-                      {gameState.seeker_node && (() => {
-                        const nodePos = getNodePosition(gameState.seeker_node);
-                        console.log(nodePos);
-                        return (
-                          <circle
-                            cx={nodePos.x}
-                            cy={nodePos.y}
-                            r={1}
-                            fill="#f6923bff"
-                            stroke="#fff"
-                            strokeWidth={0.2}
-                            style={{ filter: "drop-shadow(0 2px 6px rgba(0,0,0,0.15))" }}
-                          />
-                        );
-                      })()}
                     </svg>
-                  </motion.div>
+                  </div>
+                  
+                  {/* Zoom controls */}
+                  <div className="absolute top-4 right-4 flex flex-col gap-2 bg-white rounded-lg shadow-md p-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => {
+                        const newScale = clamp(scale * 1.2, 0.25, 4);
+                        setScale(newScale);
+                      }}
+                    >
+                      +
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => {
+                        const newScale = clamp(scale * 0.8, 0.25, 4);
+                        setScale(newScale);
+                      }}
+                    >
+                      -
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => {
+                        setScale(1);
+                        setOffset({ x: 0, y: 0 });
+                      }}
+                    >
+                      Reset
+                    </Button>
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -563,40 +586,116 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
                   Movement
                 </CardTitle>
                 <CardDescription>
-                  {isRunner ? "Choose your next destination" : "Track the runner's movement"}
+                  {isRunner ? "Choose your next destination from connected nodes" : "Search and select any node to move to"}
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  <div>
-                    <p className="text-sm font-medium text-gray-700 mb-2">Available Destinations:</p>
-                    <div className="flex flex-wrap gap-2">
-                      {availableDestinations.map((destination: string) => (
-                        <Badge key={destination} variant="outline" className="text-sm">
-                          {destination}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-
-                  {isRunner && (
-                    <div className="flex space-x-2">
-                      <Select value={selectedDestination} onValueChange={setSelectedDestination}>
-                        <SelectTrigger className="flex-1">
-                          <SelectValue placeholder="Select destination" />
-                        </SelectTrigger>
-                        <SelectContent>
+                  {isRunner ? (
+                    // Runner UI: Show available destinations as badges
+                    <>
+                      <div>
+                        <p className="text-sm font-medium text-gray-700 mb-2">Available Destinations:</p>
+                        <div className="flex flex-wrap gap-2">
                           {availableDestinations.map((destination: string) => (
-                            <SelectItem key={destination} value={destination}>
+                            <Badge key={destination} variant="outline" className="text-sm">
                               {destination}
-                            </SelectItem>
+                            </Badge>
                           ))}
-                        </SelectContent>
-                      </Select>
-                      <Button onClick={handleMove} disabled={!selectedDestination || isLoading}>
-                        {isLoading ? "Moving..." : "Move"}
+                        </div>
+                      </div>
+
+                      <div className="flex space-x-2">
+                        <Select value={selectedDestination} onValueChange={setSelectedDestination}>
+                          <SelectTrigger className="flex-1">
+                            <SelectValue placeholder="Select destination" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {availableDestinations.map((destination: string) => (
+                              <SelectItem key={destination} value={destination}>
+                                {destination}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <Button onClick={handleMove} disabled={!selectedDestination || isLoading}>
+                          {isLoading ? "Moving..." : "Move"}
+                        </Button>
+                      </div>
+                    </>
+                  ) : (
+                    // Seeker UI: Search bar and filtered results
+                    <>
+                      <div className="space-y-3">
+                        <div className="relative">
+                          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                          <Input
+                            type="text"
+                            placeholder="Search for a node..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="pl-10"
+                          />
+                        </div>
+                        
+                        {searchQuery.trim() !== "" && (
+                          <div>
+                            <p className="text-sm text-gray-600 mb-2">
+                              Showing {filteredDestinations.length} of {availableDestinations.length} nodes
+                            </p>
+                            <div className="max-h-32 overflow-y-auto border rounded-md">
+                              {filteredDestinations.slice(0, 10).map((destination: string) => (
+                                <button
+                                  key={destination}
+                                  onClick={() => {
+                                    setSelectedDestination(destination);
+                                    setSearchQuery(destination);
+                                  }}
+                                  className={`w-full text-left px-3 py-2 hover:bg-gray-50 border-b last:border-b-0 text-sm ${
+                                    selectedDestination === destination ? 'bg-blue-50 text-blue-600' : ''
+                                  }`}
+                                >
+                                  {destination}
+                                </button>
+                              ))}
+                              {filteredDestinations.length > 10 && (
+                                <div className="px-3 py-2 text-xs text-gray-500 bg-gray-50">
+                                  ... and {filteredDestinations.length - 10} more. Keep typing to narrow results.
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        )}
+
+                        {selectedDestination && (
+                          <div className="flex items-center justify-between p-2 bg-blue-50 border border-blue-200 rounded">
+                            <div className="flex items-center space-x-2">
+                              <MapPin className="w-4 h-4 text-blue-600" />
+                              <span className="text-sm font-medium text-blue-800">Selected: {selectedDestination}</span>
+                            </div>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => {
+                                setSelectedDestination("");
+                                setSearchQuery("");
+                              }}
+                              className="h-6 w-6 p-0 text-blue-600 hover:text-blue-800"
+                            >
+                              ×
+                            </Button>
+                          </div>
+                        )}
+                      </div>
+
+                      <Button 
+                        onClick={handleMove} 
+                        disabled={!selectedDestination || isLoading}
+                        className="w-full"
+                      >
+                        {isLoading ? "Moving..." : `Move to ${selectedDestination || "selected node"}`}
                       </Button>
-                    </div>
+                    </>
                   )}
                 </div>
               </CardContent>
@@ -723,7 +822,7 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
                                         </SelectTrigger>
                                         <SelectContent>
                                           {game.game_players
-                                            .filter((gp: any) => gp.player_id !== user.id)
+                                            ?.filter((gp: any) => gp.player_id !== user.id)
                                             .map((gp: any) => (
                                               <SelectItem key={gp.player_id} value={gp.player_id}>
                                                 {gp.profiles?.username || gp.profiles?.email}
@@ -755,21 +854,21 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
             )}
 
             {/* Recent Cards Played */}
-            {usedCards.length > 0 && (
+            {discardPile.length > 0 && (
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center">
                     <Trash2 className="w-5 h-5 mr-2" />
-                    Recent Cards Played ({usedCards.length})
+                    Recent Cards Played ({discardPile.length})
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-2 max-h-40 overflow-y-auto">
-                    {usedCards
+                    {discardPile
                       .slice(-5)
                       .reverse()
                       .map((card: any, index: number) => {
-                        const playerProfile = game.game_players.find(
+                        const playerProfile = game.game_players?.find(
                           (gp: any) => gp.player_id === card.usedBy,
                         )?.profiles;
                         return (
@@ -781,7 +880,7 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
                               <span className="font-medium">{card.name}</span>
                             </div>
                             <Badge variant="outline" className="text-xs">
-                              {playerProfile?.username || playerProfile?.email}
+                              {playerProfile?.username || playerProfile?.email || "Unknown"}
                             </Badge>
                           </div>
                         );
@@ -792,7 +891,6 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
             )}
 
             {/* Game Info */}
-
             <Card>
               <CardHeader>
                 <CardTitle>Game Info</CardTitle>
@@ -812,8 +910,12 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
                     <span className="font-medium">{mapInfo?.name || "Default Map"}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Cards Played:</span>
-                    <span className="font-medium">{Object.values(gameState.cards_in_hand || {}).flat().length}</span>
+                    <span className="text-gray-600">Cards in Hand:</span>
+                    <span className="font-medium">{currentPlayerHand.length}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Active Roadblocks:</span>
+                    <span className="font-medium">{roadblocks.length}</span>
                   </div>
                 </div>
               </CardContent>

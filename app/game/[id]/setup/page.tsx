@@ -9,7 +9,6 @@ export default async function GameSetup({ params }: { params: Promise<{ id: stri
     const { data } = await supabase.auth.getSession();
     const user = data?.session?.user;
     if (!user) redirect("/");
-
     const { data: game } = await supabase
         .from("games")
         .select(
@@ -18,7 +17,7 @@ export default async function GameSetup({ params }: { params: Promise<{ id: stri
                 player_id,
                 profiles(username, email)
             ),
-            card_sets(*),
+            cards(*),
             maps(*)`,
         )
         .eq("id", resolvedParams.id)

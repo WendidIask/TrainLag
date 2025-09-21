@@ -12,44 +12,62 @@ export async function moveToNode(gameId: string, newNode: string) {
         const { data: gameState } = await supabase.from("game_state").select("*").eq("game_id", gameId).single();
         if (!gameState) return { error: "Game state not found" };
 
-        const { data: game } = await supabase.from("games").select("current_runner_id").eq("id", gameId).single();
+        const { data: game } = await supabase.from("games").select("*").eq("id", gameId).single();
         if (!game) return { error: "Game not found" };
+
+        // Check if the target node has an active roadblock
+        const { data: roadblocks } = await supabase
+            .from("roadblocks")
+            .select("*")
+            .eq("game_id", gameId)
+            .eq("node_name", newNode)
+            .gte("expires_at", new Date().toISOString());
+
+        if (roadblocks && roadblocks.length > 0) {
+            return { error: `Node ${newNode} is blocked by a roadblock!` };
+        }
 
         const updatedState = {
             ...gameState,
             updated_at: new Date().toISOString(),
         };
 
-        if (user.id === game.current_runner_id) {
-            // Runner moves
+        if (user.id === gameState.current_runner_id) {
+            // Runner moves - must validate connected nodes
+            const mapInfo = game.maps?.[0];
+            const availableDestinations = mapInfo?.edges?.filter((edge: any) => 
+                edge.from.toLowerCase() === gameState.runner_node?.toLowerCase()
+            )?.map((edge: any) => edge.to) || [];
+
+            if (!availableDestinations.includes(newNode)) {
+                return { error: "You can only move to connected nodes" };
+            }
+
             updatedState.runner_node = newNode;
             updatedState.runner_points = (gameState.runner_points || 0) + 10;
         } else {
-            // Seeker moves → track movement
-            const seekerMovements = gameState.seeker_node || [];
-            seekerMovements.push({
-                userId: user.id,
-                node: newNode,
-                movedAt: new Date().toISOString(),
-            });
-            updatedState.seeker_node = seekerMovements;
+            // Seeker moves - can move to any node
+            updatedState.seeker_node = newNode;
 
-            // Draw card into shared seeker hand
-            const { data: cardSets } = await supabase.from("card_sets").select("*").eq("game_id", gameId);
-            if (cardSets && cardSets.length > 0) {
-                const randomSet = cardSets[Math.floor(Math.random() * cardSets.length)];
-                const randomCard = randomSet.cards[Math.floor(Math.random() * randomSet.cards.length)];
+            // Draw card for seeker
+            const { data: availableCards } = await supabase
+                .from("cards")
+                .select("*")
+                .eq("game_id", gameId);
 
+            if (availableCards && availableCards.length > 0) {
+                const randomCard = availableCards[Math.floor(Math.random() * availableCards.length)];
+                
                 const newCard = {
-                    id: `${randomSet.id}_${Date.now()}_${Math.random()}`,
-                    name: randomCard,
-                    type: randomSet.type,
-                    description: `${randomSet.type.charAt(0).toUpperCase() + randomSet.type.slice(1)} card: ${randomCard}`,
-                    effect: generateCardEffect(randomSet.type, randomCard),
+                    id: `${randomCard.id}_${Date.now()}_${Math.random()}`,
+                    name: randomCard.name,
+                    type: randomCard.type,
+                    description: randomCard.description,
+                    effect: generateCardEffect(randomCard.type, randomCard.name),
                 };
 
-                const currentHands = gameState.cards_in_hand || {};
-                updatedState.cards_in_hand = [...(currentHands || []), newCard];
+                const currentHand = gameState.cards_in_hand || [];
+                updatedState.cards_in_hand = [...currentHand, newCard];
             }
         }
 
@@ -65,8 +83,6 @@ export async function moveToNode(gameId: string, newNode: string) {
 
 export async function playCard(gameId: string, cardId: string, targetPlayer?: string) {
     const supabase = await createServerClient();
-    const test = await supabase.auth.getSession();
-    await console.log(test)
     const { data } = await supabase.auth.getSession();
     const user = data?.session?.user;
     if (!user) return { error: "You must be logged in" };
@@ -76,19 +92,20 @@ export async function playCard(gameId: string, cardId: string, targetPlayer?: st
         const { data: gameState } = await supabase.from("game_state").select("*").eq("game_id", gameId).single();
         if (!gameState) return { error: "Game state not found" };
 
-        const playerHand = gameState.cards_in_hand || {};
+        const playerHand = gameState.cards_in_hand || [];
 
         // Find the card to play
         const cardToPlay = playerHand.find((card: any) => card.id === cardId);
         if (!cardToPlay) return { error: "Card not found in your hand" };
+        
         const updatedHand = playerHand.filter((card: any) => card.id !== cardId);
 
-        // Add to used cards
-        const usedCards = gameState.discard_pile || [];
-        usedCards.push({
+        // Add to discard pile
+        const discardPile = gameState.discard_pile || [];
+        discardPile.push({
             ...cardToPlay,
             usedBy: user.id,
-            usedAt: Date.now(),
+            usedAt: new Date().toISOString(),
             targetPlayer,
         });
 
@@ -96,12 +113,12 @@ export async function playCard(gameId: string, cardId: string, targetPlayer?: st
         const updatedState = {
             ...gameState,
             cards_in_hand: updatedHand,
-            discard_pile: usedCards,
+            discard_pile: discardPile,
             updated_at: new Date().toISOString(),
         };
 
         // Apply card effects based on type
-        const activeEffects = updatedState.active_effects || [];
+        const activeEffects = gameState.active_effects || [];
 
         switch (cardToPlay.type) {
             case "battle":
@@ -110,7 +127,7 @@ export async function playCard(gameId: string, cardId: string, targetPlayer?: st
                     effect: "Runner location revealed",
                     player: user.id,
                     targetPlayer,
-                    expiresAt: Date.now() + 60000, // 1 minute
+                    expiresAt: new Date(Date.now() + 60000).toISOString(), // 1 minute
                 });
                 break;
 
@@ -122,7 +139,7 @@ export async function playCard(gameId: string, cardId: string, targetPlayer?: st
                     .from("roadblocks")
                     .insert({
                         game_id: gameId,
-                        node_name: updatedState.runner_node,
+                        node_name: gameState.seeker_node,
                         placed_by: user.id,
                         expires_at: expiresAt.toISOString(),
                     });
@@ -134,36 +151,36 @@ export async function playCard(gameId: string, cardId: string, targetPlayer?: st
 
             case "curse":
                 // Reduce runner's points
-                updatedState.runner_points = Math.max(0, updatedState.runner_points - 20);
+                updatedState.runner_points = Math.max(0, (gameState.runner_points || 0) - 20);
                 activeEffects.push({
                     cardId: cardToPlay.id,
                     effect: "Runner cursed (-20 points)",
                     player: user.id,
                     targetPlayer,
-                    expiresAt: Date.now() + 90000, // 1.5 minutes
+                    expiresAt: new Date(Date.now() + 90000).toISOString(), // 1.5 minutes
                 });
                 break;
 
             case "utility":
-                // For utility cards, player draws 2 additional cards
-                const { data: cardSets } = await supabase.from("card_sets").select("*").eq("game_id", gameId);
+                // Draw 2 additional cards
+                const { data: availableCards } = await supabase
+                    .from("cards")
+                    .select("*")
+                    .eq("game_id", gameId);
 
-                if (cardSets && cardSets.length > 0) {
+                if (availableCards && availableCards.length > 0) {
                     const newCards = [];
                     for (let i = 0; i < 2; i++) {
-                        const randomSet = cardSets[Math.floor(Math.random() * cardSets.length)];
-                        const randomCard = randomSet.cards[Math.floor(Math.random() * randomSet.cards.length)];
+                        const randomCard = availableCards[Math.floor(Math.random() * availableCards.length)];
                         newCards.push({
-                            id: `${randomSet.id}_${Date.now()}_${i}_${Math.random()}`,
-                            name: randomCard,
-                            type: randomSet.type,
-                            description: `${
-                                randomSet.type.charAt(0).toUpperCase() + randomSet.type.slice(1)
-                            } card: ${randomCard}`,
-                            effect: generateCardEffect(randomSet.type, randomCard),
+                            id: `${randomCard.id}_${Date.now()}_${i}_${Math.random()}`,
+                            name: randomCard.name,
+                            type: randomCard.type,
+                            description: randomCard.description,
+                            effect: generateCardEffect(randomCard.type, randomCard.name),
                         });
                     }
-                    updatedState.cards_in_hand =  [...(updatedHand || []), ...newCards];;
+                    updatedState.cards_in_hand = [...updatedHand, ...newCards];
                 }
                 break;
 
@@ -209,12 +226,11 @@ export async function endRun(gameId: string) {
     if (!user) return { error: "You must be logged in" };
 
     try {
-        // Get current game
+        // Get current game and game state
         const { data: game } = await supabase.from("games").select("*").eq("id", gameId).single();
         const { data: gameState } = await supabase.from("game_state").select("*").eq("game_id", gameId).single();
 
-        console.log(game);
-        if (!game || gameState.current_runner_id !== user.id) {
+        if (!game || !gameState || gameState.current_runner_id !== user.id) {
             return { error: "You are not the current runner" };
         }
 
@@ -223,59 +239,54 @@ export async function endRun(gameId: string) {
         const nextRunnerIndex = (currentRunnerIndex + 1) % playerOrder.length;
         const nextRunnerId = playerOrder[nextRunnerIndex];
 
-        // Update game with new runner
-        const { error: gameError } = await supabase
+        // Update game state with new runner
+        const { error: gameStateError } = await supabase
             .from("game_state")
             .update({
                 current_runner_id: nextRunnerId,
+                runner_points: 0, // Reset points for new runner
+                active_effects: [], // Clear active effects
+                start_time: new Date().toISOString(),
                 updated_at: new Date().toISOString(),
             })
             .eq("game_id", gameId);
 
-        if (gameError) {
-            return { error: "Failed to update game: " + gameError.message };
+        if (gameStateError) {
+            return { error: "Failed to update game state: " + gameStateError.message };
         }
 
-        if (gameState) {
-            const currentHands = gameState.cards_in_hand || {};
+        // Previous runner becomes seeker, gets 2 cards
+        const { data: availableCards } = await supabase
+            .from("cards")
+            .select("*")
+            .eq("game_id", gameId);
 
-            // Previous runner becomes seeker, gets 2 cards
-            const { data: cardSets } = await supabase.from("card_sets").select("*").eq("game_id", gameId);
-
-            if (cardSets && cardSets.length > 0) {
-                const newCards = [];
-                for (let i = 0; i < 2; i++) {
-                    const randomSet = cardSets[Math.floor(Math.random() * cardSets.length)];
-                    const randomCard = randomSet.cards[Math.floor(Math.random() * randomSet.cards.length)];
-                    newCards.push({
-                        id: `${randomSet.id}_${Date.now()}_${i}_${Math.random()}`,
-                        name: randomCard,
-                        type: randomSet.type,
-                        description: `${
-                            randomSet.type.charAt(0).toUpperCase() + randomSet.type.slice(1)
-                        } card: ${randomCard}`,
-                        effect: generateCardEffect(randomSet.type, randomCard),
-                    });
-                }
-                currentHands[user.id] = [...(currentHands[user.id] || []), ...newCards];
+        if (availableCards && availableCards.length > 0) {
+            const newCards = [];
+            for (let i = 0; i < 2; i++) {
+                const randomCard = availableCards[Math.floor(Math.random() * availableCards.length)];
+                newCards.push({
+                    id: `${randomCard.id}_${Date.now()}_${i}_${Math.random()}`,
+                    name: randomCard.name,
+                    type: randomCard.type,
+                    description: randomCard.description,
+                    effect: generateCardEffect(randomCard.type, randomCard.name),
+                });
             }
 
-            // New runner starts with no cards
-            currentHands[nextRunnerId] = [];
+            // Add cards to previous runner's hand (now seeker)
+            const currentHand = gameState.cards_in_hand || [];
+            const updatedHand = [...currentHand, ...newCards];
 
-            // Update game state
-            const { error: stateError } = await supabase
+            const { error: handError } = await supabase
                 .from("game_state")
                 .update({
-                    runner_points: 0, // Reset points for new runner
-                    cards_in_hand: currentHands,
-                    active_effects: [], // Clear active effects
-                    start_time: new Date().toISOString(),
+                    cards_in_hand: updatedHand,
                 })
                 .eq("game_id", gameId);
 
-            if (stateError) {
-                return { error: "Failed to update game state: " + stateError.message };
+            if (handError) {
+                console.error("Failed to update hand:", handError);
             }
         }
 

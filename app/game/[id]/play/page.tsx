@@ -24,7 +24,7 @@ export default async function GamePlay({ params }: { params: Promise<{ id: strin
                 player_id, 
                 profiles(username, email)
             ),
-            card_sets(*),
+            cards(*),
             maps(*),
             game_state(*)`
         )
