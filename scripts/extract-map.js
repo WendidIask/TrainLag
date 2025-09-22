@@ -84,7 +84,7 @@ function getGlobalMatrix(node) {
 // ----------------------
 function parsePathCommands(pathString) {
   const commands = [];
-  const regex = /([MmLlHhVvCcSsQqTtAaZz])|([+-]?(?:\d+\.?\d*|\.\d+))/g;
+  const regex = /([MmLlHhVvCcSsQqTtAaZz])|([+-]?(?:\d+\.?\d*|\.\d+)(?:[eE][+-]?\d+)?)/g;
   let currentCommand = null;
   let numbers = [];
   let match;
