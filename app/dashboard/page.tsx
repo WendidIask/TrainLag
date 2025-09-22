@@ -8,17 +8,14 @@ export default async function Dashboard() {
     const user = data?.session?.user;
     if (!user) redirect("/");
 
-    const { data: games } = await supabase
-        .from("games")
-        .select(
-            `*,
-            game_players!inner(player_id),
-            profiles!games_creator_id_fkey(username)`,
-        )
-        .or(`creator_id.eq.${user.id}`);
-      
-    
-    
-    // Fix by also showing games where the user is a player. Its bugged.
+    const { data: games, error: e2 } = await supabase
+    .from("games")
+    .select(`
+        *,
+        game_players(player_id),
+        profiles!games_creator_id_fkey(username)
+    `)
+    .eq("game_players.player_id", user.id);
+
     return <DashboardContent user={user} games={games || []} />;
 }
