@@ -26,18 +26,6 @@ interface Card {
   description?: string;
 }
 
-// Parse cards from text
-function parseCards(text: string, type: Card["type"]): Card[] {
-  return text
-    .split("\n")
-    .map((line) => line.trim())
-    .filter(Boolean)
-    .map((line) => {
-      const [name, description = ""] = line.split(",", 2);
-      return { name, description, type };
-    });
-}
-
 export async function createGame(prevState: any, formData: FormData) {
   const supabase = await createServerClient();
   const { data } = await supabase.auth.getUser();

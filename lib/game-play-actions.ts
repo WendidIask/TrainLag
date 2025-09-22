@@ -65,6 +65,7 @@ export async function moveToNode(gameId: string, newNode: string) {
 
             updatedState.runner_node = newNode;
             updatedState.runner_points = (gameState.runner_points || 0) + 10;
+            updatedState.game_log.push(newNode);
         } else {
             // Seeker moves - can move to any node
             updatedState.seeker_node = newNode;
@@ -283,6 +284,7 @@ export async function endRun(gameId: string) {
                 active_effects: [], // Clear active effects
                 start_time: new Date().toISOString(),
                 updated_at: new Date().toISOString(),
+                game_log: [gameState.runner_node]
             })
             .eq("game_id", gameId);
 

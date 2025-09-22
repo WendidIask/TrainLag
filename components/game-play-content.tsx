@@ -13,6 +13,7 @@ import { ArrowLeft, Clock, MapPin, Target, Users, Zap, AlertTriangle, Play, Tras
 import { moveToNode, playCard, endRun } from "@/lib/game-play-actions";
 import MapSvg from "./data/GameMap.svg";
 import mapNodes from "./data/map-nodes.json";
+import mapPaths from "./data/map-paths.json";
 
 interface GamePlayContentProps {
   game: any;
@@ -571,11 +572,41 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
                     <svg ref={svgRef} viewBox="0 0 200 200" width={800} height={800}>
                       <MapSvg width={200} height={200} viewBox="0 0 200 200" />
                       
+                      {/* Runner's path history */}
+                      {gameState.game_log && gameState.game_log.length > 1 && (() => {
+                        const pathSegments = [];
+                        
+                        for (let i = 0; i < gameState.game_log.length-1; i++) {
+                          const currentNode = gameState.game_log[i];
+                          const nextNode = gameState.game_log[i + 1];
+
+                          const pathData = getSvgPathFromJson(currentNode, nextNode);
+                          
+                          if (pathData) {
+                            pathSegments.push(
+                              <path
+                                key={`history-${i}`}
+                                d={pathData}
+                                stroke="#f97316"
+                                strokeWidth={0.8}
+                                fill="none"
+                                style={{ 
+                                  opacity: 0.7,
+                                  filter: "drop-shadow(0 1px 2px rgba(249, 115, 22, 0.3))"
+                                }}
+                              />
+                            );
+                          }
+                        }
+                        
+                        return <g>{pathSegments}</g>;
+                      })()}
+                      
                       {/* Cursed paths */}
                       {curses.map((curse: any) => {
                         const pathData = getSvgPathFromJson(curse.start_node, curse.end_node);
                         if (!pathData) return null;
-                        console.log(pathData);
+                        
                         return (
                           <g key={curse.id}>
                             {/* Main cursed path - thicker purple overlay */}
