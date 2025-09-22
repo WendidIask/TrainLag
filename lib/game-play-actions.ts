@@ -179,7 +179,7 @@ export async function playCard(gameId: string, cardId: string, targetPlayer?: st
                 if (!targetNode) {
                     return { error: "You must select an adjacent node to curse the path to" };
                 }
-                if (!adjacentNodes.some(node => node.toLowerCase() === targetNode.toLowerCase())) {
+                if (!adjacentNodes.some((node: string) => node.toLowerCase() === targetNode.toLowerCase())) {
                     return { error: "You can only curse paths to adjacent nodes" };
                 }
 
