@@ -18,35 +18,6 @@ export async function moveToNode(gameId: string, newNode: string) {
         const { data: map } = await supabase.from("maps").select("*").eq("game_id", gameId);
         if (!map) return { error: "Game not found" };
 
-        // Check if the target node has an active roadblock
-        const { data: roadblocks } = await supabase
-            .from("roadblocks")
-            .select("*")
-            .eq("game_id", gameId)
-            .eq("node_name", newNode)
-
-        if (roadblocks && roadblocks.length > 0) {
-            return { error: `Node ${newNode} is blocked by a roadblock!` };
-        }
-
-        // Check if the path to the target node has an active curse
-        if (user.id === gameState.current_runner_id) {
-            const { data: curses } = await supabase
-                .from("curses")
-                .select("*")
-                .eq("game_id", gameId)
-
-            // Check if any curse blocks the path from current node to target node
-            const blockedPath = curses?.find(curse => 
-                (curse.start_node === gameState.runner_node && curse.end_node === newNode) ||
-                (curse.end_node === gameState.runner_node && curse.start_node === newNode)
-            );
-
-            if (blockedPath) {
-                return { error: `The path from ${gameState.runner_node} to ${newNode} is cursed!` };
-            }
-        }
-
         const updatedState = {
             ...gameState,
             updated_at: new Date().toISOString(),
@@ -73,7 +44,7 @@ export async function moveToNode(gameId: string, newNode: string) {
             updatedState.runner_points = (gameState.runner_points || 0) + 10;
             updatedState.game_log.push(newNode);
         } else {
-            // Seeker moves - can move to any node
+            // Seeker moves - can move to any node, obstacles don't affect seekers
             updatedState.seeker_node = newNode;
 
             // Draw card for seeker
@@ -104,6 +75,66 @@ export async function moveToNode(gameId: string, newNode: string) {
         return { success: true };
     } catch (error) {
         console.error("Move error:", error);
+        return { error: "An unexpected error occurred" };
+    }
+}
+
+export async function clearRoadblock(gameId: string, nodeId: string) {
+    const supabase = await createServerClient();
+    const { data } = await supabase.auth.getSession();
+    const user = data?.session?.user;
+    if (!user) return { error: "You must be logged in" };
+
+    try {
+        const { data: gameState } = await supabase.from("game_state").select("*").eq("game_id", gameId).single();
+        if (!gameState || gameState.current_runner_id !== user.id) {
+            return { error: "Only the current runner can clear roadblocks" };
+        }
+
+        // Remove roadblock from the specified node
+        const { error } = await supabase
+            .from("roadblocks")
+            .delete()
+            .eq("game_id", gameId)
+            .eq("node_name", nodeId);
+
+        if (error) {
+            return { error: "Failed to clear roadblock: " + error.message };
+        }
+
+        return { success: true };
+    } catch (error) {
+        console.error("Clear roadblock error:", error);
+        return { error: "An unexpected error occurred" };
+    }
+}
+
+export async function clearCurse(gameId: string, curseId: string) {
+    const supabase = await createServerClient();
+    const { data } = await supabase.auth.getSession();
+    const user = data?.session?.user;
+    if (!user) return { error: "You must be logged in" };
+
+    try {
+        const { data: gameState } = await supabase.from("game_state").select("*").eq("game_id", gameId).single();
+        if (!gameState || gameState.current_runner_id !== user.id) {
+            return { error: "Only the current runner can clear curses" };
+        }
+
+        // Remove curse
+        const { error } = await supabase
+            .from("curses")
+            .delete()
+            .eq("game_id", gameId)
+            .eq("id", curseId);
+
+        if (error) {
+            return { error: "Failed to clear curse: " + error.message };
+        }
+
+        return { success: true };
+    } catch (error) {
+        console.error("Clear curse error:", error);
         return { error: "An unexpected error occurred" };
     }
 }

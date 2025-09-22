@@ -9,8 +9,8 @@ import { Input } from "@/components/ui/input";
 // prettier-ignore
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, Clock, MapPin, Target, Users, Zap, AlertTriangle, Play, Trash2, Search } from "lucide-react";
-import { moveToNode, playCard, endRun } from "@/lib/game-play-actions";
+import { ArrowLeft, Clock, MapPin, Target, Users, Zap, AlertTriangle, Play, Trash2, Search, ShieldAlert } from "lucide-react";
+import { moveToNode, playCard, endRun, clearRoadblock, clearCurse } from "@/lib/game-play-actions";
 import MapSvg from "./data/GameMap.svg";
 import mapNodes from "./data/map-nodes.json";
 import mapPaths from "./data/map-paths.json";
@@ -326,6 +326,13 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
   const activeEffects = gameState.active_effects || [];
   const discardPile = gameState.discard_pile || [];
 
+  // Check if runner is at a location with obstacles
+  const currentNodeRoadblocks = isRunner ? roadblocks.filter((rb: any) => rb.node_name.toLowerCase() === gameState.runner_node?.toLowerCase()) : [];
+  const currentNodeCurses = isRunner ? curses.filter((curse: any) => 
+    curse.start_node.toLowerCase() === gameState.game_log[gameState.game_log.length-2]?.toLowerCase() && curse.end_node.toLowerCase() === gameState.game_log[gameState.game_log.length-1]?.toLowerCase() || 
+    curse.end_node.toLowerCase() === gameState.game_log[gameState.game_log.length-2]?.toLowerCase() && curse.start_node.toLowerCase() === gameState.game_log[gameState.game_log.length-1]?.toLowerCase()
+  ) : [];
+
   const handleMove = async () => {
     if (!selectedDestination) return;
 
@@ -341,6 +348,32 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
 
     setIsLoading(false);
     setSelectedDestination("");
+  };
+
+  const handleClearRoadblock = async (nodeId: string) => {
+    setIsLoading(true);
+    const result = await clearRoadblock(game.id, nodeId);
+
+    if (result?.error) {
+      alert(result.error);
+    } else {
+      window.location.reload();
+    }
+
+    setIsLoading(false);
+  };
+
+  const handleClearCurse = async (curseId: string) => {
+    setIsLoading(true);
+    const result = await clearCurse(game.id, curseId);
+
+    if (result?.error) {
+      alert(result.error);
+    } else {
+      window.location.reload();
+    }
+
+    setIsLoading(false);
   };
 
   const handlePlayCard = async (card: any, target?: string, node?: string) => {
@@ -495,6 +528,75 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
                         <Badge variant="outline" className="text-xs">
                           Active
                         </Badge>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Runner Obstacles at Current Location */}
+            {isRunner && (currentNodeRoadblocks.length > 0 || currentNodeCurses.length > 0) && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <ShieldAlert className="w-5 h-5 mr-2 text-orange-600" />
+                    Obstacles at Your Location
+                  </CardTitle>
+                  <CardDescription>
+                    You have encountered obstacles at {gameState.runner_node}. Complete the challenges to clear them!
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    {currentNodeRoadblocks.map((roadblock: any) => (
+                      <div
+                        key={roadblock.id}
+                        className="flex flex-col space-y-3 p-3 bg-red-50 border border-red-200 rounded">
+                        <div className="flex items-start space-x-3">
+                          <AlertTriangle className="w-5 h-5 text-red-600 mt-1" />
+                          <div className="flex-1">
+                            <p className="font-medium text-red-800">Roadblock at {roadblock.node_name}</p>
+                            {roadblock.description && (
+                              <p className="text-sm text-red-600 mt-1">{roadblock.description}</p>
+                            )}
+                          </div>
+                        </div>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleClearRoadblock(roadblock.node_name)}
+                          disabled={isLoading}
+                          className="text-red-600 border-red-300 hover:bg-red-50 self-end"
+                        >
+                          {isLoading ? "Clearing..." : "Clear Roadblock"}
+                        </Button>
+                      </div>
+                    ))}
+                    {currentNodeCurses.map((curse: any) => (
+                      <div
+                        key={curse.id}
+                        className="flex flex-col space-y-3 p-3 bg-purple-50 border border-purple-200 rounded">
+                        <div className="flex items-start space-x-3">
+                          <Zap className="w-5 h-5 text-purple-600 mt-1" />
+                          <div className="flex-1">
+                            <p className="font-medium text-purple-800">
+                              Cursed Path: {curse.start_node} ↔ {curse.end_node}
+                            </p>
+                            {curse.description && (
+                              <p className="text-sm text-purple-600 mt-1">{curse.description}</p>
+                            )}
+                          </div>
+                        </div>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleClearCurse(curse.id)}
+                          disabled={isLoading}
+                          className="text-purple-600 border-purple-300 hover:bg-purple-50 self-end"
+                        >
+                          {isLoading ? "Clearing..." : "Clear Curse"}
+                        </Button>
                       </div>
                     ))}
                   </div>
