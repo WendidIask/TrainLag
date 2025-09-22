@@ -164,7 +164,7 @@ export async function startGame(gameId: string) {
       .eq("game_id", gameId);
 
     // Give each seeker 2 starting cards
-    let initialCards: any[] = [];
+    const initialCards: any[] = [];
     if (availableCards && availableCards.length > 0) {
       const seekers = playerOrder.slice(1); // All players except the runner (first player)
       

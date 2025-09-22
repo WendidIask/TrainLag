@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Plus, Play, Users, Clock, LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { signOut } from "@/lib/actions";
+import Link from 'next/link'
 
 interface Game {
   id: string;
@@ -59,7 +60,7 @@ export default function DashboardContent({ user, games }: DashboardContentProps)
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
               <h1 className="text-2xl font-bold text-gray-900">
-                <a href="/">Train Lag</a>
+                <Link href="/">Train Lag</Link>
               </h1>
             </div>
             <div className="flex items-center space-x-4">

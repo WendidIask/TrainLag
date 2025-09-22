@@ -820,7 +820,7 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
               <Card>
                 <CardHeader>
                   <CardTitle className="text-red-600">End Run</CardTitle>
-                  <CardDescription>End your run when you've been caught by the seekers</CardDescription>
+                  <CardDescription>End your run when you&apos;ve been caught by the seekers</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <Dialog open={showEndRunDialog} onOpenChange={setShowEndRunDialog}>
