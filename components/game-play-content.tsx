@@ -25,10 +25,12 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [showEndRunDialog, setShowEndRunDialog] = useState(false);
   const [targetPlayer, setTargetPlayer] = useState<string>("");
+  const [targetNode, setTargetNode] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
   const [elapsedTime, setElapsedTime] = useState(0);
   const [runTime, setRunTime] = useState(0);
   const [roadblocks, setRoadblocks] = useState([]);
+  const [curses, setCurses] = useState([]);
   const router = useRouter();
 
   const [scale, setScale] = useState(1);
@@ -64,6 +66,13 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
           const roadblocksData = await roadblocksResponse.json();
           if (isMounted) setRoadblocks(roadblocksData);
         }
+
+        // Fetch active curses
+        const cursesResponse = await fetch(`/api/game/${game.id}/curses`);
+        if (cursesResponse.ok) {
+          const cursesData = await cursesResponse.json();
+          if (isMounted) setCurses(cursesData);
+        }
       } catch (err) {
         console.error("Failed to fetch game data:", err);
       }
@@ -81,6 +90,19 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
   const getNodePosition = (nodeName: string) => {
     const node = mapNodes.find(n => n.name.toLowerCase() === nodeName.toLowerCase());
     return node ? { x: node.cx, y: node.cy } : { x: 0, y: 0 };
+  };
+
+  const getPathBetweenNodes = (startNode: string, endNode: string) => {
+    const mapInfo = game.maps?.[0];
+    const edges = mapInfo?.edges || [];
+    
+    // Find the edge that connects these two nodes
+    const edge = edges.find((e: any) => 
+      (e.from.toLowerCase() === startNode.toLowerCase() && e.to.toLowerCase() === endNode.toLowerCase()) ||
+      (e.from.toLowerCase() === endNode.toLowerCase() && e.to.toLowerCase() === startNode.toLowerCase())
+    );
+    
+    return edge?.path || null;
   };
 
   // Map interaction functions - simplified and fixed
@@ -319,9 +341,9 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
     setSelectedDestination("");
   };
 
-  const handlePlayCard = async (card: any, target?: string) => {
+  const handlePlayCard = async (card: any, target?: string, node?: string) => {
     setIsLoading(true);
-    const result = await playCard(game.id, card.id, target);
+    const result = await playCard(game.id, card.id, target, node);
 
     if (result?.error) {
       alert(result.error);
@@ -331,6 +353,7 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
 
     setIsLoading(false);
     setTargetPlayer("");
+    setTargetNode("");
   };
 
   const handleEndRun = async () => {
@@ -477,6 +500,48 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
               </Card>
             )}
 
+            {/* Active Obstacles */}
+            {(roadblocks.length > 0 || curses.length > 0) && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <AlertTriangle className="w-5 h-5 mr-2" />
+                    Active Obstacles
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    {roadblocks.map((roadblock: any) => (
+                      <div
+                        key={roadblock.id}
+                        className="flex items-center justify-between p-2 bg-red-50 border border-red-200 rounded">
+                        <div className="flex items-center space-x-2">
+                          <AlertTriangle className="w-4 h-4 text-red-600" />
+                          <span className="text-sm font-medium">Roadblock at {roadblock.node_name}</span>
+                        </div>
+                        <Badge variant="outline" className="text-xs text-red-600">
+                          Node Blocked
+                        </Badge>
+                      </div>
+                    ))}
+                    {curses.map((curse: any) => (
+                      <div
+                        key={curse.id}
+                        className="flex items-center justify-between p-2 bg-purple-50 border border-purple-200 rounded">
+                        <div className="flex items-center space-x-2">
+                          <Zap className="w-4 h-4 text-purple-600" />
+                          <span className="text-sm font-medium">Cursed path: {curse.start_node} ↔ {curse.end_node}</span>
+                        </div>
+                        <Badge variant="outline" className="text-xs text-purple-600">
+                          Path Blocked
+                        </Badge>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
             {/* Map */}
             <Card>
               <CardHeader>
@@ -505,6 +570,46 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
                     <svg ref={svgRef} viewBox="0 0 200 200" width={800} height={800}>
                       <MapSvg width={200} height={200} viewBox="0 0 200 200" />
                       
+                      {/* Cursed paths */}
+                      {curses.map((curse: any) => {
+                        const pathData = getPathBetweenNodes(curse.start_node, curse.end_node);
+                        if (!pathData) return null;
+                        
+                        return (
+                          <g key={curse.id}>
+                            <path
+                              d={pathData}
+                              stroke="#8b5cf6"
+                              strokeWidth={0.5}
+                              fill="none"
+                              strokeDasharray="1,1"
+                              style={{ filter: "drop-shadow(0 1px 3px rgba(139, 92, 246, 0.3))" }}
+                            />
+                            {/* Curse indicator at midpoint */}
+                            <g>
+                              <circle
+                                cx={(getNodePosition(curse.start_node).x + getNodePosition(curse.end_node).x) / 2}
+                                cy={(getNodePosition(curse.start_node).y + getNodePosition(curse.end_node).y) / 2}
+                                r={0.8}
+                                fill="rgba(139, 92, 246, 0.9)"
+                                stroke="#fff"
+                                strokeWidth={0.15}
+                              />
+                              <text
+                                x={(getNodePosition(curse.start_node).x + getNodePosition(curse.end_node).x) / 2}
+                                y={(getNodePosition(curse.start_node).y + getNodePosition(curse.end_node).y) / 2 + 0.2}
+                                textAnchor="middle"
+                                fill="#fff"
+                                fontSize="1"
+                                fontWeight="bold"
+                              >
+                                ⚡
+                              </text>
+                            </g>
+                          </g>
+                        );
+                      })}
+                      
                       {/* Roadblock indicators */}
                       {roadblocks.map((roadblock: any) => {
                         const nodePos = getNodePosition(roadblock.node_name);
@@ -518,6 +623,16 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
                               stroke="#b91c1c"
                               strokeWidth={0.2}
                             />
+                            <text
+                              x={nodePos.x}
+                              y={nodePos.y + 0.3}
+                              textAnchor="middle"
+                              fill="#fff"
+                              fontSize="1.2"
+                              fontWeight="bold"
+                            >
+                              🚧
+                            </text>
                           </g>
                         );
                       })}
@@ -812,7 +927,7 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
                                 </DialogHeader>
                                 <div className="py-4">
                                   <p className="text-sm text-gray-600 mb-4">Effect: {card.effect}</p>
-                                  {(card.type === "battle" || card.type === "curse") && (
+                                  {card.type === "battle" && (
                                     <div className="space-y-2">
                                       <label className="text-sm font-medium">Target Player (optional):</label>
                                       <Select value={targetPlayer} onValueChange={setTargetPlayer}>
@@ -831,10 +946,44 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
                                       </Select>
                                     </div>
                                   )}
+                                  {card.type === "curse" && (() => {
+                                    // Get adjacent nodes to current seeker position for curse placement
+                                    const mapInfo = game.maps?.[0];
+                                    const adjacentNodes = mapInfo?.edges?.filter((edge: any) => 
+                                      edge.from.toLowerCase() === gameState.seeker_node?.toLowerCase()
+                                    )?.map((edge: any) => edge.to) || [];
+                                    
+                                    return (
+                                      <div className="space-y-2">
+                                        <label className="text-sm font-medium">Target Node (curse path endpoint):</label>
+                                        <p className="text-xs text-gray-500 mb-2">
+                                          Select which adjacent node to curse the path to from your current position: {gameState.seeker_node}
+                                        </p>
+                                        <Select value={targetNode} onValueChange={setTargetNode}>
+                                          <SelectTrigger>
+                                            <SelectValue placeholder="Select target node" />
+                                          </SelectTrigger>
+                                          <SelectContent>
+                                            {adjacentNodes.map((node: string) => (
+                                              <SelectItem key={node} value={node}>
+                                                {node}
+                                              </SelectItem>
+                                            ))}
+                                          </SelectContent>
+                                        </Select>
+                                        {adjacentNodes.length === 0 && (
+                                          <p className="text-xs text-red-600">No adjacent nodes available from your current position.</p>
+                                        )}
+                                      </div>
+                                    );
+                                  })()}
                                 </div>
                                 <DialogFooter>
                                   <Button variant="outline">Cancel</Button>
-                                  <Button onClick={() => handlePlayCard(card, targetPlayer)} disabled={isLoading}>
+                                  <Button 
+                                    onClick={() => handlePlayCard(card, targetPlayer, targetNode)} 
+                                    disabled={isLoading || (card.type === "curse" && !targetNode)}
+                                  >
                                     {isLoading ? "Playing..." : "Play Card"}
                                   </Button>
                                 </DialogFooter>
@@ -915,6 +1064,10 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
                   <div className="flex justify-between">
                     <span className="text-gray-600">Active Roadblocks:</span>
                     <span className="font-medium">{roadblocks.length}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Active Curses:</span>
+                    <span className="font-medium">{curses.length}</span>
                   </div>
                 </div>
               </CardContent>

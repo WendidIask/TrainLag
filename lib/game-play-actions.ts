@@ -15,16 +15,36 @@ export async function moveToNode(gameId: string, newNode: string) {
         const { data: game } = await supabase.from("games").select("*").eq("id", gameId).single();
         if (!game) return { error: "Game not found" };
 
+        const { data: map } = await supabase.from("maps").select("*").eq("game_id", gameId);
+        if (!map) return { error: "Game not found" };
+
         // Check if the target node has an active roadblock
         const { data: roadblocks } = await supabase
             .from("roadblocks")
             .select("*")
             .eq("game_id", gameId)
             .eq("node_name", newNode)
-            .gte("expires_at", new Date().toISOString());
 
         if (roadblocks && roadblocks.length > 0) {
             return { error: `Node ${newNode} is blocked by a roadblock!` };
+        }
+
+        // Check if the path to the target node has an active curse
+        if (user.id === gameState.current_runner_id) {
+            const { data: curses } = await supabase
+                .from("curses")
+                .select("*")
+                .eq("game_id", gameId)
+
+            // Check if any curse blocks the path from current node to target node
+            const blockedPath = curses?.find(curse => 
+                (curse.start_node === gameState.runner_node && curse.end_node === newNode) ||
+                (curse.end_node === gameState.runner_node && curse.start_node === newNode)
+            );
+
+            if (blockedPath) {
+                return { error: `The path from ${gameState.runner_node} to ${newNode} is cursed!` };
+            }
         }
 
         const updatedState = {
@@ -34,7 +54,7 @@ export async function moveToNode(gameId: string, newNode: string) {
 
         if (user.id === gameState.current_runner_id) {
             // Runner moves - must validate connected nodes
-            const mapInfo = game.maps?.[0];
+            const mapInfo = map?.[0];
             const availableDestinations = mapInfo?.edges?.filter((edge: any) => 
                 edge.from.toLowerCase() === gameState.runner_node?.toLowerCase()
             )?.map((edge: any) => edge.to) || [];
@@ -81,16 +101,21 @@ export async function moveToNode(gameId: string, newNode: string) {
     }
 }
 
-export async function playCard(gameId: string, cardId: string, targetPlayer?: string) {
+export async function playCard(gameId: string, cardId: string, targetPlayer?: string, targetNode?: string) {
     const supabase = await createServerClient();
     const { data } = await supabase.auth.getSession();
     const user = data?.session?.user;
     if (!user) return { error: "You must be logged in" };
 
     try {
-        // Get current game state
+        // Get current game state and game info
         const { data: gameState } = await supabase.from("game_state").select("*").eq("game_id", gameId).single();
+        const { data: game } = await supabase.from("games").select("*").eq("id", gameId).single();
+        const { data: map } = await supabase.from("maps").select("*").eq("game_id", gameId);
+        if (!map) return { error: "Game not found" };
+        
         if (!gameState) return { error: "Game state not found" };
+        if (!game) return { error: "Game not found" };
 
         const playerHand = gameState.cards_in_hand || [];
 
@@ -127,21 +152,16 @@ export async function playCard(gameId: string, cardId: string, targetPlayer?: st
                     effect: "Runner location revealed",
                     player: user.id,
                     targetPlayer,
-                    expiresAt: new Date(Date.now() + 60000).toISOString(), // 1 minute
                 });
                 break;
 
             case "roadblock":
-                // Insert roadblock into dedicated table
-                const expiresAt = new Date(Date.now() + 120000); // 2 minutes from now
-                
                 const { error: roadblockError } = await supabase
                     .from("roadblocks")
                     .insert({
                         game_id: gameId,
                         node_name: gameState.seeker_node,
                         placed_by: user.id,
-                        expires_at: expiresAt.toISOString(),
                     });
                     
                 if (roadblockError) {
@@ -150,15 +170,30 @@ export async function playCard(gameId: string, cardId: string, targetPlayer?: st
                 break;
 
             case "curse":
-                // Reduce runner's points
-                updatedState.runner_points = Math.max(0, (gameState.runner_points || 0) - 20);
-                activeEffects.push({
-                    cardId: cardToPlay.id,
-                    effect: "Runner cursed (-20 points)",
-                    player: user.id,
-                    targetPlayer,
-                    expiresAt: new Date(Date.now() + 90000).toISOString(), // 1.5 minutes
-                });
+                // Validate that targetNode was provided and is adjacent to seeker's position
+                const mapInfo = map?.[0];
+                const adjacentNodes = mapInfo?.edges?.filter((edge: any) => 
+                    edge.from.toLowerCase() === gameState.seeker_node?.toLowerCase()
+                )?.map((edge: any) => edge.to) || [];
+
+                if (!targetNode) {
+                    return { error: "You must select an adjacent node to curse the path to" };
+                }
+                if (!adjacentNodes.some(node => node.toLowerCase() === targetNode.toLowerCase())) {
+                    return { error: "You can only curse paths to adjacent nodes" };
+                }
+
+                const { error: curseError } = await supabase
+                    .from("curses")
+                    .insert({
+                        game_id: gameId,
+                        start_node: gameState.seeker_node,
+                        end_node: targetNode,
+                    });
+                    
+                if (curseError) {
+                    return { error: "Failed to place curse: " + curseError.message };
+                }
                 break;
 
             case "utility":
@@ -208,9 +243,9 @@ function generateCardEffect(type: string, cardName: string): string {
         case "battle":
             return "Force the runner to reveal their current location and next possible moves";
         case "roadblock":
-            return "Block a specific path for the runner for 2 turns";
+            return "Block a specific node for the runner for 2 turns";
         case "curse":
-            return "Reduce runner's points by 20 and slow their next move";
+            return "Block a path between two connected nodes for 5 minutes";
         case "utility":
             return "Draw 2 additional cards or peek at runner's hand";
         default:

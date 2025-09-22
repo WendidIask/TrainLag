@@ -5,16 +5,16 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
     const { id } = await params;
     const supabase = await createServerClientReadOnly();
     
-    // Fetch active roadblocks
-    const { data: roadblocks, error } = await supabase
-        .from("roadblocks")
+    // Fetch active curses
+    const { data: curses, error } = await supabase
+        .from("curses")
         .select("*")
         .eq("game_id", id)
-
+    
     if (error) {
         console.log(error)
         return NextResponse.json({ error: error.message }, { status: 500 });
     }
     
-    return NextResponse.json(roadblocks);
+    return NextResponse.json(curses);
 }
