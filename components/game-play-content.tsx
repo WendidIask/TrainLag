@@ -92,17 +92,18 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
     return node ? { x: node.cx, y: node.cy } : { x: 0, y: 0 };
   };
 
-  const getPathBetweenNodes = (startNode: string, endNode: string) => {
-    const mapInfo = game.maps?.[0];
-    const edges = mapInfo?.edges || [];
-    
-    // Find the edge that connects these two nodes
-    const edge = edges.find((e: any) => 
-      (e.from.toLowerCase() === startNode.toLowerCase() && e.to.toLowerCase() === endNode.toLowerCase()) ||
-      (e.from.toLowerCase() === endNode.toLowerCase() && e.to.toLowerCase() === startNode.toLowerCase())
-    );
-    
-    return edge?.path || null;
+  // Helper function to get SVG path from JSON for cursed paths
+  const getSvgPathFromJson = (startNode: string, endNode: string) => {
+    // Access the JSON data from the first document
+    const mapData = game.maps?.[0];
+    if (mapData?.edges) {
+      const edge = mapData.edges.find((e: any) => 
+        (e.from.toLowerCase() === startNode.toLowerCase() && e.to.toLowerCase() === endNode.toLowerCase()) ||
+        (e.from.toLowerCase() === endNode.toLowerCase() && e.to.toLowerCase() === startNode.toLowerCase())
+      );
+      return edge?.path || null;
+    }
+    return null;
   };
 
   // Map interaction functions - simplified and fixed
@@ -572,40 +573,33 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
                       
                       {/* Cursed paths */}
                       {curses.map((curse: any) => {
-                        const pathData = getPathBetweenNodes(curse.start_node, curse.end_node);
+                        const pathData = getSvgPathFromJson(curse.start_node, curse.end_node);
                         if (!pathData) return null;
-                        
+                        console.log(pathData);
                         return (
                           <g key={curse.id}>
+                            {/* Main cursed path - thicker purple overlay */}
                             <path
                               d={pathData}
                               stroke="#8b5cf6"
-                              strokeWidth={0.5}
+                              strokeWidth={1.2}
                               fill="none"
-                              strokeDasharray="1,1"
-                              style={{ filter: "drop-shadow(0 1px 3px rgba(139, 92, 246, 0.3))" }}
+                              style={{ 
+                                filter: "drop-shadow(0 1px 3px rgba(139, 92, 246, 0.4))",
+                                opacity: 0.8
+                              }}
                             />
-                            {/* Curse indicator at midpoint */}
-                            <g>
-                              <circle
-                                cx={(getNodePosition(curse.start_node).x + getNodePosition(curse.end_node).x) / 2}
-                                cy={(getNodePosition(curse.start_node).y + getNodePosition(curse.end_node).y) / 2}
-                                r={0.8}
-                                fill="rgba(139, 92, 246, 0.9)"
-                                stroke="#fff"
-                                strokeWidth={0.15}
-                              />
-                              <text
-                                x={(getNodePosition(curse.start_node).x + getNodePosition(curse.end_node).x) / 2}
-                                y={(getNodePosition(curse.start_node).y + getNodePosition(curse.end_node).y) / 2 + 0.2}
-                                textAnchor="middle"
-                                fill="#fff"
-                                fontSize="1"
-                                fontWeight="bold"
-                              >
-                                ⚡
-                              </text>
-                            </g>
+                            {/* Inner glow effect */}
+                            <path
+                              d={pathData}
+                              stroke="#a855f7"
+                              strokeWidth={0.6}
+                              fill="none"
+                              style={{ 
+                                filter: "blur(0.1px)",
+                                opacity: 0.6
+                              }}
+                            />
                           </g>
                         );
                       })}

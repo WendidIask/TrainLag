@@ -80,6 +80,198 @@ function getGlobalMatrix(node) {
 }
 
 // ----------------------
+// Path Command Conversion
+// ----------------------
+function parsePathCommands(pathString) {
+  const commands = [];
+  const regex = /([MmLlHhVvCcSsQqTtAaZz])|([+-]?(?:\d+\.?\d*|\.\d+))/g;
+  let currentCommand = null;
+  let numbers = [];
+  let match;
+  
+  while ((match = regex.exec(pathString)) !== null) {
+    if (match[1]) {
+      // Found a command letter
+      if (currentCommand && numbers.length > 0) {
+        // Process accumulated numbers for previous command
+        commands.push({ command: currentCommand, numbers: [...numbers] });
+        numbers = [];
+      }
+      currentCommand = match[1];
+    } else if (match[2]) {
+      // Found a number
+      numbers.push(parseFloat(match[2]));
+    }
+  }
+  
+  // Don't forget the last command
+  if (currentCommand && numbers.length > 0) {
+    commands.push({ command: currentCommand, numbers });
+  }
+  
+  return commands;
+}
+
+function convertToAbsolutePath(pathString, matrix) {
+  const commands = parsePathCommands(pathString);
+  let currentX = 0, currentY = 0;
+  let startX = 0, startY = 0;
+  let result = '';
+  
+  for (const { command, numbers } of commands) {
+    const isRelative = command === command.toLowerCase();
+    const absoluteCommand = command.toUpperCase();
+    
+    switch (absoluteCommand) {
+      case 'M': // Move to
+        // Handle multiple coordinate pairs after M (implicit line commands)
+        for (let i = 0; i < numbers.length; i += 2) {
+          if (i + 1 >= numbers.length) break; // Need both x and y
+          
+          let x = numbers[i];
+          let y = numbers[i + 1];
+          
+          if (isRelative && (i > 0 || result !== '')) {
+            // Relative to current position (except for first M command)
+            currentX += x;
+            currentY += y;
+          } else {
+            // Absolute coordinates
+            currentX = x;
+            currentY = y;
+          }
+          
+          if (i === 0) {
+            // First coordinate pair is always a move
+            startX = currentX;
+            startY = currentY;
+            const [transformedX, transformedY] = applyMatrix(matrix, currentX, currentY);
+            result += `M ${transformedX.toFixed(5)},${transformedY.toFixed(5)}`;
+          } else {
+            // Subsequent coordinate pairs are implicit line commands
+            const [transformedX, transformedY] = applyMatrix(matrix, currentX, currentY);
+            result += ` L ${transformedX.toFixed(5)},${transformedY.toFixed(5)}`;
+          }
+        }
+        break;
+        
+      case 'L': // Line to
+        for (let i = 0; i < numbers.length; i += 2) {
+          if (i + 1 >= numbers.length) break;
+          
+          let x = numbers[i];
+          let y = numbers[i + 1];
+          
+          if (isRelative) {
+            currentX += x;
+            currentY += y;
+          } else {
+            currentX = x;
+            currentY = y;
+          }
+          
+          const [transformedX, transformedY] = applyMatrix(matrix, currentX, currentY);
+          result += ` L ${transformedX.toFixed(5)},${transformedY.toFixed(5)}`;
+        }
+        break;
+        
+      case 'H': // Horizontal line
+        for (const x of numbers) {
+          if (isRelative) {
+            currentX += x;
+          } else {
+            currentX = x;
+          }
+          
+          const [transformedX, transformedY] = applyMatrix(matrix, currentX, currentY);
+          result += ` L ${transformedX.toFixed(5)},${transformedY.toFixed(5)}`;
+        }
+        break;
+        
+      case 'V': // Vertical line
+        for (const y of numbers) {
+          if (isRelative) {
+            currentY += y;
+          } else {
+            currentY = y;
+          }
+          
+          const [transformedX, transformedY] = applyMatrix(matrix, currentX, currentY);
+          result += ` L ${transformedX.toFixed(5)},${transformedY.toFixed(5)}`;
+        }
+        break;
+        
+      case 'C': // Cubic Bezier curve
+        for (let i = 0; i < numbers.length; i += 6) {
+          if (i + 5 >= numbers.length) break;
+          
+          let cp1x, cp1y, cp2x, cp2y, endX, endY;
+          
+          if (isRelative) {
+            cp1x = currentX + numbers[i];
+            cp1y = currentY + numbers[i + 1];
+            cp2x = currentX + numbers[i + 2];
+            cp2y = currentY + numbers[i + 3];
+            endX = currentX + numbers[i + 4];
+            endY = currentY + numbers[i + 5];
+          } else {
+            cp1x = numbers[i];
+            cp1y = numbers[i + 1];
+            cp2x = numbers[i + 2];
+            cp2y = numbers[i + 3];
+            endX = numbers[i + 4];
+            endY = numbers[i + 5];
+          }
+          
+          const [tCP1X, tCP1Y] = applyMatrix(matrix, cp1x, cp1y);
+          const [tCP2X, tCP2Y] = applyMatrix(matrix, cp2x, cp2y);
+          const [tEndX, tEndY] = applyMatrix(matrix, endX, endY);
+          
+          result += ` C ${tCP1X.toFixed(5)},${tCP1Y.toFixed(5)} ${tCP2X.toFixed(5)},${tCP2Y.toFixed(5)} ${tEndX.toFixed(5)},${tEndY.toFixed(5)}`;
+          
+          currentX = endX;
+          currentY = endY;
+        }
+        break;
+        
+      case 'A': // Arc
+        for (let i = 0; i < numbers.length; i += 7) {
+          if (i + 6 >= numbers.length) break;
+          
+          let endX, endY;
+          if (isRelative) {
+            endX = currentX + numbers[i + 5];
+            endY = currentY + numbers[i + 6];
+          } else {
+            endX = numbers[i + 5];
+            endY = numbers[i + 6];
+          }
+          
+          // For arcs, we'll convert to a line for simplicity
+          const [tArcEndX, tArcEndY] = applyMatrix(matrix, endX, endY);
+          result += ` L ${tArcEndX.toFixed(5)},${tArcEndY.toFixed(5)}`;
+          
+          currentX = endX;
+          currentY = endY;
+        }
+        break;
+        
+      case 'Z': // Close path
+        result += ' Z';
+        currentX = startX;
+        currentY = startY;
+        break;
+        
+      default:
+        console.warn(`Unhandled path command: ${command}`);
+        break;
+    }
+  }
+  
+  return result.trim();
+}
+
+// ----------------------
 // Ellipse Processing
 // ----------------------
 function getEllipseData(ellipse, group) {
@@ -132,26 +324,29 @@ for (const path of pathNodes) {
 
   const matrix = getGlobalMatrix(path);
 
-  // Use SVGPathProperties to get exact start and end
+  // Convert path to absolute coordinates with transforms applied
+  const globalPath = convertToAbsolutePath(d, matrix);
+
+  // Use SVGPathProperties on the original path to get endpoints
   const properties = new svgPathProperties(d);
   const { x: x1, y: y1 } = properties.getPointAtLength(0);
   const { x: x2, y: y2 } = properties.getPointAtLength(properties.getTotalLength());
 
-    let [tx1, ty1] = applyMatrix(matrix, x1, y1);
-    let [tx2, ty2] = applyMatrix(matrix, x2, y2);
-    tx1 = Math.round(tx1); ty1 = Math.round(ty1);
-    tx2 = Math.round(tx2); ty2 = Math.round(ty2);
+  let [tx1, ty1] = applyMatrix(matrix, x1, y1);
+  let [tx2, ty2] = applyMatrix(matrix, x2, y2);
+  tx1 = Math.round(tx1); ty1 = Math.round(ty1);
+  tx2 = Math.round(tx2); ty2 = Math.round(ty2);
 
-    const start = findNearestEllipse(tx1, ty1);
-    const end = findNearestEllipse(tx2, ty2);
+  const start = findNearestEllipse(tx1, ty1);
+  const end = findNearestEllipse(tx2, ty2);
 
-    paths.push({
-        d,
-        from: start ? start.name : null,
-        to: end ? end.name : null,
-        start: [tx1, ty1],
-        end: [tx2, ty2]
-    });
+  paths.push({
+    d: globalPath, // Use the transformed absolute path
+    from: start ? start.name : null,
+    to: end ? end.name : null,
+    start: [tx1, ty1],
+    end: [tx2, ty2]
+  });
 }
 
 const nodes = new Set();
@@ -177,4 +372,4 @@ const graph = {
 // ----------------------
 fs.writeFileSync('./components/data/map-nodes.json', JSON.stringify(ellipses, null, 2));
 fs.writeFileSync('./components/data/map-paths.json', JSON.stringify(graph, null, 2));
-console.log('Extraction complete with transforms applied, first & last endpoints.');
+console.log('Extraction complete with global absolute paths applied.');
