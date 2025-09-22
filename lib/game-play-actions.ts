@@ -53,7 +53,7 @@ export async function moveToNode(gameId: string, newNode: string) {
         };
 
         if (user.id === gameState.current_runner_id) {
-            // Runner moves - must validate connected nodes
+            // Runner moves - must validate connected nodes and check if already visited
             const mapInfo = map?.[0];
             const availableDestinations = mapInfo?.edges?.filter((edge: any) => 
                 edge.from.toLowerCase() === gameState.runner_node?.toLowerCase()
@@ -61,6 +61,12 @@ export async function moveToNode(gameId: string, newNode: string) {
 
             if (!availableDestinations.includes(newNode)) {
                 return { error: "You can only move to connected nodes" };
+            }
+
+            // Check if the runner has already visited this node (in game_log)
+            const gameLog = gameState.game_log || [];
+            if (gameLog.includes(newNode)) {
+                return { error: "You cannot move to a node you have already visited" };
             }
 
             updatedState.runner_node = newNode;
@@ -275,6 +281,25 @@ export async function endRun(gameId: string) {
         const nextRunnerIndex = (currentRunnerIndex + 1) % playerOrder.length;
         const nextRunnerId = playerOrder[nextRunnerIndex];
 
+        // Clear roadblocks and curses for this game
+        const { error: roadblockError } = await supabase
+            .from("roadblocks")
+            .delete()
+            .eq("game_id", gameId);
+
+        if (roadblockError) {
+            console.error("Failed to clear roadblocks:", roadblockError);
+        }
+
+        const { error: curseError } = await supabase
+            .from("curses")
+            .delete()
+            .eq("game_id", gameId);
+
+        if (curseError) {
+            console.error("Failed to clear curses:", curseError);
+        }
+
         // Update game state with new runner
         const { error: gameStateError } = await supabase
             .from("game_state")
@@ -284,7 +309,8 @@ export async function endRun(gameId: string) {
                 active_effects: [], // Clear active effects
                 start_time: new Date().toISOString(),
                 updated_at: new Date().toISOString(),
-                game_log: [gameState.runner_node]
+                game_log: [gameState.runner_node], // Start new game log with current position
+                seeker_node: gameState.runner_node
             })
             .eq("game_id", gameId);
 
