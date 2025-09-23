@@ -559,8 +559,7 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
                           <DialogHeader>
                             <DialogTitle>Start Your Run?</DialogTitle>
                             <DialogDescription>
-                              The seekers have finished positioning. Are you ready to start your run? Once you start, 
-                              you'll begin earning points and the seekers can start moving to catch you.
+                              The seekers have finished positioning. Are you ready to start your run? 
                             </DialogDescription>
                           </DialogHeader>
                           <DialogFooter>
