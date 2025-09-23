@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ArrowLeft, Clock, MapPin, Target, Users, Zap, AlertTriangle, Play, Trash2, Search, ShieldAlert } from "lucide-react";
-import { moveToNode, playCard, endRun, clearRoadblock, clearCurse, startRun } from "@/lib/game-play-actions";
+import { moveToNode, playCard, endRun, clearRoadblock, clearCurse, startRun, startPositioning } from "@/lib/game-play-actions";
 import MapSvg from "./data/GameMap.svg";
 import mapNodes from "./data/map-nodes.json";
 import Link from 'next/link'
@@ -26,6 +26,7 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [showEndRunDialog, setShowEndRunDialog] = useState(false);
   const [showStartRunDialog, setShowStartRunDialog] = useState(false);
+  const [showStartPositioningDialog, setShowStartPositioningDialog] = useState(false);
   const [targetPlayer, setTargetPlayer] = useState<string>("");
   const [targetNode, setTargetNode] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
@@ -318,19 +319,22 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
   // Check if we're in positioning phase
   const isPositioningPhase = gameState.phase === 'positioning';
   const isRunPhase = gameState.phase === 'running';
+  const isWaitingForPositioning = gameState.phase === 'waiting_for_positioning';
   const isPositioningComplete = positioningTime <= 0 && isPositioningPhase;
   
   // Modified: Different destination logic for runner vs seeker
   let availableDestinations: string[] = [];
   let filteredDestinations: string[] = [];
   
-  if (isRunner && isRunPhase) {
-    // Runner can only move to connected nodes during run phase
-    availableDestinations = mapInfo?.edges?.filter((edge: any) => 
-      edge.from.toLowerCase() === gameState.runner_node?.toLowerCase()
-    )?.map((edge: any) => edge.to) || [];
-    filteredDestinations = availableDestinations;
-  } else if (!isRunner) {
+  if (isRunner && (isRunPhase || isPositioningPhase)) {
+    // Runner can only move to connected nodes during run phase, not during positioning
+    if (isRunPhase) {
+      availableDestinations = mapInfo?.edges?.filter((edge: any) => 
+        edge.from.toLowerCase() === gameState.runner_node?.toLowerCase()
+      )?.map((edge: any) => edge.to) || [];
+      filteredDestinations = availableDestinations;
+    }
+  } else if (!isRunner && (isPositioningPhase || isRunPhase)) {
     // Seeker can move to any node on the map during positioning or running
     availableDestinations = mapNodes.map(node => node.name);
     // Filter based on search query for seekers
@@ -488,32 +492,78 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
     <div className="min-h-screen bg-gray-50">
       <header className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center">
-              <Button variant="ghost" onClick={() => router.push("/dashboard")} className="mr-4">
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Back
+          <div className="flex items-center justify-between min-h-16 py-2">
+            {/* Left section - Back button and title */}
+            <div className="flex items-center min-w-0 flex-1">
+              <Button 
+                variant="ghost" 
+                onClick={() => router.push("/dashboard")} 
+                className="mr-2 sm:mr-4 p-2 sm:px-3"
+                size="sm"
+              >
+                <ArrowLeft className="w-4 h-4 sm:mr-2" />
+                <span className="hidden sm:inline">Back</span>
               </Button>
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">{game.name}</h1>
-                <p className="text-sm text-gray-600">{isRunner ? "You are the Runner" : "You are a Seeker"}</p>
+              <div className="min-w-0 flex-1">
+                <h1 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900 truncate">
+                  {game.name}
+                </h1>
+                <p className="text-xs sm:text-sm text-gray-600">
+                  {isRunner ? "You are the Runner" : "You are a Seeker"}
+                </p>
               </div>
             </div>
-            <div className="flex items-center space-x-4">
-              <Badge variant={isRunner ? "default" : "secondary"}>
-                Current Runner: {currentRunnerProfile?.username || currentRunnerProfile?.email || "Unknown"}
+
+            {/* Right section - Badges (responsive) */}
+            <div className="flex items-center gap-1 sm:gap-2 lg:gap-4 flex-shrink-0">
+              {/* Current Runner Badge - Hide text on mobile, show icon */}
+              <Badge 
+                variant={isRunner ? "default" : "secondary"} 
+                className="text-xs sm:text-sm px-1 sm:px-2"
+              >
+                <Users className="w-3 h-3 sm:mr-1" />
+                <span className="hidden sm:inline">Current Runner: </span>
+                <span className="hidden md:inline">
+                  {currentRunnerProfile?.username || currentRunnerProfile?.email || "Unknown"}
+                </span>
+                <span className="sm:hidden md:hidden">
+                  {(currentRunnerProfile?.username || currentRunnerProfile?.email || "Unknown").substring(0, 3)}...
+                </span>
               </Badge>
-              {/* NEW: Phase indicator */}
-              {isPositioningPhase && (
-                <Badge variant="outline" className="bg-orange-50 text-orange-700 border-orange-200">
-                  Positioning Phase
-                </Badge>
-              )}
-              {isRunPhase && (
-                <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
-                  Running Phase
-                </Badge>
-              )}
+
+              {/* Phase indicator badges - Stack on very small screens */}
+              <div className="flex flex-col sm:flex-row gap-1 sm:gap-2">
+                {isWaitingForPositioning && (
+                  <Badge 
+                    variant="outline" 
+                    className="bg-yellow-50 text-yellow-700 border-yellow-200 text-xs px-1 sm:px-2"
+                  >
+                    <Clock className="w-3 h-3 sm:mr-1" />
+                    <span className="hidden sm:inline">Waiting to Start</span>
+                    <span className="sm:hidden">Wait</span>
+                  </Badge>
+                )}
+                {isPositioningPhase && (
+                  <Badge 
+                    variant="outline" 
+                    className="bg-orange-50 text-orange-700 border-orange-200 text-xs px-1 sm:px-2"
+                  >
+                    <MapPin className="w-3 h-3 sm:mr-1" />
+                    <span className="hidden sm:inline">Positioning Phase</span>
+                    <span className="sm:hidden">Pos</span>
+                  </Badge>
+                )}
+                {isRunPhase && (
+                  <Badge 
+                    variant="outline" 
+                    className="bg-green-50 text-green-700 border-green-200 text-xs px-1 sm:px-2"
+                  >
+                    <Play className="w-3 h-3 sm:mr-1" />
+                    <span className="hidden sm:inline">Running Phase</span>
+                    <span className="sm:hidden">Run</span>
+                  </Badge>
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -523,6 +573,70 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Game Status */}
           <div className="lg:col-span-2 space-y-6">
+            {/* NEW: Waiting for Positioning Phase */}
+            {isWaitingForPositioning && (
+              <Card className="border-yellow-200 bg-yellow-50">
+                <CardHeader>
+                  <CardTitle className="flex items-center text-yellow-800">
+                    <Clock className="w-5 h-5 mr-2" />
+                    Ready to Start Next Round
+                  </CardTitle>
+                  <CardDescription className="text-yellow-700">
+                    {isRunner 
+                      ? "You are the new runner! Wait for a seeker to start the positioning phase."
+                      : "The previous run has ended. Start the positioning phase when everyone is ready."}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {!isRunner && (
+                    <div className="text-center">
+                      <Dialog open={showStartPositioningDialog} onOpenChange={setShowStartPositioningDialog}>
+                        <DialogTrigger asChild>
+                          <Button size="lg" className="bg-yellow-600 hover:bg-yellow-700 text-white">
+                            <Users className="w-5 h-5 mr-2" />
+                            Start Positioning Phase
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                          <DialogHeader>
+                            <DialogTitle>Start Positioning Phase?</DialogTitle>
+                            <DialogDescription>
+                              This will begin the 20-minute positioning phase. All seekers (including yourself) will be able to move around the map to position strategically before the runner starts their turn.
+                            </DialogDescription>
+                          </DialogHeader>
+                          <DialogFooter>
+                            <Button variant="outline" onClick={() => setShowStartPositioningDialog(false)}>
+                              Wait a moment
+                            </Button>
+                            <Button 
+                              onClick={handleStartPositioning} 
+                              disabled={isLoading}
+                              className="bg-yellow-600 hover:bg-yellow-700 text-white"
+                            >
+                              {isLoading ? "Starting..." : "Start Positioning"}
+                            </Button>
+                          </DialogFooter>
+                        </DialogContent>
+                      </Dialog>
+                    </div>
+                  )}
+                  {isRunner && (
+                    <div className="text-center py-4">
+                      <div className="p-4 bg-blue-50 border border-blue-200 rounded-md">
+                        <div className="flex items-center justify-center space-x-2">
+                          <Users className="w-5 h-5 text-blue-600" />
+                          <p className="text-blue-800 font-medium">Waiting for seekers to start positioning</p>
+                        </div>
+                        <p className="text-sm text-blue-600 mt-2">
+                          Any seeker can start the positioning phase when the team is ready.
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+
             {/* NEW: Positioning Phase Status */}
             {isPositioningPhase && (
               <Card className="border-orange-200 bg-orange-50">
@@ -559,7 +673,8 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
                           <DialogHeader>
                             <DialogTitle>Start Your Run?</DialogTitle>
                             <DialogDescription>
-                              The seekers have finished positioning. Are you ready to start your run? 
+                              The seekers have finished positioning. Are you ready to start your run? Once you start, 
+                              you'll begin earning points and the seekers can start moving to catch you.
                             </DialogDescription>
                           </DialogHeader>
                           <DialogFooter>
@@ -940,7 +1055,7 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
             </Card>
 
             {/* Movement */}
-            {!isPositioningPhase && (<Card>
+            {!(isPositioningPhase && isRunner) && (<Card>
               <CardHeader>
                 <CardTitle className="flex items-center">
                   <MapPin className="w-5 h-5 mr-2" />

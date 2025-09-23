@@ -89,6 +89,74 @@ export async function moveToNode(gameId: string, newNode: string) {
     }
 }
 
+export async function startPositioning(gameId: string) {
+    const supabase = await createServerClient();
+    const { data } = await supabase.auth.getSession();
+    const user = data?.session?.user;
+    if (!user) return { error: "You must be logged in" };
+
+    try {
+        const { data: gameState } = await supabase.from("game_state").select("*").eq("game_id", gameId).single();
+        if (!gameState) return { error: "Game state not found" };
+
+        // Validate that we're in waiting phase
+        if (gameState.phase !== 'intermission') {
+            return { error: "Positioning can only be started from waiting phase" };
+        }
+
+        // Validate that the user is not the current runner (only seekers can start positioning)
+        if (gameState.current_runner_id === user.id) {
+            return { error: "Only seekers can start the positioning phase" };
+        }
+
+        // Transition to positioning phase
+        const updatedState = {
+            ...gameState,
+            phase: 'positioning',
+            positioning_start_time: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+        };
+
+        const { error } = await supabase.from("game_state").update(updatedState).eq("game_id", gameId);
+        if (error) return { error: "Failed to start positioning: " + error.message };
+
+        // Previous runner becomes seeker, gets 2 cards
+        const { data: availableCards } = await supabase
+            .from("cards")
+            .select("*")
+            .eq("game_id", gameId);
+
+        if (availableCards && availableCards.length > 0) {
+            const newCards = [];
+            for (let i = 0; i < 2; i++) {
+                const randomCard = availableCards[Math.floor(Math.random() * availableCards.length)];
+                newCards.push({
+                    id: `${randomCard.id}_${Date.now()}_${i}_${Math.random()}`,
+                    name: randomCard.name,
+                    type: randomCard.type,
+                    description: randomCard.description,
+                });
+            }
+
+            const { error: handError } = await supabase
+                .from("game_state")
+                .update({
+                    cards_in_hand: newCards,
+                })
+                .eq("game_id", gameId);
+
+            if (handError) {
+                console.error("Failed to update hand:", handError);
+            }
+        }
+
+        return { success: true };
+    } catch (error) {
+        console.error("Start positioning error:", error);
+        return { error: "An unexpected error occurred" };
+    }
+}
+
 export async function startRun(gameId: string) {
     const supabase = await createServerClient();
     const { data } = await supabase.auth.getSession();
@@ -131,36 +199,6 @@ export async function startRun(gameId: string) {
 
         const { error } = await supabase.from("game_state").update(updatedState).eq("game_id", gameId);
         if (error) return { error: "Failed to start run: " + error.message };
-
-        // Previous runner becomes seeker, gets 2 cards
-        const { data: availableCards } = await supabase
-            .from("cards")
-            .select("*")
-            .eq("game_id", gameId);
-
-        if (availableCards && availableCards.length > 0) {
-            const newCards = [];
-            for (let i = 0; i < 2; i++) {
-                const randomCard = availableCards[Math.floor(Math.random() * availableCards.length)];
-                newCards.push({
-                    id: `${randomCard.id}_${Date.now()}_${i}_${Math.random()}`,
-                    name: randomCard.name,
-                    type: randomCard.type,
-                    description: randomCard.description,
-                });
-            }
-
-            const { error: handError } = await supabase
-                .from("game_state")
-                .update({
-                    cards_in_hand: newCards,
-                })
-                .eq("game_id", gameId);
-
-            if (handError) {
-                console.error("Failed to update hand:", handError);
-            }
-        }
 
         return { success: true };
     } catch (error) {
@@ -429,13 +467,13 @@ export async function endRun(gameId: string) {
             console.error("Failed to clear curses:", curseError);
         }
 
-        // Update game state with new runner and enter positioning phase
+        // Update game state with new runner and enter waiting phase
         const { error: gameStateError } = await supabase
             .from("game_state")
             .update({
                 current_runner_id: nextRunnerId,
-                phase: 'positioning', // Start new positioning phase
-                positioning_start_time: new Date().toISOString(), // Start positioning timer
+                phase: 'intermission', // Wait for seekers to start positioning
+                positioning_start_time: null, // Clear positioning timer
                 runner_points: 0, // Reset points for new runner
                 active_effects: [], // Clear active effects
                 start_time: null, // Clear run start time
