@@ -319,7 +319,7 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
   // Check if we're in positioning phase
   const isPositioningPhase = gameState.phase === 'positioning';
   const isRunPhase = gameState.phase === 'running';
-  const isWaitingForPositioning = gameState.phase === 'waiting_for_positioning';
+  const isWaitingForPositioning = gameState.phase === 'intermission';
   const isPositioningComplete = positioningTime <= 0 && isPositioningPhase;
   
   // Modified: Different destination logic for runner vs seeker
