@@ -56,26 +56,23 @@ export async function moveToNode(gameId: string, newNode: string) {
 
             updatedState.seeker_node = newNode;
 
-            // Draw card for seeker only during running phase (not positioning)
-            if (gameState.phase === 'running') {
-                const { data: availableCards } = await supabase
-                    .from("cards")
-                    .select("*")
-                    .eq("game_id", gameId);
+            const { data: availableCards } = await supabase
+                .from("cards")
+                .select("*")
+                .eq("game_id", gameId);
 
-                if (availableCards && availableCards.length > 0) {
-                    const randomCard = availableCards[Math.floor(Math.random() * availableCards.length)];
-                    
-                    const newCard = {
-                        id: `${randomCard.id}_${Date.now()}_${Math.random()}`,
-                        name: randomCard.name,
-                        type: randomCard.type,
-                        description: randomCard.description,
-                    };
+            if (availableCards && availableCards.length > 0) {
+                const randomCard = availableCards[Math.floor(Math.random() * availableCards.length)];
+                
+                const newCard = {
+                    id: `${randomCard.id}_${Date.now()}_${Math.random()}`,
+                    name: randomCard.name,
+                    type: randomCard.type,
+                    description: randomCard.description,
+                };
 
-                    const currentHand = gameState.cards_in_hand || [];
-                    updatedState.cards_in_hand = [...currentHand, newCard];
-                }
+                const currentHand = gameState.cards_in_hand || [];
+                updatedState.cards_in_hand = [...currentHand, newCard];
             }
         }
 
@@ -220,8 +217,8 @@ export async function clearRoadblock(gameId: string, nodeId: string) {
         }
 
         // Can only clear roadblocks during running phase
-        if (gameState.phase !== 'running') {
-            return { error: "Roadblocks can only be cleared during the running phase" };
+        if (gameState.phase === 'intermission') {
+            return { error: "Roadblocks cannot be cleared during the intermission" };
         }
 
         // Remove roadblock from the specified node
@@ -255,8 +252,8 @@ export async function clearCurse(gameId: string, curseId: string) {
         }
 
         // Can only clear curses during running phase
-        if (gameState.phase !== 'running') {
-            return { error: "Curses can only be cleared during the running phase" };
+        if (gameState.phase === 'intermission') {
+            return { error: "Curses cannot be cleared during the intermission" };
         }
 
         // Remove curse
@@ -294,8 +291,8 @@ export async function playCard(gameId: string, cardId: string, targetPlayer?: st
         if (!game) return { error: "Game not found" };
 
         // Cards can only be played during running phase
-        if (gameState.phase !== 'running') {
-            return { error: "Cards can only be played during the running phase" };
+        if (gameState.phase === 'intermission'){
+            return { error: "Cards cannot be played during the intermission" };
         }
 
         // Only seekers can play cards
@@ -347,6 +344,7 @@ export async function playCard(gameId: string, cardId: string, targetPlayer?: st
                         game_id: gameId,
                         node_name: gameState.seeker_node,
                         placed_by: user.id,
+                        description: cardToPlay.description
                     });
                     
                 if (roadblockError) {
@@ -374,6 +372,7 @@ export async function playCard(gameId: string, cardId: string, targetPlayer?: st
                         game_id: gameId,
                         start_node: gameState.seeker_node,
                         end_node: targetNode,
+                        description: cardToPlay.description
                     });
                     
                 if (curseError) {

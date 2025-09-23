@@ -83,7 +83,7 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
     };
 
     fetchGameData();
-    const interval = setInterval(fetchGameData, 10000);
+    const interval = setInterval(fetchGameData, 3000);
 
     return () => {
       isMounted = false;
