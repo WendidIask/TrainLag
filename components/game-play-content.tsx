@@ -373,6 +373,20 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
     setSelectedDestination("");
   };
 
+  const handleStartPositioning = async () => {
+    setIsLoading(true);
+    const result = await startPositioning(game.id);
+
+    if (result?.error) {
+      alert(result.error);
+    } else {
+      window.location.reload();
+    }
+
+    setIsLoading(false);
+    setShowStartPositioningDialog(false);
+  };
+
   const handleStartRun = async () => {
     setIsLoading(true);
     const result = await startRun(game.id);
