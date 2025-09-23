@@ -13,7 +13,7 @@ import { ArrowLeft, Clock, MapPin, Target, Users, Zap, AlertTriangle, Play, Tras
 import { moveToNode, playCard, endRun, clearRoadblock, clearCurse } from "@/lib/game-play-actions";
 import MapSvg from "./data/GameMap.svg";
 import mapNodes from "./data/map-nodes.json";
-import mapPaths from "./data/map-paths.json";
+import Link from 'next/link'
 
 interface GamePlayContentProps {
   game: any;
@@ -649,7 +649,19 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
             {/* Map */}
             <Card>
               <CardHeader>
-                <CardTitle>Map</CardTitle>
+                <CardTitle>
+                  <div className="flex flex-row items-center justify-between gap-2">
+                    <h1 className="text-xl font-bold">Map</h1>
+                    <Button asChild className="w-auto px-3 py-1 text-sm">
+                      <Link
+                        target="_blank"
+                        href="https://www.google.com/maps/d/viewer?ll=-33.8190444882586%2C151.03183450363866&z=11&mid=1Du0Pg5r3uPZxyORBNmCYSsoQCxBWuE4"
+                      >
+                        Geographical Map
+                      </Link>
+                    </Button>
+                  </div>
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <div
@@ -715,7 +727,7 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
                             <path
                               d={pathData}
                               stroke="#8b5cf6"
-                              strokeWidth={1.2}
+                              strokeWidth={0.8}
                               fill="none"
                               style={{ 
                                 filter: "drop-shadow(0 1px 3px rgba(139, 92, 246, 0.4))",
@@ -828,6 +840,11 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
                 </CardTitle>
                 <CardDescription>
                   {isRunner ? "Choose your next destination from connected nodes" : "Search and select any node to move to"}
+                  {isRunner && (currentNodeRoadblocks.length > 0 || currentNodeCurses.length > 0) && (
+                    <span className="block text-red-600 font-medium mt-1">
+                      ⚠️ Clear all obstacles at your location before moving
+                    </span>
+                  )}
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -847,7 +864,11 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
                       </div>
 
                       <div className="flex space-x-2">
-                        <Select value={selectedDestination} onValueChange={setSelectedDestination}>
+                        <Select 
+                          value={selectedDestination} 
+                          onValueChange={setSelectedDestination}
+                          disabled={currentNodeRoadblocks.length > 0 || currentNodeCurses.length > 0}
+                        >
                           <SelectTrigger className="flex-1">
                             <SelectValue placeholder="Select destination" />
                           </SelectTrigger>
@@ -859,13 +880,35 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
                             ))}
                           </SelectContent>
                         </Select>
-                        <Button onClick={handleMove} disabled={!selectedDestination || isLoading}>
+                        <Button 
+                          onClick={handleMove} 
+                          disabled={
+                            !selectedDestination || 
+                            isLoading || 
+                            (isRunner && (currentNodeRoadblocks.length > 0 || currentNodeCurses.length > 0))
+                          }
+                        >
                           {isLoading ? "Moving..." : "Move"}
                         </Button>
                       </div>
+                      
+                      {/* Blocking message for runner */}
+                      {isRunner && (currentNodeRoadblocks.length > 0 || currentNodeCurses.length > 0) && (
+                        <div className="p-3 bg-red-50 border border-red-200 rounded-md">
+                          <div className="flex items-center space-x-2">
+                            <AlertTriangle className="w-4 h-4 text-red-600" />
+                            <p className="text-sm text-red-800 font-medium">
+                              Movement blocked by {currentNodeRoadblocks.length} roadblock(s) and {currentNodeCurses.length} curse(s)
+                            </p>
+                          </div>
+                          <p className="text-xs text-red-600 mt-1">
+                            Clear all obstacles at your location to continue moving.
+                          </p>
+                        </div>
+                      )}
                     </>
                   ) : (
-                    // Seeker UI: Search bar and filtered results
+                    // Seeker UI: Search bar and filtered results (unchanged)
                     <>
                       <div className="space-y-3">
                         <div className="relative">
