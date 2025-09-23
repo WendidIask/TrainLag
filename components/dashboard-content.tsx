@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Plus, Play, Users, Clock, LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { signOut } from "@/lib/actions";
-import { Link } from 'next/link'
+import Link from 'next/link'
 
 interface Game {
   id: string;
