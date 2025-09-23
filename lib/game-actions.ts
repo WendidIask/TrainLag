@@ -164,7 +164,6 @@ export async function startGame(gameId: string) {
             name: randomCard.name,
             type: randomCard.type,
             description: randomCard.description,
-            effect: generateCardEffect(randomCard.type, randomCard.name),
           });
         }
       }
@@ -189,21 +188,5 @@ export async function startGame(gameId: string) {
   } catch (error) {
     console.error("Start game error:", error);
     return { error: "An unexpected error occurred. Please try again." };
-  }
-}
-
-// Add this helper function at the end of the file
-function generateCardEffect(type: string, cardName: string): string {
-  switch (type) {
-    case "battle":
-      return "Force the runner to reveal their current location and next possible moves";
-    case "roadblock":
-      return "Block a specific path for the runner for 2 turns";
-    case "curse":
-      return "Reduce runner's points by 20 and slow their next move";
-    case "utility":
-      return "Draw 2 additional cards or peek at runner's hand";
-    default:
-      return "Special effect varies by card";
   }
 }

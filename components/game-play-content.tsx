@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ArrowLeft, Clock, MapPin, Target, Users, Zap, AlertTriangle, Play, Trash2, Search, ShieldAlert } from "lucide-react";
-import { moveToNode, playCard, endRun, clearRoadblock, clearCurse } from "@/lib/game-play-actions";
+import { moveToNode, playCard, endRun, clearRoadblock, clearCurse, startRun } from "@/lib/game-play-actions";
 import MapSvg from "./data/GameMap.svg";
 import mapNodes from "./data/map-nodes.json";
 import Link from 'next/link'
@@ -25,11 +25,13 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
   const [selectedDestination, setSelectedDestination] = useState<string>("");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [showEndRunDialog, setShowEndRunDialog] = useState(false);
+  const [showStartRunDialog, setShowStartRunDialog] = useState(false);
   const [targetPlayer, setTargetPlayer] = useState<string>("");
   const [targetNode, setTargetNode] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
   const [elapsedTime, setElapsedTime] = useState(0);
   const [runTime, setRunTime] = useState(0);
+  const [positioningTime, setPositioningTime] = useState(0);
   const [roadblocks, setRoadblocks] = useState([]);
   const [curses, setCurses] = useState([]);
   const router = useRouter();
@@ -294,6 +296,18 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
     return () => clearInterval(interval);
   }, [gameState?.start_time]);
 
+  // NEW: Positioning phase timer
+  useEffect(() => {
+    if (!gameState?.positioning_start_time) return;
+    const startTime = new Date(gameState.positioning_start_time).getTime();
+    const interval = setInterval(() => {
+      const elapsed = Math.floor((Date.now() - startTime) / 1000);
+      setPositioningTime(Math.max(0, 1200 - elapsed)); // 20 minutes = 1200 seconds
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [gameState?.positioning_start_time]);
+
   if (!gameState) {
     return <div className="min-h-screen bg-gray-50 flex items-center justify-center">Loading game state...</div>;
   }
@@ -301,18 +315,23 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
   const isRunner = user.id === gameState.current_runner_id;
   const mapInfo = game.maps?.[0];
   
+  // Check if we're in positioning phase
+  const isPositioningPhase = gameState.phase === 'positioning';
+  const isRunPhase = gameState.phase === 'running';
+  const isPositioningComplete = positioningTime <= 0 && isPositioningPhase;
+  
   // Modified: Different destination logic for runner vs seeker
   let availableDestinations: string[] = [];
   let filteredDestinations: string[] = [];
   
-  if (isRunner) {
-    // Runner can only move to connected nodes
+  if (isRunner && isRunPhase) {
+    // Runner can only move to connected nodes during run phase
     availableDestinations = mapInfo?.edges?.filter((edge: any) => 
       edge.from.toLowerCase() === gameState.runner_node?.toLowerCase()
     )?.map((edge: any) => edge.to) || [];
     filteredDestinations = availableDestinations;
-  } else {
-    // Seeker can move to any node on the map
+  } else if (!isRunner) {
+    // Seeker can move to any node on the map during positioning or running
     availableDestinations = mapNodes.map(node => node.name);
     // Filter based on search query for seekers
     filteredDestinations = searchQuery.trim() === "" 
@@ -348,6 +367,20 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
 
     setIsLoading(false);
     setSelectedDestination("");
+  };
+
+  const handleStartRun = async () => {
+    setIsLoading(true);
+    const result = await startRun(game.id);
+
+    if (result?.error) {
+      alert(result.error);
+    } else {
+      window.location.reload();
+    }
+
+    setIsLoading(false);
+    setShowStartRunDialog(false);
   };
 
   const handleClearRoadblock = async (nodeId: string) => {
@@ -470,6 +503,17 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
               <Badge variant={isRunner ? "default" : "secondary"}>
                 Current Runner: {currentRunnerProfile?.username || currentRunnerProfile?.email || "Unknown"}
               </Badge>
+              {/* NEW: Phase indicator */}
+              {isPositioningPhase && (
+                <Badge variant="outline" className="bg-orange-50 text-orange-700 border-orange-200">
+                  Positioning Phase
+                </Badge>
+              )}
+              {isRunPhase && (
+                <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                  Running Phase
+                </Badge>
+              )}
             </div>
           </div>
         </div>
@@ -479,31 +523,97 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Game Status */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Runner Info */}
+            {/* NEW: Positioning Phase Status */}
+            {isPositioningPhase && (
+              <Card className="border-orange-200 bg-orange-50">
+                <CardHeader>
+                  <CardTitle className="flex items-center text-orange-800">
+                    <Clock className="w-5 h-5 mr-2" />
+                    Positioning Phase
+                  </CardTitle>
+                  <CardDescription className="text-orange-700">
+                    {isRunner 
+                      ? "Seekers are positioning themselves. Wait for the timer to finish before starting your run."
+                      : "Position yourself strategically! You have time to move around and prepare before the runner starts."}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-center">
+                    <p className="text-3xl font-bold text-orange-600">{formatTime(positioningTime)}</p>
+                    <p className="text-sm text-orange-700 mt-1">
+                      {positioningTime > 0 ? "Time remaining for positioning" : "Positioning complete - Ready to start run!"}
+                    </p>
+                  </div>
+                  
+                  {/* NEW: Start Run button for runner when positioning is complete */}
+                  {isRunner && isPositioningComplete && (
+                    <div className="mt-4 text-center">
+                      <Dialog open={showStartRunDialog} onOpenChange={setShowStartRunDialog}>
+                        <DialogTrigger asChild>
+                          <Button size="lg" className="bg-green-600 hover:bg-green-700 text-white">
+                            <Play className="w-5 h-5 mr-2" />
+                            Start Your Run
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                          <DialogHeader>
+                            <DialogTitle>Start Your Run?</DialogTitle>
+                            <DialogDescription>
+                              The seekers have finished positioning. Are you ready to start your run? Once you start, 
+                              you'll begin earning points and the seekers can start moving to catch you.
+                            </DialogDescription>
+                          </DialogHeader>
+                          <DialogFooter>
+                            <Button variant="outline" onClick={() => setShowStartRunDialog(false)}>
+                              Wait a moment
+                            </Button>
+                            <Button 
+                              onClick={handleStartRun} 
+                              disabled={isLoading}
+                              className="bg-green-600 hover:bg-green-700 text-white"
+                            >
+                              {isLoading ? "Starting..." : "Start Run"}
+                            </Button>
+                          </DialogFooter>
+                        </DialogContent>
+                      </Dialog>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Runner Info - Modified to show different info during positioning */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center">
                   <Clock className="w-5 h-5 mr-2" />
-                  Runner Status
+                  {isPositioningPhase ? "Game Status" : "Runner Status"}
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <div className="text-center">
-                    <p className="text-2xl font-bold text-blue-600">{formatTime(runTime)}</p>
-                    <p className="text-sm text-gray-600">Run Time</p>
-                  </div>
-                  <div className="text-center">
-                    <p className="text-2xl font-bold text-green-600">{gameState.runner_points || 0}</p>
-                    <p className="text-sm text-gray-600">Points</p>
-                  </div>
+                  {isRunPhase && (
+                    <>
+                      <div className="text-center">
+                        <p className="text-2xl font-bold text-blue-600">{formatTime(runTime)}</p>
+                        <p className="text-sm text-gray-600">Run Time</p>
+                      </div>
+                      <div className="text-center">
+                        <p className="text-2xl font-bold text-green-600">{gameState.runner_points || 0}</p>
+                        <p className="text-sm text-gray-600">Points</p>
+                      </div>
+                    </>
+                  )}
                   <div className="text-center">
                     <p className="text-2xl font-bold text-purple-600">{gameState.runner_node || "Start"}</p>
-                    <p className="text-sm text-gray-600">Current Node</p>
+                    <p className="text-sm text-gray-600">{isRunner ? "Your Position" : "Runner Position"}</p>
                   </div>
                   <div className="text-center">
                     <p className="text-2xl font-bold text-orange-600">{availableDestinations.length}</p>
-                    <p className="text-sm text-gray-600">{isRunner ? "Destinations" : "Available Nodes"}</p>
+                    <p className="text-sm text-gray-600">
+                      {isRunner ? (isRunPhase ? "Destinations" : "Starting Position") : "Available Nodes"}
+                    </p>
                   </div>
                 </div>
               </CardContent>
@@ -520,11 +630,10 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-2">
-                    {activeEffects.map((effect: any, index: number) => (
+                    {activeEffects.map((index: number) => (
                       <div
                         key={index}
                         className="flex items-center justify-between p-2 bg-yellow-50 border border-yellow-200 rounded">
-                        <span className="text-sm font-medium">{effect.effect}</span>
                         <Badge variant="outline" className="text-xs">
                           Active
                         </Badge>
@@ -535,8 +644,8 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
               </Card>
             )}
 
-            {/* Runner Obstacles at Current Location */}
-            {isRunner && (currentNodeRoadblocks.length > 0 || currentNodeCurses.length > 0) && (
+            {/* Runner Obstacles at Current Location - Only during run phase */}
+            {isRunner && isRunPhase && (currentNodeRoadblocks.length > 0 || currentNodeCurses.length > 0) && (
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center">
@@ -832,7 +941,7 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
             </Card>
 
             {/* Movement */}
-            <Card>
+            {!isPositioningPhase && (<Card>
               <CardHeader>
                 <CardTitle className="flex items-center">
                   <MapPin className="w-5 h-5 mr-2" />
@@ -983,10 +1092,10 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
                   )}
                 </div>
               </CardContent>
-            </Card>
+            </Card> )}
 
             {/* End Run */}
-            {isRunner && (
+            {isRunner && !isPositioningPhase && (
               <Card>
                 <CardHeader>
                   <CardTitle className="text-red-600">End Run</CardTitle>
@@ -1062,21 +1171,14 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
                                   <DialogTitle className="flex items-center space-x-2">
                                     {getCardTypeIcon(card.type)}
                                     <span>{card.name}</span>
-                                  </DialogTitle>
-                                  <DialogDescription>
                                     <Badge className={getCardTypeColor(card.type)} variant="outline">
                                       {card.type}
                                     </Badge>
-                                  </DialogDescription>
+                                  </DialogTitle>
                                 </DialogHeader>
                                 <div className="py-4 space-y-3">
                                   <div>
-                                    <h4 className="font-medium mb-1">Description:</h4>
                                     <p className="text-sm text-gray-600">{card.description}</p>
-                                  </div>
-                                  <div>
-                                    <h4 className="font-medium mb-1">Effect:</h4>
-                                    <p className="text-sm text-gray-600">{card.effect}</p>
                                   </div>
                                 </div>
                               </DialogContent>
@@ -1096,7 +1198,6 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
                                   </DialogDescription>
                                 </DialogHeader>
                                 <div className="py-4">
-                                  <p className="text-sm text-gray-600 mb-4">Effect: {card.effect}</p>
                                   {card.type === "battle" && (
                                     <div className="space-y-2">
                                       <label className="text-sm font-medium">Target Player (optional):</label>
@@ -1170,78 +1271,6 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
                 </CardContent> 
               </Card>
             )}
-
-            {/* Recent Cards Played */}
-            {discardPile.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center">
-                    <Trash2 className="w-5 h-5 mr-2" />
-                    Recent Cards Played ({discardPile.length})
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2 max-h-40 overflow-y-auto">
-                    {discardPile
-                      .slice(-5)
-                      .reverse()
-                      .map((card: any, index: number) => {
-                        const playerProfile = game.game_players?.find(
-                          (gp: any) => gp.player_id === card.usedBy,
-                        )?.profiles;
-                        return (
-                          <div
-                            key={index}
-                            className="flex items-center justify-between p-2 bg-gray-50 border rounded text-sm">
-                            <div className="flex items-center space-x-2">
-                              {getCardTypeIcon(card.type)}
-                              <span className="font-medium">{card.name}</span>
-                            </div>
-                            <Badge variant="outline" className="text-xs">
-                              {playerProfile?.username || playerProfile?.email || "Unknown"}
-                            </Badge>
-                          </div>
-                        );
-                      })}
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Game Info */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Game Info</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Total Game Time:</span>
-                    <span className="font-medium">{formatTime(elapsedTime)}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Players:</span>
-                    <span className="font-medium">{game.game_players?.length || 0}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Map:</span>
-                    <span className="font-medium">{mapInfo?.name || "Default Map"}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Cards in Hand:</span>
-                    <span className="font-medium">{currentPlayerHand.length}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Active Roadblocks:</span>
-                    <span className="font-medium">{roadblocks.length}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Active Curses:</span>
-                    <span className="font-medium">{curses.length}</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
           </div>
         </div>
       </main>
