@@ -352,8 +352,8 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
   // Check if runner is at a location with obstacles
   const currentNodeRoadblocks = isRunner ? roadblocks.filter((rb: any) => rb.node_name.toLowerCase() === gameState.runner_node?.toLowerCase()) : [];
   const currentNodeCurses = isRunner ? curses.filter((curse: any) => 
-    curse.start_node.toLowerCase() === gameState.game_log[gameState.game_log.length-2]?.toLowerCase() && curse.end_node.toLowerCase() === gameState.game_log[gameState.game_log.length-1]?.toLowerCase() || 
-    curse.end_node.toLowerCase() === gameState.game_log[gameState.game_log.length-2]?.toLowerCase() && curse.start_node.toLowerCase() === gameState.game_log[gameState.game_log.length-1]?.toLowerCase()
+    curse.start_node.toLowerCase() === gameState.game_log[gameState.game_log.length-1]?.toLowerCase() && curse.end_node.toLowerCase() === gameState.runner_node?.toLowerCase() || 
+    curse.end_node.toLowerCase() === gameState.game_log[gameState.game_log.length-1]?.toLowerCase() && curse.start_node.toLowerCase() === gameState.runner_node?.toLowerCase()
   ) : [];
 
   const handleMove = async () => {

@@ -45,9 +45,15 @@ export async function moveToNode(gameId: string, newNode: string) {
                 return { error: "You cannot move to a node you have already visited" };
             }
 
+            // Move to the new node
             updatedState.runner_node = newNode;
-            updatedState.runner_points = (gameState.runner_points || 0) + 10;
-            updatedState.game_log.push(newNode);
+            
+            await checkAndAwardPoints(supabase, gameId, gameState);
+
+            const { error } = await supabase.from("game_state").update(updatedState).eq("game_id", gameId);
+            if (error) return { error: "Failed to update game state: " + error.message };
+
+            return { success: true };
         } else {
             // Seeker moves - can move during positioning or running phases
             if (gameState.phase !== 'positioning' && gameState.phase !== 'running') {
@@ -177,10 +183,10 @@ export async function startRun(gameId: string) {
         // Check if positioning time has elapsed (20 minutes = 1200 seconds)
         if (gameState.positioning_start_time) {
             const positioningStart = new Date(gameState.positioning_start_time).getTime();
-            const elapsed = (Date.now() - positioningStart+10000000) / 1000;
+            const elapsed = (Date.now() - positioningStart) / 1000;
             
-            if (elapsed < 10) { // Less than 20 minutes
-                const remaining = Math.ceil(10 - elapsed);
+            if (elapsed < 1200) { // Less than 20 minutes
+                const remaining = Math.ceil(1200 - elapsed);
                 return { error: `Positioning phase not complete. ${Math.floor(remaining / 60)}:${String(remaining % 60).padStart(2, '0')} remaining.` };
             }
         }
@@ -232,12 +238,17 @@ export async function clearRoadblock(gameId: string, nodeId: string) {
             return { error: "Failed to clear roadblock: " + error.message };
         }
 
+        // Check if all obstacles at current location are now cleared
+        await checkAndAwardPoints(supabase, gameId, gameState);
+
         return { success: true };
     } catch (error) {
         console.error("Clear roadblock error:", error);
         return { error: "An unexpected error occurred" };
     }
 }
+
+// Modified clearCurse function to award points when obstacles are cleared:
 
 export async function clearCurse(gameId: string, curseId: string) {
     const supabase = await createServerClient();
@@ -267,10 +278,71 @@ export async function clearCurse(gameId: string, curseId: string) {
             return { error: "Failed to clear curse: " + error.message };
         }
 
+        // Check if all obstacles at current location are now cleared
+        await checkAndAwardPoints(supabase, gameId, gameState);
+
         return { success: true };
     } catch (error) {
         console.error("Clear curse error:", error);
         return { error: "An unexpected error occurred" };
+    }
+}
+
+// New helper function to check and award points when all obstacles are cleared:
+
+async function checkAndAwardPoints(supabase: any, gameId: string, gameState: any) {
+    const currentNode = gameState.runner_node;
+    if (!currentNode) return;
+
+    // Check if this node is already in the game_log (meaning points were already awarded)
+    const gameLog = gameState.game_log || [];
+    if (gameLog.includes(currentNode)) {
+        return; // Points already awarded for this node
+    }
+
+    // Check for remaining roadblocks at current location
+    const { data: remainingRoadblocks } = await supabase
+        .from("roadblocks")
+        .select("*")
+        .eq("game_id", gameId)
+        .eq("node_name", currentNode);
+
+    // Check for remaining curses affecting paths to/from current location
+    const previousNode = gameLog.length >= 1 ? gameLog[gameLog.length - 1] : null;
+    
+    let remainingCurses = [];
+    if (previousNode) {
+        const { data: cursesData } = await supabase
+            .from("curses")
+            .select("*")
+            .eq("game_id", gameId)
+            .or(`and(start_node.eq.${previousNode},end_node.eq.${currentNode}),and(start_node.eq.${currentNode},end_node.eq.${previousNode})`);
+        
+        remainingCurses = cursesData || [];
+    }
+
+    console.log("CHECK", remainingRoadblocks, remainingCurses);
+
+    const hasRemainingObstacles = (remainingRoadblocks && remainingRoadblocks.length > 0) || 
+                                 (remainingCurses && remainingCurses.length > 0);
+
+    // If no obstacles remain, award points and add to game_log
+    if (!hasRemainingObstacles) {
+        const updatedPoints = (gameState.runner_points || 0) + 10;
+        const updatedGameLog = [...gameLog, currentNode];
+        
+        const { error: pointsError } = await supabase
+            .from("game_state")
+            .update({ 
+                runner_points: updatedPoints,
+                game_log: updatedGameLog,
+                updated_at: new Date().toISOString()
+            })
+            .eq("game_id", gameId);
+
+        if (pointsError) {
+            console.error("Failed to award points:", pointsError);
+        }
     }
 }
 
