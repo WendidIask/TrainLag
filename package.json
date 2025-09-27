@@ -4,7 +4,8 @@
     "private": true,
     "scripts": {
         "extract-map": "node scripts/extract-map.js",
-        "dev": "npm run extract-map && next dev",
+        "insert-points": "node scripts/insert-points.js",
+        "dev": "npm run extract-map && npm run insert-points && next dev",
         "build": "next build",
         "start": "next start",
         "lint": "next lint"

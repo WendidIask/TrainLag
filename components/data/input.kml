@@ -1,0 +1,2285 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <name>Untitled layer</name>
+    <Style id="icon-1899-0288D1-nodesc-normal">
+      <IconStyle>
+        <color>ffd18802</color>
+        <scale>1</scale>
+        <Icon>
+          <href>https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+        </Icon>
+        <hotSpot x="32" xunits="pixels" y="64" yunits="insetPixels"/>
+      </IconStyle>
+      <LabelStyle>
+        <scale>0</scale>
+      </LabelStyle>
+      <BalloonStyle>
+        <text><![CDATA[<h3>$[name]</h3>]]></text>
+      </BalloonStyle>
+    </Style>
+    <Style id="icon-1899-0288D1-nodesc-highlight">
+      <IconStyle>
+        <color>ffd18802</color>
+        <scale>1</scale>
+        <Icon>
+          <href>https://www.gstatic.com/mapspro/images/stock/503-wht-blank_maps.png</href>
+        </Icon>
+        <hotSpot x="32" xunits="pixels" y="64" yunits="insetPixels"/>
+      </IconStyle>
+      <LabelStyle>
+        <scale>1</scale>
+      </LabelStyle>
+      <BalloonStyle>
+        <text><![CDATA[<h3>$[name]</h3>]]></text>
+      </BalloonStyle>
+    </Style>
+    <StyleMap id="icon-1899-0288D1-nodesc">
+      <Pair>
+        <key>normal</key>
+        <styleUrl>#icon-1899-0288D1-nodesc-normal</styleUrl>
+      </Pair>
+      <Pair>
+        <key>highlight</key>
+        <styleUrl>#icon-1899-0288D1-nodesc-highlight</styleUrl>
+      </Pair>
+    </StyleMap>
+    <Style id="line-00FF00-3000-normal">
+      <LineStyle>
+        <color>ff00ff00</color>
+        <width>3</width>
+      </LineStyle>
+    </Style>
+    <Style id="line-00FF00-3000-highlight">
+      <LineStyle>
+        <color>ff00ff00</color>
+        <width>4.5</width>
+      </LineStyle>
+    </Style>
+    <StyleMap id="line-00FF00-3000">
+      <Pair>
+        <key>normal</key>
+        <styleUrl>#line-00FF00-3000-normal</styleUrl>
+      </Pair>
+      <Pair>
+        <key>highlight</key>
+        <styleUrl>#line-00FF00-3000-highlight</styleUrl>
+      </Pair>
+    </StyleMap>
+    <Style id="line-7F7F00-3000-normal">
+      <LineStyle>
+        <color>ff007f7f</color>
+        <width>3</width>
+      </LineStyle>
+    </Style>
+    <Style id="line-7F7F00-3000-highlight">
+      <LineStyle>
+        <color>ff007f7f</color>
+        <width>4.5</width>
+      </LineStyle>
+    </Style>
+    <StyleMap id="line-7F7F00-3000">
+      <Pair>
+        <key>normal</key>
+        <styleUrl>#line-7F7F00-3000-normal</styleUrl>
+      </Pair>
+      <Pair>
+        <key>highlight</key>
+        <styleUrl>#line-7F7F00-3000-highlight</styleUrl>
+      </Pair>
+    </StyleMap>
+    <Style id="line-B44A00-3000-normal">
+      <LineStyle>
+        <color>ff004ab4</color>
+        <width>3</width>
+      </LineStyle>
+    </Style>
+    <Style id="line-B44A00-3000-highlight">
+      <LineStyle>
+        <color>ff004ab4</color>
+        <width>4.5</width>
+      </LineStyle>
+    </Style>
+    <StyleMap id="line-B44A00-3000">
+      <Pair>
+        <key>normal</key>
+        <styleUrl>#line-B44A00-3000-normal</styleUrl>
+      </Pair>
+      <Pair>
+        <key>highlight</key>
+        <styleUrl>#line-B44A00-3000-highlight</styleUrl>
+      </Pair>
+    </StyleMap>
+    <Style id="line-DC2200-3000-normal">
+      <LineStyle>
+        <color>ff0022dc</color>
+        <width>3</width>
+      </LineStyle>
+    </Style>
+    <Style id="line-DC2200-3000-highlight">
+      <LineStyle>
+        <color>ff0022dc</color>
+        <width>4.5</width>
+      </LineStyle>
+    </Style>
+    <StyleMap id="line-DC2200-3000">
+      <Pair>
+        <key>normal</key>
+        <styleUrl>#line-DC2200-3000-normal</styleUrl>
+      </Pair>
+      <Pair>
+        <key>highlight</key>
+        <styleUrl>#line-DC2200-3000-highlight</styleUrl>
+      </Pair>
+    </StyleMap>
+    <Style id="line-FF0000-3000-normal">
+      <LineStyle>
+        <color>ff0000ff</color>
+        <width>3</width>
+      </LineStyle>
+    </Style>
+    <Style id="line-FF0000-3000-highlight">
+      <LineStyle>
+        <color>ff0000ff</color>
+        <width>4.5</width>
+      </LineStyle>
+    </Style>
+    <StyleMap id="line-FF0000-3000">
+      <Pair>
+        <key>normal</key>
+        <styleUrl>#line-FF0000-3000-normal</styleUrl>
+      </Pair>
+      <Pair>
+        <key>highlight</key>
+        <styleUrl>#line-FF0000-3000-highlight</styleUrl>
+      </Pair>
+    </StyleMap>
+    <Placemark>
+      <name>Strathfield</name>
+      <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          151.1042828,-33.8772355,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Sydney CBD</name>
+      <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          151.208114,-33.873047,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Watsons Bay</name>
+      <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          151.28104,-33.84344,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Bondi Beach</name>
+      <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          151.274675,-33.89062,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Randwick</name>
+      <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          151.24054,-33.917114,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Maroubra Beach</name>
+      <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          151.25547,-33.94759,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>La Perouse</name>
+      <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          151.233612,-33.987934,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Brighton-Le-Sands</name>
+      <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          151.155774,-33.960609,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Marrickville</name>
+      <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          151.15316,-33.9138,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Earlwood</name>
+      <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          151.125057,-33.926473,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Hurstville</name>
+      <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          151.102358,-33.967647,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Balmain</name>
+      <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          151.181131,-33.857937,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Manly</name>
+      <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          151.285142,-33.798822,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Mona Vale</name>
+      <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          151.30272,-33.679273,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Forestville</name>
+      <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          151.216678,-33.760916,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Brookvale</name>
+      <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          151.266671,-33.767146,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Macquarie Park</name>
+      <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          151.11827,-33.77728,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Hornsby</name>
+      <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          151.098357,-33.70349,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>North Rocks</name>
+      <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          151.052414,-33.776473,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Rhodes</name>
+      <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          151.087152,-33.830528,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Eastwood</name>
+      <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          151.081977,-33.790104,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Rouse Hill</name>
+      <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          150.924377,-33.691952,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Dural</name>
+      <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          151.018682,-33.694021,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Castle Hill</name>
+      <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          151.007318,-33.731625,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Parramatta</name>
+      <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          151.004906,-33.817263,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Blacktown</name>
+      <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          150.90739,-33.768631,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Baulkham Hills</name>
+      <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          150.991579,-33.759015,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Fairfield</name>
+      <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          150.95682,-33.872407,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Auburn</name>
+      <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          151.032892,-33.849189,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Pennant Hills</name>
+      <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          151.072469,-33.738117,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Chester Hill</name>
+      <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          150.99986,-33.883592,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Bankstown</name>
+      <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          151.034562,-33.917854,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Riverwood</name>
+      <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          151.052488,-33.951467,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Roselands</name>
+      <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          151.069744,-33.934507,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Campsie</name>
+      <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          151.103537,-33.910654,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Five Dock</name>
+      <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          151.129304,-33.869367,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Lane Cove</name>
+      <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          151.168802,-33.813776,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Pemulwuy</name>
+      <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          150.933318,-33.818203,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Liverpool</name>
+      <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          150.92721,-33.924309,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Sylvania</name>
+      <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          151.104277,-34.010324,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Miranda</name>
+      <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          151.102558,-34.036309,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Ramsgate</name>
+      <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          151.147028,-33.986243,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Sutherland</name>
+      <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          151.057376,-34.031531,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Menai</name>
+      <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          151.013201,-34.015878,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Revesby</name>
+      <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          151.014899,-33.952449,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Georges Hall</name>
+      <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          150.983851,-33.913208,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Mount Druitt</name>
+      <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          150.820129,-33.769581,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Emerton</name>
+      <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          150.809055,-33.743538,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Marsden Park</name>
+      <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          150.843074,-33.718582,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Riverstone</name>
+      <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          150.860413,-33.679079,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Coles Windsor</name>
+      <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          150.818963,-33.60695,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Richmond</name>
+      <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          150.752525,-33.598826,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Penrith</name>
+      <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          150.696576,-33.750163,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Glenfield</name>
+      <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          150.893133,-33.972247,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Campbelltown</name>
+      <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          150.814166,-34.064013,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Narellan</name>
+      <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          150.737026,-34.040399,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Wetherill Park</name>
+      <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          150.898621,-33.858735,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Bonnyrigg</name>
+      <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          150.884574,-33.886427,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Carnes Hill</name>
+      <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          150.84504,-33.937382,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Minto</name>
+      <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          150.842466,-34.027309,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Oran Park</name>
+      <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          150.740592,-34.000461,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Plumpton</name>
+      <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          150.83573,-33.745983,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Lugarno</name>
+      <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          151.039352,-33.988548,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Newtown</name>
+      <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          151.179635,-33.897996,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Eastlakes</name>
+      <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          151.21175,-33.925187,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Leichhardt</name>
+      <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          151.158213,-33.886375,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>St Ives</name>
+      <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          151.158707,-33.729793,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>Leppington</name>
+      <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          150.808068,-33.954441,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Sydney CBD & Newtown]]></name>
+      <description>Points: 1</description>
+      <styleUrl>#line-00FF00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          151.208114,-33.873047,0
+          151.179635,-33.897996,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Newtown & Burwood]]></name>
+      <description>Points: 1</description>
+      <styleUrl>#line-00FF00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          151.179635,-33.897996,0
+          151.1042828,-33.8772355,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Newtown & Marrickville]]></name>
+      <description>Points: 1</description>
+      <styleUrl>#line-00FF00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          151.179635,-33.897996,0
+          151.15316,-33.9138,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Marrickville & Earlwood]]></name>
+      <description>Points: 2</description>
+      <styleUrl>#line-00FF00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          151.15316,-33.9138,0
+          151.125057,-33.926473,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Earlwood & Campsie]]></name>
+      <description>Points: 2</description>
+      <styleUrl>#line-7F7F00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          151.125057,-33.926473,0
+          151.103537,-33.910654,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Marrickville & Campsie]]></name>
+      <description>Points: 1</description>
+      <styleUrl>#line-00FF00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          151.103537,-33.910654,0
+          151.15316,-33.9138,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Campsie & Roselands]]></name>
+      <description>Points: 2</description>
+      <styleUrl>#line-7F7F00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          151.069744,-33.934507,0
+          151.103537,-33.910654,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Burwood & Campsie]]></name>
+      <description>Points: 2</description>
+      <styleUrl>#line-00FF00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          151.1042828,-33.8772355,0
+          151.103537,-33.910654,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Roselands & Bankstown]]></name>
+      <description>Points: 2</description>
+      <styleUrl>#line-7F7F00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          151.034562,-33.917854,0
+          151.069744,-33.934507,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Campsie & Bankstown]]></name>
+      <description>Points: 1</description>
+      <styleUrl>#line-00FF00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          151.103537,-33.910654,0
+          151.034562,-33.917854,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Roselands & Riverwood]]></name>
+      <description>Points: 1</description>
+      <styleUrl>#line-00FF00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          151.069744,-33.934507,0
+          151.052488,-33.951467,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Eastlakes & Brighton-Le-Sands]]></name>
+      <description>Points: 3</description>
+      <styleUrl>#line-B44A00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          151.21175,-33.925187,0
+          151.155774,-33.960609,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Randwick & Eastlakes]]></name>
+      <description>Points: 2</description>
+      <styleUrl>#line-7F7F00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          151.21175,-33.925187,0
+          151.24054,-33.917114,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Sydney CBD & Eastlakes]]></name>
+      <description>Points: 1</description>
+      <styleUrl>#line-00FF00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          151.208114,-33.873047,0
+          151.21175,-33.925187,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Randwick & Bondi Beach]]></name>
+      <description>Points: 3</description>
+      <styleUrl>#line-B44A00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          151.24054,-33.917114,0
+          151.274675,-33.89062,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Earlwood & Hurstville]]></name>
+      <description>Points: 1</description>
+      <styleUrl>#line-00FF00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          151.125057,-33.926473,0
+          151.102358,-33.967647,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Hurstville & Ramsgate]]></name>
+      <description>Points: 2</description>
+      <styleUrl>#line-7F7F00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          151.102358,-33.967647,0
+          151.147028,-33.986243,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Brighton-Le-Sands & Ramsgate]]></name>
+      <description>Points: 1</description>
+      <styleUrl>#line-00FF00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          151.155774,-33.960609,0
+          151.147028,-33.986243,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Riverwood & Lugarno]]></name>
+      <description>Points: 3</description>
+      <styleUrl>#line-B44A00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          151.052488,-33.951467,0
+          151.039352,-33.988548,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Hurstville & Sylvania]]></name>
+      <description>Points: 2</description>
+      <styleUrl>#line-7F7F00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          151.102358,-33.967647,0
+          151.104277,-34.010324,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Ramsgate & Miranda]]></name>
+      <description>Points: 2</description>
+      <styleUrl>#line-7F7F00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          151.147028,-33.986243,0
+          151.102558,-34.036309,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Sylvania & Miranda]]></name>
+      <description>Points: 1</description>
+      <styleUrl>#line-00FF00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          151.104277,-34.010324,0
+          151.102558,-34.036309,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Riverwood & Revesby]]></name>
+      <description>Points: 1</description>
+      <styleUrl>#line-00FF00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          151.052488,-33.951467,0
+          151.014899,-33.952449,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Revesby & Menai]]></name>
+      <description>Points: 2</description>
+      <styleUrl>#line-7F7F00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          151.014899,-33.952449,0
+          151.013201,-34.015878,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Sutherland & Menai]]></name>
+      <description>Points: 1</description>
+      <styleUrl>#line-00FF00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          151.013201,-34.015878,0
+          151.057376,-34.031531,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Sutherland & Miranda]]></name>
+      <description>Points: 1</description>
+      <styleUrl>#line-00FF00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          151.102558,-34.036309,0
+          151.057376,-34.031531,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Hurstville & Sutherland]]></name>
+      <description>Points: 1</description>
+      <styleUrl>#line-00FF00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          151.102358,-33.967647,0
+          151.057376,-34.031531,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Randwick & Maroubra Beach]]></name>
+      <description>Points: 2</description>
+      <styleUrl>#line-7F7F00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          151.24054,-33.917114,0
+          151.25547,-33.94759,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Eastlakes & La Perouse]]></name>
+      <description>Points: 4</description>
+      <styleUrl>#line-DC2200-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          151.21175,-33.925187,0
+          151.233612,-33.987934,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Maroubra Beach & La Perouse]]></name>
+      <description>Points: 2</description>
+      <styleUrl>#line-7F7F00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          151.25547,-33.94759,0
+          151.233612,-33.987934,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Sydney CBD & Bondi Beach]]></name>
+      <description>Points: 2</description>
+      <styleUrl>#line-7F7F00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          151.208114,-33.873047,0
+          151.274675,-33.89062,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Sydney CBD & Watsons Bay]]></name>
+      <description>Points: 3</description>
+      <styleUrl>#line-B44A00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          151.208114,-33.873047,0
+          151.28104,-33.84344,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Bondi Beach & Watsons Bay]]></name>
+      <description>Points: 2</description>
+      <styleUrl>#line-7F7F00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          151.28104,-33.84344,0
+          151.274675,-33.89062,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Sydney CBD & Balmain]]></name>
+      <description>Points: 1</description>
+      <styleUrl>#line-00FF00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          151.208114,-33.873047,0
+          151.181131,-33.857937,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Manly & Brookvale]]></name>
+      <description>Points: 1</description>
+      <styleUrl>#line-00FF00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          151.266671,-33.767146,0
+          151.285142,-33.798822,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Brookvale & Mona Vale ]]></name>
+      <description>Points: 1</description>
+      <styleUrl>#line-00FF00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          151.266671,-33.767146,0
+          151.30272,-33.679273,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Forestville & Brookvale]]></name>
+      <description>Points: 2</description>
+      <styleUrl>#line-7F7F00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          151.216678,-33.760916,0
+          151.266671,-33.767146,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Forestville & Belrose]]></name>
+      <description>Points: 1</description>
+      <styleUrl>#line-00FF00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          151.213149,-33.703477,0
+          151.216678,-33.760916,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Belrose & Mona Vale]]></name>
+      <description>Points: 3</description>
+      <styleUrl>#line-B44A00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          151.213149,-33.703477,0
+          151.30272,-33.679273,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[St Ives & Belrose]]></name>
+      <description>Points: 1</description>
+      <styleUrl>#line-00FF00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          151.158707,-33.729793,0
+          151.213149,-33.703477,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Lane Cove & Macquarie Park]]></name>
+      <description>Points: 1</description>
+      <styleUrl>#line-00FF00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          151.11827,-33.77728,0
+          151.168802,-33.813776,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Five Dock & Lane Cove]]></name>
+      <description>Points: 3</description>
+      <styleUrl>#line-B44A00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          151.168802,-33.813776,0
+          151.129304,-33.869367,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Balmain & Leichhardt]]></name>
+      <description>Points: 2</description>
+      <styleUrl>#line-7F7F00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          151.181131,-33.857937,0
+          151.158213,-33.886375,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Sydney CBD & Leichhardt]]></name>
+      <description>Points: 1</description>
+      <styleUrl>#line-00FF00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          151.208114,-33.873047,0
+          151.158213,-33.886375,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Leichhardt & Five Dock]]></name>
+      <description>Points: 1</description>
+      <styleUrl>#line-00FF00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          151.129304,-33.869367,0
+          151.158213,-33.886375,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Burwood & Rhodes]]></name>
+      <description>Points: 1</description>
+      <styleUrl>#line-00FF00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          151.087152,-33.830528,0
+          151.1042828,-33.8772355,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Five Dock & Burwood]]></name>
+      <description>Points: 2</description>
+      <styleUrl>#line-7F7F00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          151.129304,-33.869367,0
+          151.1042828,-33.8772355,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Rhodes & Eastwood]]></name>
+      <description>Points: 1</description>
+      <styleUrl>#line-00FF00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          151.087152,-33.830528,0
+          151.081977,-33.790104,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Eastwood & Macquarie Park]]></name>
+      <description>Points: 1</description>
+      <styleUrl>#line-00FF00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          151.081977,-33.790104,0
+          151.11827,-33.77728,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Burwood & Auburn]]></name>
+      <description>Points: 1</description>
+      <styleUrl>#line-00FF00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          151.032892,-33.849189,0
+          151.1042828,-33.8772355,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Auburn & Chester Hill]]></name>
+      <description>Points: 3</description>
+      <styleUrl>#line-B44A00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          151.032892,-33.849189,0
+          150.99986,-33.883592,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Burwood & Chester Hill]]></name>
+      <description>Points: 2</description>
+      <styleUrl>#line-7F7F00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          151.1042828,-33.8772355,0
+          150.99986,-33.883592,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Bankstown & Chester Hill]]></name>
+      <description>Points: 2</description>
+      <styleUrl>#line-7F7F00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          150.99986,-33.883592,0
+          151.034562,-33.917854,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Chester Hill & Georges Hall]]></name>
+      <description>Points: 2</description>
+      <styleUrl>#line-7F7F00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          150.99986,-33.883592,0
+          150.983851,-33.913208,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Bankstown & Georges Hall]]></name>
+      <description>Points: 2</description>
+      <styleUrl>#line-7F7F00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          151.034562,-33.917854,0
+          150.983851,-33.913208,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Auburn & Fairfield]]></name>
+      <description>Points: 1</description>
+      <styleUrl>#line-00FF00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          151.032892,-33.849189,0
+          150.95682,-33.872407,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Parramatta & Fairfield]]></name>
+      <description>Points: 2</description>
+      <styleUrl>#line-7F7F00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          151.004906,-33.817263,0
+          150.95682,-33.872407,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Fairfield & Liverpool]]></name>
+      <description>Points: 1</description>
+      <styleUrl>#line-00FF00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          150.95682,-33.872407,0
+          150.92721,-33.924309,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Liverpool & Glenfield]]></name>
+      <description>Points: 1</description>
+      <styleUrl>#line-00FF00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          150.92721,-33.924309,0
+          150.893133,-33.972247,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Revesby & Glenfield]]></name>
+      <description>Points: 1</description>
+      <styleUrl>#line-00FF00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          151.014899,-33.952449,0
+          150.893133,-33.972247,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Chester Hill & Liverpool]]></name>
+      <description>Points: 1</description>
+      <styleUrl>#line-00FF00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          150.99986,-33.883592,0
+          150.92721,-33.924309,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Eastwood & Parramatta]]></name>
+      <description>Points: 2</description>
+      <styleUrl>#line-7F7F00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          151.004906,-33.817263,0
+          151.081977,-33.790104,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Auburn & Parramatta]]></name>
+      <description>Points: 1</description>
+      <styleUrl>#line-00FF00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          151.004906,-33.817263,0
+          151.032892,-33.849189,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[St Ives & Hornsby]]></name>
+      <description>Points: 3</description>
+      <styleUrl>#line-B44A00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          151.098357,-33.70349,0
+          151.158707,-33.729793,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Macquarie Park & St Ives]]></name>
+      <description>Points: 2</description>
+      <styleUrl>#line-7F7F00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          151.158707,-33.729793,0
+          151.11827,-33.77728,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name>Belrose</name>
+      <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          151.213149,-33.703477,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Pennant Hills & Dural]]></name>
+      <description>Points: 3</description>
+      <styleUrl>#line-B44A00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          151.072469,-33.738117,0
+          151.018682,-33.694021,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Dural & Castle Hill]]></name>
+      <description>Points: 2</description>
+      <styleUrl>#line-7F7F00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          151.007318,-33.731625,0
+          151.018682,-33.694021,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Hornsby & Pennant Hills]]></name>
+      <description>Points: 1</description>
+      <styleUrl>#line-00FF00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          151.098357,-33.70349,0
+          151.072469,-33.738117,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Eastwood & Pennant Hills]]></name>
+      <description>Points: 1</description>
+      <styleUrl>#line-00FF00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          151.081977,-33.790104,0
+          151.072469,-33.738117,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Castle Hill & Baulkham Hills]]></name>
+      <description>Points: 1</description>
+      <styleUrl>#line-00FF00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          151.007318,-33.731625,0
+          150.991579,-33.759015,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Parramatta & Baulkham Hills]]></name>
+      <description>Points: 1</description>
+      <styleUrl>#line-00FF00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          151.004906,-33.817263,0
+          150.991579,-33.759015,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Castle Hill & Rouse Hill]]></name>
+      <description>Points: 1</description>
+      <styleUrl>#line-00FF00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          151.007318,-33.731625,0
+          150.924377,-33.691952,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Blacktown & Mount Druitt]]></name>
+      <description>Points: 1</description>
+      <styleUrl>#line-00FF00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          150.820129,-33.769581,0
+          150.90739,-33.768631,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Rouse Hill & Riverstone]]></name>
+      <description>Points: 2</description>
+      <styleUrl>#line-7F7F00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          150.924377,-33.691952,0
+          150.860413,-33.679079,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Blacktown & Riverstone]]></name>
+      <description>Points: 2</description>
+      <styleUrl>#line-7F7F00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          150.90739,-33.768631,0
+          150.860413,-33.679079,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Riverstone & Windsor]]></name>
+      <description>Points: 2</description>
+      <styleUrl>#line-7F7F00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          150.860413,-33.679079,0
+          150.818963,-33.60695,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Windsor & Richmond]]></name>
+      <description>Points: 2</description>
+      <styleUrl>#line-7F7F00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          150.752525,-33.598826,0
+          150.818963,-33.60695,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Pemulwuy & Blacktown]]></name>
+      <description>Points: 3</description>
+      <styleUrl>#line-B44A00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          150.90739,-33.768631,0
+          150.933318,-33.818203,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Parramatta & Pemulwuy]]></name>
+      <description>Points: 3</description>
+      <styleUrl>#line-B44A00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          151.004906,-33.817263,0
+          150.933318,-33.818203,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Pemulwuy & Wetherill Park]]></name>
+      <description>Points: 2</description>
+      <styleUrl>#line-7F7F00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          150.933318,-33.818203,0
+          150.898621,-33.858735,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Mount Druitt & Penrith]]></name>
+      <description>Points: 1</description>
+      <styleUrl>#line-00FF00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          150.820129,-33.769581,0
+          150.696576,-33.750163,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Wetherill Park & Bonnyrigg]]></name>
+      <description>Points: 1</description>
+      <styleUrl>#line-00FF00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          150.898621,-33.858735,0
+          150.888694,-33.886427,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Fairfield & Wetherill Park]]></name>
+      <description>Points: 2</description>
+      <styleUrl>#line-7F7F00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          150.899141,-33.856542,0
+          150.95682,-33.872407,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Liverpool & Bonnyrigg]]></name>
+      <description>Points: 2</description>
+      <styleUrl>#line-7F7F00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          150.888694,-33.886427,0
+          150.92721,-33.924309,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Liverpool & Carnes Hill]]></name>
+      <description>Points: 3</description>
+      <styleUrl>#line-B44A00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          150.92721,-33.924309,0
+          150.84504,-33.937382,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Bonnyrigg & Carnes Hill]]></name>
+      <description>Points: 4</description>
+      <styleUrl>#line-DC2200-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          150.888694,-33.886427,0
+          150.84504,-33.937382,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Penrith & Richmond]]></name>
+      <description>Points: 5</description>
+      <styleUrl>#line-FF0000-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          150.752525,-33.598826,0
+          150.696576,-33.750163,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Leppington & Carnes Hill]]></name>
+      <description>Points: 5</description>
+      <styleUrl>#line-FF0000-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          150.84504,-33.937382,0
+          150.808068,-33.954441,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Glenfield & Leppington]]></name>
+      <description>Points: 1</description>
+      <styleUrl>#line-00FF00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          150.808068,-33.954441,0
+          150.893133,-33.972247,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Glenfield & Minto]]></name>
+      <description>Points: 1</description>
+      <styleUrl>#line-00FF00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          150.893133,-33.972247,0
+          150.842466,-34.027309,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Minto & Campbelltown]]></name>
+      <description>Points: 1</description>
+      <styleUrl>#line-00FF00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          150.842466,-34.027309,0
+          150.814166,-34.064013,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Leppington & Oran Park]]></name>
+      <description>Points: 3</description>
+      <styleUrl>#line-B44A00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          150.808068,-33.954441,0
+          150.740592,-34.000461,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Oran Park & Narellan]]></name>
+      <description>Points: 2</description>
+      <styleUrl>#line-7F7F00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          150.740592,-34.000461,0
+          150.737026,-34.040399,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Campbelltown & Narellan]]></name>
+      <description>Points: 2</description>
+      <styleUrl>#line-7F7F00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          150.737026,-34.040399,0
+          150.814166,-34.064013,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Minto & Oran Park]]></name>
+      <description>Points: 3</description>
+      <styleUrl>#line-B44A00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          150.740592,-34.000461,0
+          150.842466,-34.027309,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Riverstone & Marsden Park]]></name>
+      <description>Points: 2</description>
+      <styleUrl>#line-7F7F00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          150.860413,-33.679079,0
+          150.843074,-33.718582,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Marsden Park & Plumpton]]></name>
+      <description>Points: 2</description>
+      <styleUrl>#line-7F7F00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          150.83573,-33.745983,0
+          150.843074,-33.718582,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Mount Druitt & Emerton]]></name>
+      <description>Points: 2</description>
+      <styleUrl>#line-7F7F00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          150.809055,-33.743538,0
+          150.820129,-33.769581,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Emerton & Plumpton]]></name>
+      <description>Points: 2</description>
+      <styleUrl>#line-7F7F00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          150.809055,-33.743538,0
+          150.83573,-33.745983,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Mount Druitt & Plumpton]]></name>
+      <description>Points: 2</description>
+      <styleUrl>#line-7F7F00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          150.820129,-33.769581,0
+          150.83573,-33.745983,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Hurstville & Riverwood]]></name>
+      <description>Points: 1</description>
+      <styleUrl>#line-00FF00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          151.102358,-33.967647,0
+          151.052488,-33.951467,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Lane Cove & Chatswood]]></name>
+      <description>Points: 1</description>
+      <styleUrl>#line-00FF00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          151.168802,-33.813776,0
+          151.18093,-33.79724,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name>Crows Nest</name>
+      <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          151.198847,-33.825359,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Crows Nest & Lane Cove]]></name>
+      <description>Points: 2</description>
+      <styleUrl>#line-7F7F00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          151.168802,-33.813776,0
+          151.198847,-33.825359,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Crows Nest & Manly]]></name>
+      <description>Points: 3</description>
+      <styleUrl>#line-B44A00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          151.198847,-33.825359,0
+          151.285142,-33.798822,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Chatswood & Forestville]]></name>
+      <description>Points: 2</description>
+      <styleUrl>#line-7F7F00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          151.18093,-33.79724,0
+          151.216678,-33.760916,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name>Chatswood</name>
+      <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          151.18093,-33.79724,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Crows Nest & Chatswood]]></name>
+      <description>Points: 1</description>
+      <styleUrl>#line-00FF00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          151.18093,-33.79724,0
+          151.198847,-33.825359,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Sydney CBD & Crows Nest]]></name>
+      <description>Points: 1</description>
+      <styleUrl>#line-00FF00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          151.208114,-33.873047,0
+          151.198847,-33.825359,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Hurstville & Lugarno]]></name>
+      <description>Points: 3</description>
+      <styleUrl>#line-B44A00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          151.039352,-33.988548,0
+          151.102358,-33.967647,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name>Castlecrag</name>
+      <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          151.211578,-33.802396,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Chatswood & Castlecrag]]></name>
+      <description>Points: 2</description>
+      <styleUrl>#line-7F7F00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          151.18093,-33.79724,0
+          151.211567,-33.802425,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Castlecrag & St Ives]]></name>
+      <description>Points: 4</description>
+      <styleUrl>#line-DC2200-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          151.158707,-33.729793,0
+          151.211567,-33.802425,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name>Concord</name>
+      <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          151.103236,-33.856213,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Concord & Rhodes]]></name>
+      <description>Points: 2</description>
+      <styleUrl>#line-7F7F00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          151.087152,-33.830528,0
+          151.103236,-33.856213,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Five Dock & Concord]]></name>
+      <description>Points: 3</description>
+      <styleUrl>#line-B44A00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          151.103236,-33.856213,0
+          151.129304,-33.869367,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Minto & Leppington]]></name>
+      <description>Points: 4</description>
+      <styleUrl>#line-DC2200-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          150.808068,-33.954441,0
+          150.842466,-34.027309,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name>Kings Langley</name>
+      <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          150.95742,-33.759355,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Kings Langley & Blacktown]]></name>
+      <description>Points: 2</description>
+      <styleUrl>#line-7F7F00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          150.90739,-33.768631,0
+          150.95742,-33.759355,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Parramatta & Kings Langley]]></name>
+      <description>Points: 2</description>
+      <styleUrl>#line-7F7F00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          150.95742,-33.759355,0
+          151.004906,-33.817263,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Kings Langley & Castle Hill]]></name>
+      <description>Points: 2</description>
+      <styleUrl>#line-7F7F00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          150.95742,-33.759355,0
+          151.007318,-33.731625,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Blacktown & Parklea]]></name>
+      <description>Points: 2</description>
+      <styleUrl>#line-7F7F00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          150.90739,-33.768631,0
+          150.932007,-33.722976,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Parklea & Rouse Hill]]></name>
+      <description>Points: 2</description>
+      <styleUrl>#line-7F7F00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          150.924377,-33.691952,0
+          150.932007,-33.722976,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name>Parklea</name>
+      <styleUrl>#icon-1899-0288D1-nodesc</styleUrl>
+      <Point>
+        <coordinates>
+          150.932007,-33.722976,0
+        </coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Kings Langley & Parklea]]></name>
+      <description>Points: 2</description>
+      <styleUrl>#line-7F7F00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          150.932007,-33.722976,0
+          150.95742,-33.759355,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Baulkham Hills & Carlingford]]></name>
+      <description>Points: 3</description>
+      <styleUrl>#line-B44A00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          150.991579,-33.759015,0
+          151.052414,-33.776473,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name><![CDATA[Carlingford & Eastwood]]></name>
+      <description>Points: 1</description>
+      <styleUrl>#line-00FF00-3000</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          151.052414,-33.776473,0
+          151.081977,-33.790104,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+  </Document>
+</kml>

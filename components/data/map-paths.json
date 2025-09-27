@@ -81,1192 +81,1430 @@
     {
       "path": "M 110.00001,50.00002 L 100.00000,60.00000",
       "from": "DURAL",
-      "to": "CASTLE HILL"
+      "to": "CASTLE HILL",
+      "points": 2
     },
     {
       "path": "M 110.00001,50.00002 L 100.00000,60.00000",
       "from": "CASTLE HILL",
-      "to": "DURAL"
+      "to": "DURAL",
+      "points": 2
     },
     {
       "path": "M 120.00011,59.99998 L 110.00012,49.99997",
       "from": "PENNANT HILLS",
-      "to": "DURAL"
+      "to": "DURAL",
+      "points": 3
     },
     {
       "path": "M 120.00011,59.99998 L 110.00012,49.99997",
       "from": "DURAL",
-      "to": "PENNANT HILLS"
+      "to": "PENNANT HILLS",
+      "points": 3
     },
     {
       "path": "M 129.99997,100.00000 L 119.99999,89.99999",
       "from": "CONCORD",
-      "to": "RHODES"
+      "to": "RHODES",
+      "points": 2
     },
     {
       "path": "M 129.99997,100.00000 L 119.99999,89.99999",
       "from": "RHODES",
-      "to": "CONCORD"
+      "to": "CONCORD",
+      "points": 2
     },
     {
       "path": "M 80.00009,50.00001 L 70.00011,40.00000",
       "from": "ROUSE HILL",
-      "to": "RIVERSTONE"
+      "to": "RIVERSTONE",
+      "points": 2
     },
     {
       "path": "M 80.00009,50.00001 L 70.00011,40.00000",
       "from": "RIVERSTONE",
-      "to": "ROUSE HILL"
+      "to": "ROUSE HILL",
+      "points": 2
     },
     {
       "path": "M 159.99998,109.99998 L 179.99998,109.99998",
       "from": "SYDNEY CBD",
-      "to": "BONDI BEACH"
+      "to": "BONDI BEACH",
+      "points": 2
     },
     {
       "path": "M 159.99998,109.99998 L 179.99998,109.99998",
       "from": "BONDI BEACH",
-      "to": "SYDNEY CBD"
+      "to": "SYDNEY CBD",
+      "points": 2
     },
     {
       "path": "M 80.00000,89.99999 L 100.00000,89.99999",
       "from": "PEMULWUY",
-      "to": "PARRAMATTA"
+      "to": "PARRAMATTA",
+      "points": 3
     },
     {
       "path": "M 80.00000,89.99999 L 100.00000,89.99999",
       "from": "PARRAMATTA",
-      "to": "PEMULWUY"
+      "to": "PEMULWUY",
+      "points": 3
     },
     {
       "path": "M 29.99999,19.99999 L 49.99999,19.99999",
       "from": "RICHMOND",
-      "to": "WINDSOR"
+      "to": "WINDSOR",
+      "points": 2
     },
     {
       "path": "M 29.99999,19.99999 L 49.99999,19.99999",
       "from": "WINDSOR",
-      "to": "RICHMOND"
+      "to": "RICHMOND",
+      "points": 2
     },
     {
       "path": "M 49.99998,69.99998 L 69.99998,69.99998",
       "from": "MOUNT DRUITT",
-      "to": "BLACKTOWN"
+      "to": "BLACKTOWN",
+      "points": 1
     },
     {
       "path": "M 49.99998,69.99998 L 69.99998,69.99998",
       "from": "BLACKTOWN",
-      "to": "MOUNT DRUITT"
+      "to": "MOUNT DRUITT",
+      "points": 1
     },
     {
       "path": "M 29.99998,69.99998 L 49.99998,69.99998",
       "from": "PENRITH",
-      "to": "MOUNT DRUITT"
+      "to": "MOUNT DRUITT",
+      "points": 1
     },
     {
       "path": "M 29.99998,69.99998 L 49.99998,69.99998",
       "from": "MOUNT DRUITT",
-      "to": "PENRITH"
+      "to": "PENRITH",
+      "points": 1
     },
     {
       "path": "M 129.99999,49.99999 L 149.99999,49.99999",
       "from": "HORNSBY",
-      "to": "ST IVES"
+      "to": "ST IVES",
+      "points": 3
     },
     {
       "path": "M 129.99999,49.99999 L 149.99999,49.99999",
       "from": "ST IVES",
-      "to": "HORNSBY"
+      "to": "HORNSBY",
+      "points": 3
     },
     {
       "path": "M 120.00000,129.99998 L 140.00000,129.99998",
       "from": "CAMPSIE",
-      "to": "MARRICKVILLE"
+      "to": "MARRICKVILLE",
+      "points": 1
     },
     {
       "path": "M 120.00000,129.99998 L 140.00000,129.99998",
       "from": "MARRICKVILLE",
-      "to": "CAMPSIE"
+      "to": "CAMPSIE",
+      "points": 1
     },
     {
       "path": "M 150.00000,50.00000 L 170.00000,50.00000",
       "from": "ST IVES",
-      "to": "BELROSE"
+      "to": "BELROSE",
+      "points": 1
     },
     {
       "path": "M 150.00000,50.00000 L 170.00000,50.00000",
       "from": "BELROSE",
-      "to": "ST IVES"
+      "to": "ST IVES",
+      "points": 1
     },
     {
       "path": "M 140.00000,110.00000 L 160.00000,110.00000",
       "from": "LEICHHARDT",
-      "to": "SYDNEY CBD"
+      "to": "SYDNEY CBD",
+      "points": 1
     },
     {
       "path": "M 140.00000,110.00000 L 160.00000,110.00000",
       "from": "SYDNEY CBD",
-      "to": "LEICHHARDT"
+      "to": "LEICHHARDT",
+      "points": 1
     },
     {
       "path": "M 100.00008,129.99998 L 120.00008,129.99998",
       "from": "BANKSTOWN",
-      "to": "CAMPSIE"
+      "to": "CAMPSIE",
+      "points": 1
     },
     {
       "path": "M 100.00008,129.99998 L 120.00008,129.99998",
       "from": "CAMPSIE",
-      "to": "BANKSTOWN"
+      "to": "BANKSTOWN",
+      "points": 1
     },
     {
       "path": "M 59.99999,109.99998 L 79.99999,109.99998",
       "from": "WETHERILL PARK",
-      "to": "FAIRFIELD"
+      "to": "FAIRFIELD",
+      "points": 2
     },
     {
       "path": "M 59.99999,109.99998 L 79.99999,109.99998",
       "from": "FAIRFIELD",
-      "to": "WETHERILL PARK"
+      "to": "WETHERILL PARK",
+      "points": 2
     },
     {
       "path": "M 110.00003,160.00002 L 130.00003,160.00002",
       "from": "LUGARNO",
-      "to": "HURSTVILLE"
+      "to": "HURSTVILLE",
+      "points": 3
     },
     {
       "path": "M 110.00003,160.00002 L 130.00003,160.00002",
       "from": "HURSTVILLE",
-      "to": "LUGARNO"
+      "to": "LUGARNO",
+      "points": 3
     },
     {
       "path": "M 50.00001,140.00000 L 70.00001,140.00000",
       "from": "CARNES HILL",
-      "to": "LIVERPOOL"
+      "to": "LIVERPOOL",
+      "points": 3
     },
     {
       "path": "M 50.00001,140.00000 L 70.00001,140.00000",
       "from": "LIVERPOOL",
-      "to": "CARNES HILL"
+      "to": "CARNES HILL",
+      "points": 3
     },
     {
       "path": "M 20.00000,179.99999 L 40.00000,179.99999",
       "from": "NARELLAN",
-      "to": "CAMPBELLTOWN"
+      "to": "CAMPBELLTOWN",
+      "points": 2
     },
     {
       "path": "M 20.00000,179.99999 L 40.00000,179.99999",
       "from": "CAMPBELLTOWN",
-      "to": "NARELLAN"
+      "to": "NARELLAN",
+      "points": 2
     },
     {
       "path": "M 160.00001,109.99999 L 160.00001,124.99999 L 160.00001,124.99999 L 160.00001,129.99999",
       "from": "SYDNEY CBD",
-      "to": "EASTLAKES"
+      "to": "EASTLAKES",
+      "points": 1
     },
     {
       "path": "M 160.00001,109.99999 L 160.00001,124.99999 L 160.00001,124.99999 L 160.00001,129.99999",
       "from": "EASTLAKES",
-      "to": "SYDNEY CBD"
+      "to": "SYDNEY CBD",
+      "points": 1
     },
     {
       "path": "M 160.00000,90.00000 L 160.00000,105.00000 L 160.00000,105.00000 L 160.00000,110.00000",
       "from": "CROWS NEST",
-      "to": "SYDNEY CBD"
+      "to": "SYDNEY CBD",
+      "points": 1
     },
     {
       "path": "M 160.00000,90.00000 L 160.00000,105.00000 L 160.00000,105.00000 L 160.00000,110.00000",
       "from": "SYDNEY CBD",
-      "to": "CROWS NEST"
+      "to": "CROWS NEST",
+      "points": 1
     },
     {
       "path": "M 179.99999,80.00001 L 179.99999,60.00001",
       "from": "MANLY",
-      "to": "BROOKVALE"
+      "to": "BROOKVALE",
+      "points": 1
     },
     {
       "path": "M 179.99999,80.00001 L 179.99999,60.00001",
       "from": "BROOKVALE",
-      "to": "MANLY"
+      "to": "MANLY",
+      "points": 1
     },
     {
       "path": "M 179.99999,60.00001 L 179.99999,40.00001",
       "from": "BROOKVALE",
-      "to": "MONA VALE"
+      "to": "MONA VALE",
+      "points": 1
     },
     {
       "path": "M 179.99999,60.00001 L 179.99999,40.00001",
       "from": "MONA VALE",
-      "to": "BROOKVALE"
+      "to": "BROOKVALE",
+      "points": 1
     },
     {
       "path": "M 169.99999,140.00001 L 169.99999,120.00001",
       "from": "MAROUBRA BEACH",
-      "to": "RANDWICK"
+      "to": "RANDWICK",
+      "points": 2
     },
     {
       "path": "M 169.99999,140.00001 L 169.99999,120.00001",
       "from": "RANDWICK",
-      "to": "MAROUBRA BEACH"
+      "to": "MAROUBRA BEACH",
+      "points": 2
     },
     {
       "path": "M 160.00000,150.00000 L 160.00000,130.00000",
       "from": "LA PEROUSE",
-      "to": "EASTLAKES"
+      "to": "EASTLAKES",
+      "points": 4
     },
     {
       "path": "M 160.00000,150.00000 L 160.00000,130.00000",
       "from": "EASTLAKES",
-      "to": "LA PEROUSE"
+      "to": "LA PEROUSE",
+      "points": 4
     },
     {
       "path": "M 120.00009,129.99999 L 120.00009,109.99999",
       "from": "CAMPSIE",
-      "to": "BURWOOD"
+      "to": "BURWOOD",
+      "points": 2
     },
     {
       "path": "M 120.00009,129.99999 L 120.00009,109.99999",
       "from": "BURWOOD",
-      "to": "CAMPSIE"
+      "to": "CAMPSIE",
+      "points": 2
     },
     {
       "path": "M 50.00000,140.00000 L 50.00000,120.00000",
       "from": "CARNES HILL",
-      "to": "BONNYRIGG"
+      "to": "BONNYRIGG",
+      "points": 4
     },
     {
       "path": "M 50.00000,140.00000 L 50.00000,120.00000",
       "from": "BONNYRIGG",
-      "to": "CARNES HILL"
+      "to": "CARNES HILL",
+      "points": 4
     },
     {
       "path": "M 120.00001,109.99999 L 120.00001,89.99999",
       "from": "BURWOOD",
-      "to": "RHODES"
+      "to": "RHODES",
+      "points": 1
     },
     {
       "path": "M 120.00001,109.99999 L 120.00001,89.99999",
       "from": "RHODES",
-      "to": "BURWOOD"
+      "to": "BURWOOD",
+      "points": 1
     },
     {
       "path": "M 100.00001,89.99999 L 100.00001,69.99999",
       "from": "PARRAMATTA",
-      "to": "BAULKHAM HILLS"
+      "to": "BAULKHAM HILLS",
+      "points": 1
     },
     {
       "path": "M 100.00001,89.99999 L 100.00001,69.99999",
       "from": "BAULKHAM HILLS",
-      "to": "PARRAMATTA"
+      "to": "PARRAMATTA",
+      "points": 1
     },
     {
       "path": "M 69.99999,69.99999 L 69.99999,39.99999",
       "from": "BLACKTOWN",
-      "to": "RIVERSTONE"
+      "to": "RIVERSTONE",
+      "points": 2
     },
     {
       "path": "M 69.99999,69.99999 L 69.99999,39.99999",
       "from": "RIVERSTONE",
-      "to": "BLACKTOWN"
+      "to": "BLACKTOWN",
+      "points": 2
     },
     {
       "path": "M 70.00002,150.00000 L 40.00002,150.00000",
       "from": "GLENFIELD",
-      "to": "LEPPINGTON"
+      "to": "LEPPINGTON",
+      "points": 1
     },
     {
       "path": "M 70.00002,150.00000 L 40.00002,150.00000",
       "from": "LEPPINGTON",
-      "to": "GLENFIELD"
+      "to": "GLENFIELD",
+      "points": 1
     },
     {
       "path": "M 49.99996,169.99998 L 19.99996,169.99998",
       "from": "MINTO",
-      "to": "ORAN PARK"
+      "to": "ORAN PARK",
+      "points": 3
     },
     {
       "path": "M 49.99996,169.99998 L 19.99996,169.99998",
       "from": "ORAN PARK",
-      "to": "MINTO"
+      "to": "MINTO",
+      "points": 3
     },
     {
       "path": "M 29.99999,70.00001 L 29.99999,20.00001",
       "from": "PENRITH",
-      "to": "RICHMOND"
+      "to": "RICHMOND",
+      "points": 5
     },
     {
       "path": "M 29.99999,70.00001 L 29.99999,20.00001",
       "from": "RICHMOND",
-      "to": "PENRITH"
+      "to": "PENRITH",
+      "points": 5
     },
     {
       "path": "M 120.00000,90.00000 L 120.00000,70.00000",
       "from": "RHODES",
-      "to": "EASTWOOD"
+      "to": "EASTWOOD",
+      "points": 1
     },
     {
       "path": "M 120.00000,90.00000 L 120.00000,70.00000",
       "from": "EASTWOOD",
-      "to": "RHODES"
+      "to": "RHODES",
+      "points": 1
     },
     {
       "path": "M 140.00000,149.99999 L 160.00004,130.00001",
       "from": "BRIGHTON-LE-SANDS",
-      "to": "EASTLAKES"
+      "to": "EASTLAKES",
+      "points": 3
     },
     {
       "path": "M 140.00000,149.99999 L 160.00004,130.00001",
       "from": "EASTLAKES",
-      "to": "BRIGHTON-LE-SANDS"
+      "to": "BRIGHTON-LE-SANDS",
+      "points": 3
     },
     {
       "path": "M 130.00008,110.00002 L 150.00012,90.00003",
       "from": "FIVE DOCK",
-      "to": "LANE COVE"
+      "to": "LANE COVE",
+      "points": 3
     },
     {
       "path": "M 130.00008,110.00002 L 150.00012,90.00003",
       "from": "LANE COVE",
-      "to": "FIVE DOCK"
+      "to": "FIVE DOCK",
+      "points": 3
     },
     {
       "path": "M 100.00003,89.99998 L 120.00007,70.00000",
       "from": "PARRAMATTA",
-      "to": "EASTWOOD"
+      "to": "EASTWOOD",
+      "points": 2
     },
     {
       "path": "M 100.00003,89.99998 L 120.00007,70.00000",
       "from": "EASTWOOD",
-      "to": "PARRAMATTA"
+      "to": "PARRAMATTA",
+      "points": 2
     },
     {
       "path": "M 90.00004,119.99998 L 110.00008,100.00000",
       "from": "CHESTER HILL",
-      "to": "AUBURN"
+      "to": "AUBURN",
+      "points": 3
     },
     {
       "path": "M 90.00004,119.99998 L 110.00008,100.00000",
       "from": "AUBURN",
-      "to": "CHESTER HILL"
+      "to": "CHESTER HILL",
+      "points": 3
     },
     {
       "path": "M 80.00001,109.99996 L 100.00005,89.99998",
       "from": "FAIRFIELD",
-      "to": "PARRAMATTA"
+      "to": "PARRAMATTA",
+      "points": 2
     },
     {
       "path": "M 80.00001,109.99996 L 100.00005,89.99998",
       "from": "PARRAMATTA",
-      "to": "FAIRFIELD"
+      "to": "FAIRFIELD",
+      "points": 2
     },
     {
       "path": "M 60.00000,110.00001 L 80.00004,90.00003",
       "from": "WETHERILL PARK",
-      "to": "PEMULWUY"
+      "to": "PEMULWUY",
+      "points": 2
     },
     {
       "path": "M 60.00000,110.00001 L 80.00004,90.00003",
       "from": "PEMULWUY",
-      "to": "WETHERILL PARK"
+      "to": "WETHERILL PARK",
+      "points": 2
     },
     {
       "path": "M 70.00021,139.99999 L 90.00025,120.00001",
       "from": "LIVERPOOL",
-      "to": "CHESTER HILL"
+      "to": "CHESTER HILL",
+      "points": 1
     },
     {
       "path": "M 70.00021,139.99999 L 90.00025,120.00001",
       "from": "CHESTER HILL",
-      "to": "LIVERPOOL"
+      "to": "LIVERPOOL",
+      "points": 1
     },
     {
       "path": "M 49.99998,170.00001 L 70.00002,150.00003",
       "from": "MINTO",
-      "to": "GLENFIELD"
+      "to": "GLENFIELD",
+      "points": 1
     },
     {
       "path": "M 49.99998,170.00001 L 70.00002,150.00003",
       "from": "GLENFIELD",
-      "to": "MINTO"
+      "to": "MINTO",
+      "points": 1
     },
     {
       "path": "M 19.99996,170.00001 L 40.00000,150.00003",
       "from": "ORAN PARK",
-      "to": "LEPPINGTON"
+      "to": "LEPPINGTON",
+      "points": 3
     },
     {
       "path": "M 19.99996,170.00001 L 40.00000,150.00003",
       "from": "LEPPINGTON",
-      "to": "ORAN PARK"
+      "to": "ORAN PARK",
+      "points": 3
     },
     {
       "path": "M 130.00000,69.99999 L 150.00005,50.00001",
       "from": "MACQUARIE PARK",
-      "to": "ST IVES"
+      "to": "ST IVES",
+      "points": 2
     },
     {
       "path": "M 130.00000,69.99999 L 150.00005,50.00001",
       "from": "ST IVES",
-      "to": "MACQUARIE PARK"
+      "to": "MACQUARIE PARK",
+      "points": 2
     },
     {
       "path": "M 169.99998,70.00000 L 150.00000,49.99996",
       "from": "CASTLECRAG",
-      "to": "ST IVES"
+      "to": "ST IVES",
+      "points": 4
     },
     {
       "path": "M 169.99998,70.00000 L 150.00000,49.99996",
       "from": "ST IVES",
-      "to": "CASTLECRAG"
+      "to": "CASTLECRAG",
+      "points": 4
     },
     {
       "path": "M 130.00003,70.00001 L 150.00002,90.00005",
       "from": "MACQUARIE PARK",
-      "to": "LANE COVE"
+      "to": "LANE COVE",
+      "points": 1
     },
     {
       "path": "M 130.00003,70.00001 L 150.00002,90.00005",
       "from": "LANE COVE",
-      "to": "MACQUARIE PARK"
+      "to": "MACQUARIE PARK",
+      "points": 1
     },
     {
       "path": "M 80.00012,69.99996 L 100.00011,90.00000",
       "from": "KINGS LANGLEY",
-      "to": "PARRAMATTA"
+      "to": "PARRAMATTA",
+      "points": 2
     },
     {
       "path": "M 80.00012,69.99996 L 100.00011,90.00000",
       "from": "PARRAMATTA",
-      "to": "KINGS LANGLEY"
+      "to": "KINGS LANGLEY",
+      "points": 2
     },
     {
       "path": "M 50.00001,20.00003 L 69.99999,40.00007",
       "from": "WINDSOR",
-      "to": "RIVERSTONE"
+      "to": "RIVERSTONE",
+      "points": 2
     },
     {
       "path": "M 50.00001,20.00003 L 69.99999,40.00007",
       "from": "RIVERSTONE",
-      "to": "WINDSOR"
+      "to": "WINDSOR",
+      "points": 2
     },
     {
       "path": "M 50.00003,120.00000 L 70.00001,140.00004",
       "from": "BONNYRIGG",
-      "to": "LIVERPOOL"
+      "to": "LIVERPOOL",
+      "points": 2
     },
     {
       "path": "M 50.00003,120.00000 L 70.00001,140.00004",
       "from": "LIVERPOOL",
-      "to": "BONNYRIGG"
+      "to": "BONNYRIGG",
+      "points": 2
     },
     {
       "path": "M 160.00002,130.00000 L 170.00003,120.00002",
       "from": "EASTLAKES",
-      "to": "RANDWICK"
+      "to": "RANDWICK",
+      "points": 2
     },
     {
       "path": "M 160.00002,130.00000 L 170.00003,120.00002",
       "from": "RANDWICK",
-      "to": "EASTLAKES"
+      "to": "EASTLAKES",
+      "points": 2
     },
     {
       "path": "M 160.00001,90.00001 L 169.00002,81.00001 L 171.41423,80.00001 L 180.00002,80.00001",
       "from": "CROWS NEST",
-      "to": "MANLY"
+      "to": "MANLY",
+      "points": 3
     },
     {
       "path": "M 160.00001,90.00001 L 169.00002,81.00001 L 171.41423,80.00001 L 180.00002,80.00001",
       "from": "MANLY",
-      "to": "CROWS NEST"
+      "to": "CROWS NEST",
+      "points": 3
     },
     {
       "path": "M 160.00003,110.00002 L 169.00004,101.00002 L 171.41425,100.00003 L 180.00004,100.00003",
       "from": "SYDNEY CBD",
-      "to": "WATSONS BAY"
+      "to": "WATSONS BAY",
+      "points": 3
     },
     {
       "path": "M 160.00003,110.00002 L 169.00004,101.00002 L 171.41425,100.00003 L 180.00004,100.00003",
       "from": "WATSONS BAY",
-      "to": "SYDNEY CBD"
+      "to": "SYDNEY CBD",
+      "points": 3
     },
     {
       "path": "M 160.00001,149.99999 L 170.00002,140.00001",
       "from": "LA PEROUSE",
-      "to": "MAROUBRA BEACH"
+      "to": "MAROUBRA BEACH",
+      "points": 2
     },
     {
       "path": "M 160.00001,149.99999 L 170.00002,140.00001",
       "from": "MAROUBRA BEACH",
-      "to": "LA PEROUSE"
+      "to": "LA PEROUSE",
+      "points": 2
     },
     {
       "path": "M 170.00001,120.00004 L 180.00002,110.00006",
       "from": "RANDWICK",
-      "to": "BONDI BEACH"
+      "to": "BONDI BEACH",
+      "points": 3
     },
     {
       "path": "M 170.00001,120.00004 L 180.00002,110.00006",
       "from": "BONDI BEACH",
-      "to": "RANDWICK"
+      "to": "RANDWICK",
+      "points": 3
     },
     {
       "path": "M 140.00002,129.99997 L 150.00003,119.99999",
       "from": "MARRICKVILLE",
-      "to": "NEWTOWN"
+      "to": "NEWTOWN",
+      "points": 1
     },
     {
       "path": "M 140.00002,129.99997 L 150.00003,119.99999",
       "from": "NEWTOWN",
-      "to": "MARRICKVILLE"
+      "to": "MARRICKVILLE",
+      "points": 1
     },
     {
       "path": "M 150.00002,120.00000 L 160.00003,110.00002",
       "from": "NEWTOWN",
-      "to": "SYDNEY CBD"
+      "to": "SYDNEY CBD",
+      "points": 1
     },
     {
       "path": "M 150.00002,120.00000 L 160.00003,110.00002",
       "from": "SYDNEY CBD",
-      "to": "NEWTOWN"
+      "to": "NEWTOWN",
+      "points": 1
     },
     {
       "path": "M 130.00003,140.00000 L 140.00004,130.00001",
       "from": "EARLWOOD",
-      "to": "MARRICKVILLE"
+      "to": "MARRICKVILLE",
+      "points": 2
     },
     {
       "path": "M 130.00003,140.00000 L 140.00004,130.00001",
       "from": "MARRICKVILLE",
-      "to": "EARLWOOD"
+      "to": "EARLWOOD",
+      "points": 2
     },
     {
       "path": "M 130.00002,180.00000 L 140.00003,170.00002",
       "from": "MIRANDA",
-      "to": "RAMSGATE"
+      "to": "RAMSGATE",
+      "points": 2
     },
     {
       "path": "M 130.00002,180.00000 L 140.00003,170.00002",
       "from": "RAMSGATE",
-      "to": "MIRANDA"
+      "to": "MIRANDA",
+      "points": 2
     },
     {
       "path": "M 120.00002,180.00000 L 120.00003,171.41420 L 121.00002,169.00001 L 130.00003,160.00001",
       "from": "SUTHERLAND",
-      "to": "HURSTVILLE"
+      "to": "HURSTVILLE",
+      "points": 1
     },
     {
       "path": "M 120.00002,180.00000 L 120.00003,171.41420 L 121.00002,169.00001 L 130.00003,160.00001",
       "from": "HURSTVILLE",
-      "to": "SUTHERLAND"
+      "to": "SUTHERLAND",
+      "points": 1
     },
     {
       "path": "M 50.00005,169.99997 L 50.00004,161.41417 L 49.00005,158.99998 L 40.00004,149.99999",
       "from": "MINTO",
-      "to": "LEPPINGTON"
+      "to": "LEPPINGTON",
+      "points": 4
     },
     {
       "path": "M 50.00005,169.99997 L 50.00004,161.41417 L 49.00005,158.99998 L 40.00004,149.99999",
       "from": "LEPPINGTON",
-      "to": "MINTO"
+      "to": "MINTO",
+      "points": 4
     },
     {
       "path": "M 160.00001,80.00005 L 160.00003,71.41425 L 161.00002,69.00006 L 170.00002,60.00007",
       "from": "CHATSWOOD",
-      "to": "FORESTVILLE"
+      "to": "FORESTVILLE",
+      "points": 2
     },
     {
       "path": "M 160.00001,80.00005 L 160.00003,71.41425 L 161.00002,69.00006 L 170.00002,60.00007",
       "from": "FORESTVILLE",
-      "to": "CHATSWOOD"
+      "to": "CHATSWOOD",
+      "points": 2
     },
     {
       "path": "M 69.99999,70.00002 L 70.00000,78.58582 L 70.99999,81.00001 L 80.00000,90.00000",
       "from": "BLACKTOWN",
-      "to": "PEMULWUY"
+      "to": "PEMULWUY",
+      "points": 3
     },
     {
       "path": "M 69.99999,70.00002 L 70.00000,78.58582 L 70.99999,81.00001 L 80.00000,90.00000",
       "from": "PEMULWUY",
-      "to": "BLACKTOWN"
+      "to": "BLACKTOWN",
+      "points": 3
     },
     {
       "path": "M 100.00002,170.00000 L 108.58582,170.00002 L 111.00001,171.00001 L 120.00000,180.00001",
       "from": "MENAI",
-      "to": "SUTHERLAND"
+      "to": "SUTHERLAND",
+      "points": 1
     },
     {
       "path": "M 100.00002,170.00000 L 108.58582,170.00002 L 111.00001,171.00001 L 120.00000,180.00001",
       "from": "SUTHERLAND",
-      "to": "MENAI"
+      "to": "MENAI",
+      "points": 1
     },
     {
       "path": "M 80.00015,70.00002 L 88.58596,70.00001 L 91.00015,69.00002 L 100.00014,60.00001",
       "from": "KINGS LANGLEY",
-      "to": "CASTLE HILL"
+      "to": "CASTLE HILL",
+      "points": 2
     },
     {
       "path": "M 80.00015,70.00002 L 88.58596,70.00001 L 91.00015,69.00002 L 100.00014,60.00001",
       "from": "CASTLE HILL",
-      "to": "KINGS LANGLEY"
+      "to": "KINGS LANGLEY",
+      "points": 2
     },
     {
       "path": "M 110.00005,150.00000 L 118.58585,150.00002 L 121.00004,151.00001 L 130.00003,160.00001",
       "from": "RIVERWOOD",
-      "to": "HURSTVILLE"
+      "to": "HURSTVILLE",
+      "points": 1
     },
     {
       "path": "M 110.00005,150.00000 L 118.58585,150.00002 L 121.00004,151.00001 L 130.00003,160.00001",
       "from": "HURSTVILLE",
-      "to": "RIVERWOOD"
+      "to": "RIVERWOOD",
+      "points": 1
     },
     {
       "path": "M 100.00016,60.00000 L 91.41436,59.99998 L 89.00017,58.99999 L 80.00018,49.99999",
       "from": "CASTLE HILL",
-      "to": "ROUSE HILL"
+      "to": "ROUSE HILL",
+      "points": 1
     },
     {
       "path": "M 100.00016,60.00000 L 91.41436,59.99998 L 89.00017,58.99999 L 80.00018,49.99999",
       "from": "ROUSE HILL",
-      "to": "CASTLE HILL"
+      "to": "CASTLE HILL",
+      "points": 1
     },
     {
       "path": "M 150.00009,119.99999 L 131.41429,119.99998 L 129.00010,118.99999 L 120.00011,109.99998",
       "from": "NEWTOWN",
-      "to": "BURWOOD"
+      "to": "BURWOOD",
+      "points": 1
     },
     {
       "path": "M 150.00009,119.99999 L 131.41429,119.99998 L 129.00010,118.99999 L 120.00011,109.99998",
       "from": "BURWOOD",
-      "to": "NEWTOWN"
+      "to": "NEWTOWN",
+      "points": 1
     },
     {
       "path": "M 130.00002,160.00001 L 140.00000,170.00002",
       "from": "HURSTVILLE",
-      "to": "RAMSGATE"
+      "to": "RAMSGATE",
+      "points": 2
     },
     {
       "path": "M 130.00002,160.00001 L 140.00000,170.00002",
       "from": "RAMSGATE",
-      "to": "HURSTVILLE"
+      "to": "HURSTVILLE",
+      "points": 2
     },
     {
       "path": "M 120.00005,129.99997 L 130.00003,139.99998",
       "from": "CAMPSIE",
-      "to": "EARLWOOD"
+      "to": "EARLWOOD",
+      "points": 2
     },
     {
       "path": "M 120.00005,129.99997 L 130.00003,139.99998",
       "from": "EARLWOOD",
-      "to": "CAMPSIE"
+      "to": "CAMPSIE",
+      "points": 2
     },
     {
       "path": "M 149.99995,100.00007 L 139.99994,110.00005",
       "from": "BALMAIN",
-      "to": "LEICHHARDT"
+      "to": "LEICHHARDT",
+      "points": 2
     },
     {
       "path": "M 149.99995,100.00007 L 139.99994,110.00005",
       "from": "LEICHHARDT",
-      "to": "BALMAIN"
+      "to": "BALMAIN",
+      "points": 2
     },
     {
       "path": "M 49.99995,170.00005 L 39.99994,180.00003",
       "from": "MINTO",
-      "to": "CAMPBELLTOWN"
+      "to": "CAMPBELLTOWN",
+      "points": 1
     },
     {
       "path": "M 49.99995,170.00005 L 39.99994,180.00003",
       "from": "CAMPBELLTOWN",
-      "to": "MINTO"
+      "to": "MINTO",
+      "points": 1
     },
     {
       "path": "M 79.99995,60.00006 L 69.99994,70.00004",
       "from": "PARKLEA",
-      "to": "BLACKTOWN"
+      "to": "BLACKTOWN",
+      "points": 2
     },
     {
       "path": "M 79.99995,60.00006 L 69.99994,70.00004",
       "from": "BLACKTOWN",
-      "to": "PARKLEA"
+      "to": "PARKLEA",
+      "points": 2
     },
     {
       "path": "M 59.99995,60.00007 L 49.99994,70.00005",
       "from": "PLUMPTON",
-      "to": "MOUNT DRUITT"
+      "to": "MOUNT DRUITT",
+      "points": 2
     },
     {
       "path": "M 59.99995,60.00007 L 49.99994,70.00005",
       "from": "MOUNT DRUITT",
-      "to": "PLUMPTON"
+      "to": "PLUMPTON",
+      "points": 2
     },
     {
       "path": "M 69.99995,40.00004 L 59.99994,50.00003",
       "from": "RIVERSTONE",
-      "to": "MARSDEN PARK"
+      "to": "MARSDEN PARK",
+      "points": 2
     },
     {
       "path": "M 69.99995,40.00004 L 59.99994,50.00003",
       "from": "MARSDEN PARK",
-      "to": "RIVERSTONE"
+      "to": "RIVERSTONE",
+      "points": 2
     },
     {
       "path": "M 129.99995,50.00006 L 119.99994,60.00004",
       "from": "HORNSBY",
-      "to": "PENNANT HILLS"
+      "to": "PENNANT HILLS",
+      "points": 1
     },
     {
       "path": "M 129.99995,50.00006 L 119.99994,60.00004",
       "from": "PENNANT HILLS",
-      "to": "HORNSBY"
+      "to": "HORNSBY",
+      "points": 1
     },
     {
       "path": "M 159.99996,80.00007 L 149.99995,90.00006",
       "from": "CHATSWOOD",
-      "to": "LANE COVE"
+      "to": "LANE COVE",
+      "points": 1
     },
     {
       "path": "M 159.99996,80.00007 L 149.99995,90.00006",
       "from": "LANE COVE",
-      "to": "CHATSWOOD"
+      "to": "CHATSWOOD",
+      "points": 1
     },
     {
       "path": "M 170.00002,70.00001 L 160.00001,80.00000",
       "from": "CASTLECRAG",
-      "to": "CHATSWOOD"
+      "to": "CHATSWOOD",
+      "points": 2
     },
     {
       "path": "M 170.00002,70.00001 L 160.00001,80.00000",
       "from": "CHATSWOOD",
-      "to": "CASTLECRAG"
+      "to": "CASTLECRAG",
+      "points": 2
     },
     {
       "path": "M 179.99996,40.00008 L 169.99995,50.00006",
       "from": "MONA VALE",
-      "to": "BELROSE"
+      "to": "BELROSE",
+      "points": 3
     },
     {
       "path": "M 179.99996,40.00008 L 169.99995,50.00006",
       "from": "BELROSE",
-      "to": "MONA VALE"
+      "to": "MONA VALE",
+      "points": 3
     },
     {
       "path": "M 160.00004,110.00006 L 150.00005,100.00005",
       "from": "SYDNEY CBD",
-      "to": "BALMAIN"
+      "to": "BALMAIN",
+      "points": 1
     },
     {
       "path": "M 160.00004,110.00006 L 150.00005,100.00005",
       "from": "BALMAIN",
-      "to": "SYDNEY CBD"
+      "to": "SYDNEY CBD",
+      "points": 1
     },
     {
       "path": "M 120.00010,110.00000 L 110.00012,99.99999",
       "from": "BURWOOD",
-      "to": "AUBURN"
+      "to": "AUBURN",
+      "points": 1
     },
     {
       "path": "M 120.00010,110.00000 L 110.00012,99.99999",
       "from": "AUBURN",
-      "to": "BURWOOD"
+      "to": "BURWOOD",
+      "points": 1
     },
     {
       "path": "M 110.00008,100.00000 L 100.00010,89.99999",
       "from": "AUBURN",
-      "to": "PARRAMATTA"
+      "to": "PARRAMATTA",
+      "points": 1
     },
     {
       "path": "M 110.00008,100.00000 L 100.00010,89.99999",
       "from": "PARRAMATTA",
-      "to": "AUBURN"
+      "to": "AUBURN",
+      "points": 1
     },
     {
       "path": "M 110.00011,139.99999 L 120.00012,130.00001",
       "from": "ROSELANDS",
-      "to": "CAMPSIE"
+      "to": "CAMPSIE",
+      "points": 2
     },
     {
       "path": "M 110.00011,139.99999 L 120.00012,130.00001",
       "from": "CAMPSIE",
-      "to": "ROSELANDS"
+      "to": "ROSELANDS",
+      "points": 2
     },
     {
       "path": "M 50.00000,120.00000 L 60.00001,110.00002",
       "from": "BONNYRIGG",
-      "to": "WETHERILL PARK"
+      "to": "WETHERILL PARK",
+      "points": 1
     },
     {
       "path": "M 50.00000,120.00000 L 60.00001,110.00002",
       "from": "WETHERILL PARK",
-      "to": "BONNYRIGG"
+      "to": "BONNYRIGG",
+      "points": 1
     },
     {
       "path": "M 39.64646,150.35355 L 49.64647,140.35357",
       "from": "LEPPINGTON",
-      "to": "CARNES HILL"
+      "to": "CARNES HILL",
+      "points": 5
     },
     {
       "path": "M 39.64646,150.35355 L 49.64647,140.35357",
       "from": "CARNES HILL",
-      "to": "LEPPINGTON"
+      "to": "LEPPINGTON",
+      "points": 5
     },
     {
       "path": "M 80.00002,110.00001 L 71.00001,118.99999 L 70.00001,121.41421 L 70.00003,140.00001",
       "from": "FAIRFIELD",
-      "to": "LIVERPOOL"
+      "to": "LIVERPOOL",
+      "points": 1
     },
     {
       "path": "M 80.00002,110.00001 L 71.00001,118.99999 L 70.00001,121.41421 L 70.00003,140.00001",
       "from": "LIVERPOOL",
-      "to": "FAIRFIELD"
+      "to": "FAIRFIELD",
+      "points": 1
     },
     {
       "path": "M 100.00013,129.99997 L 110.00011,139.99998",
       "from": "BANKSTOWN",
-      "to": "ROSELANDS"
+      "to": "ROSELANDS",
+      "points": 2
     },
     {
       "path": "M 100.00013,129.99997 L 110.00011,139.99998",
       "from": "ROSELANDS",
-      "to": "BANKSTOWN"
+      "to": "BANKSTOWN",
+      "points": 2
     },
     {
       "path": "M 90.00017,119.99999 L 100.00015,130.00000",
       "from": "CHESTER HILL",
-      "to": "BANKSTOWN"
+      "to": "BANKSTOWN",
+      "points": 2
     },
     {
       "path": "M 90.00017,119.99999 L 100.00015,130.00000",
       "from": "BANKSTOWN",
-      "to": "CHESTER HILL"
+      "to": "CHESTER HILL",
+      "points": 2
     },
     {
       "path": "M 130.00003,159.99995 L 130.00003,139.99995",
       "from": "HURSTVILLE",
-      "to": "EARLWOOD"
+      "to": "EARLWOOD",
+      "points": 1
     },
     {
       "path": "M 130.00003,159.99995 L 130.00003,139.99995",
       "from": "EARLWOOD",
-      "to": "HURSTVILLE"
+      "to": "HURSTVILLE",
+      "points": 1
     },
     {
       "path": "M 100.00000,170.00000 L 100.00000,150.00000",
       "from": "MENAI",
-      "to": "REVESBY"
+      "to": "REVESBY",
+      "points": 2
     },
     {
       "path": "M 100.00000,170.00000 L 100.00000,150.00000",
       "from": "REVESBY",
-      "to": "MENAI"
+      "to": "MENAI",
+      "points": 2
     },
     {
       "path": "M 139.99999,170.00001 L 139.99999,150.00001",
       "from": "RAMSGATE",
-      "to": "BRIGHTON-LE-SANDS"
+      "to": "BRIGHTON-LE-SANDS",
+      "points": 1
     },
     {
       "path": "M 139.99999,170.00001 L 139.99999,150.00001",
       "from": "BRIGHTON-LE-SANDS",
-      "to": "RAMSGATE"
+      "to": "RAMSGATE",
+      "points": 1
     },
     {
       "path": "M 129.99999,180.00001 L 129.99999,170.00001",
       "from": "MIRANDA",
-      "to": "SYLVANIA"
+      "to": "SYLVANIA",
+      "points": 1
     },
     {
       "path": "M 129.99999,180.00001 L 129.99999,170.00001",
       "from": "SYLVANIA",
-      "to": "MIRANDA"
+      "to": "MIRANDA",
+      "points": 1
     },
     {
       "path": "M 130.00002,179.99996 L 120.00002,179.99996",
       "from": "MIRANDA",
-      "to": "SUTHERLAND"
+      "to": "SUTHERLAND",
+      "points": 1
     },
     {
       "path": "M 130.00002,179.99996 L 120.00002,179.99996",
       "from": "SUTHERLAND",
-      "to": "MIRANDA"
+      "to": "MIRANDA",
+      "points": 1
     },
     {
       "path": "M 160.00002,90.00000 L 150.00002,90.00000",
       "from": "CROWS NEST",
-      "to": "LANE COVE"
+      "to": "LANE COVE",
+      "points": 2
     },
     {
       "path": "M 160.00002,90.00000 L 150.00002,90.00000",
       "from": "LANE COVE",
-      "to": "CROWS NEST"
+      "to": "CROWS NEST",
+      "points": 2
     },
     {
       "path": "M 180.00002,60.00000 L 170.00002,60.00000",
       "from": "BROOKVALE",
-      "to": "FORESTVILLE"
+      "to": "FORESTVILLE",
+      "points": 2
     },
     {
       "path": "M 180.00002,60.00000 L 170.00002,60.00000",
       "from": "FORESTVILLE",
-      "to": "BROOKVALE"
+      "to": "BROOKVALE",
+      "points": 2
     },
     {
       "path": "M 160.00001,79.99999 L 160.00001,89.99999",
       "from": "CHATSWOOD",
-      "to": "CROWS NEST"
+      "to": "CROWS NEST",
+      "points": 1
     },
     {
       "path": "M 160.00001,79.99999 L 160.00001,89.99999",
       "from": "CROWS NEST",
-      "to": "CHATSWOOD"
+      "to": "CHATSWOOD",
+      "points": 1
     },
     {
       "path": "M 180.00001,99.99999 L 180.00001,109.99999",
       "from": "WATSONS BAY",
-      "to": "BONDI BEACH"
+      "to": "BONDI BEACH",
+      "points": 2
     },
     {
       "path": "M 180.00001,99.99999 L 180.00001,109.99999",
       "from": "BONDI BEACH",
-      "to": "WATSONS BAY"
+      "to": "WATSONS BAY",
+      "points": 2
     },
     {
       "path": "M 140.00002,110.00000 L 130.00002,110.00000",
       "from": "LEICHHARDT",
-      "to": "FIVE DOCK"
+      "to": "FIVE DOCK",
+      "points": 1
     },
     {
       "path": "M 140.00002,110.00000 L 130.00002,110.00000",
       "from": "FIVE DOCK",
-      "to": "LEICHHARDT"
+      "to": "LEICHHARDT",
+      "points": 1
     },
     {
       "path": "M 130.00002,109.99998 L 120.00002,109.99998",
       "from": "FIVE DOCK",
-      "to": "BURWOOD"
+      "to": "BURWOOD",
+      "points": 2
     },
     {
       "path": "M 130.00002,109.99998 L 120.00002,109.99998",
       "from": "BURWOOD",
-      "to": "FIVE DOCK"
+      "to": "FIVE DOCK",
+      "points": 2
     },
     {
       "path": "M 80.00002,70.00002 L 70.00002,70.00002",
       "from": "KINGS LANGLEY",
-      "to": "BLACKTOWN"
+      "to": "BLACKTOWN",
+      "points": 2
     },
     {
       "path": "M 80.00002,70.00002 L 70.00002,70.00002",
       "from": "BLACKTOWN",
-      "to": "KINGS LANGLEY"
+      "to": "KINGS LANGLEY",
+      "points": 2
     },
     {
       "path": "M 129.99999,170.00001 L 129.99999,160.00001",
       "from": "SYLVANIA",
-      "to": "HURSTVILLE"
+      "to": "HURSTVILLE",
+      "points": 2
     },
     {
       "path": "M 129.99999,170.00001 L 129.99999,160.00001",
       "from": "HURSTVILLE",
-      "to": "SYLVANIA"
+      "to": "SYLVANIA",
+      "points": 2
     },
     {
       "path": "M 110.00000,150.00000 L 110.00000,140.00000",
       "from": "RIVERWOOD",
-      "to": "ROSELANDS"
+      "to": "ROSELANDS",
+      "points": 1
     },
     {
       "path": "M 110.00000,150.00000 L 110.00000,140.00000",
       "from": "ROSELANDS",
-      "to": "RIVERWOOD"
+      "to": "RIVERWOOD",
+      "points": 1
     },
     {
       "path": "M 120.00002,70.00000 L 120.00002,60.00000",
       "from": "EASTWOOD",
-      "to": "PENNANT HILLS"
+      "to": "PENNANT HILLS",
+      "points": 1
     },
     {
       "path": "M 120.00002,70.00000 L 120.00002,60.00000",
       "from": "PENNANT HILLS",
-      "to": "EASTWOOD"
+      "to": "EASTWOOD",
+      "points": 1
     },
     {
       "path": "M 129.99999,110.00001 L 129.99999,100.00001",
       "from": "FIVE DOCK",
-      "to": "CONCORD"
+      "to": "CONCORD",
+      "points": 3
     },
     {
       "path": "M 129.99999,110.00001 L 129.99999,100.00001",
       "from": "CONCORD",
-      "to": "FIVE DOCK"
+      "to": "FIVE DOCK",
+      "points": 3
     },
     {
       "path": "M 100.00009,69.99995 L 100.00009,59.99995",
       "from": "BAULKHAM HILLS",
-      "to": "CASTLE HILL"
+      "to": "CASTLE HILL",
+      "points": 1
     },
     {
       "path": "M 100.00009,69.99995 L 100.00009,59.99995",
       "from": "CASTLE HILL",
-      "to": "BAULKHAM HILLS"
+      "to": "BAULKHAM HILLS",
+      "points": 1
     },
     {
       "path": "M 80.00015,70.00003 L 80.00015,60.00003",
       "from": "KINGS LANGLEY",
-      "to": "PARKLEA"
+      "to": "PARKLEA",
+      "points": 2
     },
     {
       "path": "M 80.00015,70.00003 L 80.00015,60.00003",
       "from": "PARKLEA",
-      "to": "KINGS LANGLEY"
+      "to": "KINGS LANGLEY",
+      "points": 2
     },
     {
       "path": "M 79.99999,60.00013 L 79.99999,50.00013",
       "from": "PARKLEA",
-      "to": "ROUSE HILL"
+      "to": "ROUSE HILL",
+      "points": 2
     },
     {
       "path": "M 79.99999,60.00013 L 79.99999,50.00013",
       "from": "ROUSE HILL",
-      "to": "PARKLEA"
+      "to": "PARKLEA",
+      "points": 2
     },
     {
       "path": "M 60.00000,60.00000 L 60.00000,50.00000",
       "from": "PLUMPTON",
-      "to": "MARSDEN PARK"
+      "to": "MARSDEN PARK",
+      "points": 2
     },
     {
       "path": "M 60.00000,60.00000 L 60.00000,50.00000",
       "from": "MARSDEN PARK",
-      "to": "PLUMPTON"
+      "to": "PLUMPTON",
+      "points": 2
     },
     {
       "path": "M 50.00002,69.99998 L 50.00002,59.99998",
       "from": "MOUNT DRUITT",
-      "to": "EMERTON"
+      "to": "EMERTON",
+      "points": 2
     },
     {
       "path": "M 50.00002,69.99998 L 50.00002,59.99998",
       "from": "EMERTON",
-      "to": "MOUNT DRUITT"
+      "to": "MOUNT DRUITT",
+      "points": 2
     },
     {
       "path": "M 170.00000,60.00000 L 170.00000,50.00000",
       "from": "FORESTVILLE",
-      "to": "BELROSE"
+      "to": "BELROSE",
+      "points": 1
     },
     {
       "path": "M 170.00000,60.00000 L 170.00000,50.00000",
       "from": "BELROSE",
-      "to": "FORESTVILLE"
+      "to": "FORESTVILLE",
+      "points": 1
     },
     {
       "path": "M 110.00002,150.00000 L 100.00002,150.00000",
       "from": "RIVERWOOD",
-      "to": "REVESBY"
+      "to": "REVESBY",
+      "points": 1
     },
     {
       "path": "M 110.00002,150.00000 L 100.00002,150.00000",
       "from": "REVESBY",
-      "to": "RIVERWOOD"
+      "to": "RIVERWOOD",
+      "points": 1
     },
     {
       "path": "M 100.00000,150.00000 L 70.00000,150.00000",
       "from": "REVESBY",
-      "to": "GLENFIELD"
+      "to": "GLENFIELD",
+      "points": 1
     },
     {
       "path": "M 100.00000,150.00000 L 70.00000,150.00000",
       "from": "GLENFIELD",
-      "to": "REVESBY"
+      "to": "REVESBY",
+      "points": 1
     },
     {
       "path": "M 130.00000,70.00000 L 120.00000,70.00000",
       "from": "MACQUARIE PARK",
-      "to": "EASTWOOD"
+      "to": "EASTWOOD",
+      "points": 1
     },
     {
       "path": "M 130.00000,70.00000 L 120.00000,70.00000",
       "from": "EASTWOOD",
-      "to": "MACQUARIE PARK"
+      "to": "MACQUARIE PARK",
+      "points": 1
     },
     {
       "path": "M 120.00004,70.00002 L 110.00004,70.00002",
       "from": "EASTWOOD",
-      "to": "CARLINGFORD"
+      "to": "CARLINGFORD",
+      "points": 1
     },
     {
       "path": "M 120.00004,70.00002 L 110.00004,70.00002",
       "from": "CARLINGFORD",
-      "to": "EASTWOOD"
+      "to": "EASTWOOD",
+      "points": 1
     },
     {
       "path": "M 110.00004,70.00000 L 100.00004,70.00000",
       "from": "CARLINGFORD",
-      "to": "BAULKHAM HILLS"
+      "to": "BAULKHAM HILLS",
+      "points": 3
     },
     {
       "path": "M 110.00004,70.00000 L 100.00004,70.00000",
       "from": "BAULKHAM HILLS",
-      "to": "CARLINGFORD"
+      "to": "CARLINGFORD",
+      "points": 3
     },
     {
       "path": "M 60.00002,60.00000 L 50.00002,60.00000",
       "from": "PLUMPTON",
-      "to": "EMERTON"
+      "to": "EMERTON",
+      "points": 2
     },
     {
       "path": "M 60.00002,60.00000 L 50.00002,60.00000",
       "from": "EMERTON",
-      "to": "PLUMPTON"
+      "to": "PLUMPTON",
+      "points": 2
     },
     {
       "path": "M 100.00018,129.99998 L 90.00018,129.99998",
       "from": "BANKSTOWN",
-      "to": "GEORGES HALL"
+      "to": "GEORGES HALL",
+      "points": 2
     },
     {
       "path": "M 100.00018,129.99998 L 90.00018,129.99998",
       "from": "GEORGES HALL",
-      "to": "BANKSTOWN"
+      "to": "BANKSTOWN",
+      "points": 2
     },
     {
       "path": "M 110.00003,149.99999 L 110.00003,159.99999",
       "from": "RIVERWOOD",
-      "to": "LUGARNO"
+      "to": "LUGARNO",
+      "points": 3
     },
     {
       "path": "M 110.00003,149.99999 L 110.00003,159.99999",
       "from": "LUGARNO",
-      "to": "RIVERWOOD"
+      "to": "RIVERWOOD",
+      "points": 3
     },
     {
       "path": "M 90.00001,119.99999 L 90.00001,129.99999",
       "from": "CHESTER HILL",
-      "to": "GEORGES HALL"
+      "to": "GEORGES HALL",
+      "points": 2
     },
     {
       "path": "M 90.00001,119.99999 L 90.00001,129.99999",
       "from": "GEORGES HALL",
-      "to": "CHESTER HILL"
+      "to": "CHESTER HILL",
+      "points": 2
     },
     {
       "path": "M 70.00001,139.99999 L 70.00001,149.99999",
       "from": "LIVERPOOL",
-      "to": "GLENFIELD"
+      "to": "GLENFIELD",
+      "points": 1
     },
     {
       "path": "M 70.00001,139.99999 L 70.00001,149.99999",
       "from": "GLENFIELD",
-      "to": "LIVERPOOL"
+      "to": "LIVERPOOL",
+      "points": 1
     },
     {
       "path": "M 20.00001,169.99999 L 20.00001,179.99999",
       "from": "ORAN PARK",
-      "to": "NARELLAN"
+      "to": "NARELLAN",
+      "points": 2
     },
     {
       "path": "M 20.00001,169.99999 L 20.00001,179.99999",
       "from": "NARELLAN",
-      "to": "ORAN PARK"
+      "to": "ORAN PARK",
+      "points": 2
     }
   ]
 }
