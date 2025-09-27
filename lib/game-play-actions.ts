@@ -48,10 +48,7 @@ export async function moveToNode(gameId: string, newNode: string) {
             // Move to the new node
             updatedState.runner_node = newNode;
             
-            await checkAndAwardPoints(supabase, gameId, gameState);
-
-            const { error } = await supabase.from("game_state").update(updatedState).eq("game_id", gameId);
-            if (error) return { error: "Failed to update game state: " + error.message };
+            await checkAndAwardPoints(supabase, gameId, updatedState);
 
             return { success: true };
         } else {
@@ -292,6 +289,7 @@ export async function clearCurse(gameId: string, curseId: string) {
 
 async function checkAndAwardPoints(supabase: any, gameId: string, gameState: any) {
     const currentNode = gameState.runner_node;
+    console.log(gameState.runner_node, gameState.game_log)
     if (!currentNode) return;
 
     // Check if this node is already in the game_log (meaning points were already awarded)
@@ -326,23 +324,21 @@ async function checkAndAwardPoints(supabase: any, gameId: string, gameState: any
     const hasRemainingObstacles = (remainingRoadblocks && remainingRoadblocks.length > 0) || 
                                  (remainingCurses && remainingCurses.length > 0);
 
+    console.log(hasRemainingObstacles)
     // If no obstacles remain, award points and add to game_log
     if (!hasRemainingObstacles) {
-        const updatedPoints = (gameState.runner_points || 0) + 10;
-        const updatedGameLog = [...gameLog, currentNode];
+        gameState.runner_points = (gameState.runner_points || 0) + 10;
+        const gameLog = gameState.game_log || [];
+        gameState.game_log = [...gameLog, gameState.runner_node];
         
-        const { error: pointsError } = await supabase
+        const { data, error: pointsError, count } = await supabase
             .from("game_state")
-            .update({ 
-                runner_points: updatedPoints,
-                game_log: updatedGameLog,
-                updated_at: new Date().toISOString()
-            })
+            .update(gameState)
             .eq("game_id", gameId);
 
-        if (pointsError) {
-            console.error("Failed to award points:", pointsError);
-        }
+        console.log("Updated data:", data);
+        console.log("Rows affected:", count);
+        console.log("Update error:", pointsError);
     }
 }
 

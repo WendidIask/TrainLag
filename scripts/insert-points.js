@@ -37,8 +37,6 @@ for (let i = 0; i < placemarks.length; i++) {
   }
 }
 
-console.log(kmlPointsData)
-
 // Add points property to existing edges based on path name matching
 const updatedGraph = { ...existingPaths };
 
@@ -46,8 +44,6 @@ for (const edge of updatedGraph.edges) {
   // Try to match by constructing path name from from->to
   const pathName1 = `${edge.from} & ${edge.to}`;
   const pathName2 = `${edge.to} & ${edge.from}`;
-
-  console.log(pathName1, pathName2)
   
   // Check if we have points data for this path
   edge.points = kmlPointsData[pathName1] || kmlPointsData[pathName2] || 0;
