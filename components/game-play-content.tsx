@@ -35,6 +35,7 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
   const [positioningTime, setPositioningTime] = useState(0);
   const [roadblocks, setRoadblocks] = useState([]);
   const [curses, setCurses] = useState([]);
+  const [challenges, setChallenges] = useState([]);
   const router = useRouter();
 
   const [scale, setScale] = useState(1);
@@ -85,6 +86,15 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
           const cursesData = await cursesResponse.json();
           if (isMounted) setCurses(cursesData);
         }
+
+        // Fetch active challenges
+        const challengesResponse = await fetch(`/api/game/${game.id}/challenges`);
+        if (challengesResponse.ok) {
+          const challengesData = await challengesResponse.json();
+          if (isMounted) setChallenges(challengesData);
+        }
+
+
       } catch (err) {
         console.error("Failed to fetch game data:", err);
       }
@@ -363,6 +373,7 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
     curse.start_node.toLowerCase() === gameState.game_log[gameState.game_log.length-1]?.toLowerCase() && curse.end_node.toLowerCase() === gameState.runner_node?.toLowerCase() || 
     curse.end_node.toLowerCase() === gameState.game_log[gameState.game_log.length-1]?.toLowerCase() && curse.start_node.toLowerCase() === gameState.runner_node?.toLowerCase()
   ) : [];
+  const currentNodeChallenges = isRunner ? challenges.filter((rb: any) => rb.node_name.toLowerCase() === gameState.runner_node?.toLowerCase()) : [];
 
   const handleMove = async () => {
     if (!selectedDestination) return;
@@ -849,7 +860,7 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
             )}
 
             {/* Active Obstacles */}
-            {(roadblocks.length > 0 || curses.length > 0) && (
+            {(roadblocks.length > 0 || curses.length > 0 || challenges.length > 0) && (
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center">
@@ -882,6 +893,19 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
                         </div>
                         <Badge variant="outline" className="text-xs text-purple-600">
                           Path Blocked
+                        </Badge>
+                      </div>
+                    ))}
+                    {challenges.map((challenge: any) => (
+                      <div
+                        key={challenge.id}
+                        className="flex items-center justify-between p-2 bg-red-50 border border-red-200 rounded">
+                        <div className="flex items-center space-x-2">
+                          <Target className="w-4 h-4 text-red-600" />
+                          <span className="text-sm font-medium">Roadblock at {challenge.node_name}</span>
+                        </div>
+                        <Badge variant="outline" className="text-xs text-red-600">
+                          Node Challenged
                         </Badge>
                       </div>
                     ))}
@@ -1337,25 +1361,6 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
                                   </DialogDescription>
                                 </DialogHeader>
                                 <div className="py-4">
-                                  {card.type === "battle" && (
-                                    <div className="space-y-2">
-                                      <label className="text-sm font-medium">Target Player (optional):</label>
-                                      <Select value={targetPlayer} onValueChange={setTargetPlayer}>
-                                        <SelectTrigger>
-                                          <SelectValue placeholder="Select target" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                          {game.game_players
-                                            ?.filter((gp: any) => gp.player_id !== user.id)
-                                            .map((gp: any) => (
-                                              <SelectItem key={gp.player_id} value={gp.player_id}>
-                                                {gp.profiles?.username || gp.profiles?.email}
-                                              </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                      </Select>
-                                    </div>
-                                  )}
                                   {card.type === "curse" && (() => {
                                     // Get adjacent nodes to current seeker position for curse placement
                                     const mapInfo = game.maps?.[0];
@@ -1411,11 +1416,6 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
               </Card>
             )}
           </div>
-            {Array.isArray(gameState?.game_log) && gameState.game_log.length > 1 ? (
-              <div className="text-green-700">✅ hasHistory = true</div>
-            ) : (
-              <div className="text-red-700">❌ hasHistory = false</div>
-            )}
         </div>
       </main>
     </div>
