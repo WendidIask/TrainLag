@@ -902,7 +902,7 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
                         className="flex items-center justify-between p-2 bg-red-50 border border-red-200 rounded">
                         <div className="flex items-center space-x-2">
                           <Target className="w-4 h-4 text-red-600" />
-                          <span className="text-sm font-medium">Roadblock at {challenge.node_name}</span>
+                          <span className="text-sm font-medium">Battle Challenge at {challenge.node_name}</span>
                         </div>
                         <Badge variant="outline" className="text-xs text-red-600">
                           Node Challenged
@@ -1043,6 +1043,32 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
                               fontWeight="bold"
                             >
                               🚧
+                            </text>
+                          </g>
+                        );
+                      })}
+
+                      {challenges.map((challenge: any) => {
+                        const nodePos = getNodePosition(challenge.node_name);
+                        return (
+                          <g key={challenge.id}>
+                            <circle
+                              cx={nodePos.x}
+                              cy={nodePos.y}
+                              r={1}
+                              fill="rgba(255, 187, 0, 0.95)"
+                              stroke="#fffb07ff"
+                              strokeWidth={0.2}
+                            />
+                            <text
+                              x={nodePos.x}
+                              y={nodePos.y + 0.3}
+                              textAnchor="middle"
+                              fill="#fff"
+                              fontSize="1.2"
+                              fontWeight="bold"
+                            >
+                              ⚔️
                             </text>
                           </g>
                         );
