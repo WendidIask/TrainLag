@@ -4,8 +4,7 @@ import { createServerClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import mapPaths from "../components/data/map-paths.json";
 
-type node = "Start" | "Center" | "North" | "South" | "East" | "West" | "End";
-type edge = { from: node; to: node };
+type edge = { from: string; to: string, points: number };
 
 interface User {
   email?: string;
@@ -16,7 +15,7 @@ interface User {
 
 interface MapData {
   name: string;
-  nodes: node[];
+  nodes: string[];
   edges: edge[];
 }
 
@@ -172,14 +171,15 @@ export async function startGame(gameId: string) {
     const { error: initError } = await supabase.from("game_state").insert({
       game_id: gameId,
       current_runner_id: playerOrder[0],
-      runner_node: "Sydney CBD",
-      seeker_node: "Sydney CBD",
+      runner_node: "SYDNEY CBD",
+      seeker_node: "SYDNEY CBD",
       runner_points: 0,
       cards_in_hand: initialCards, // Changed from available_cards: {} to cards_in_hand: initialCards
       discard_pile: [],
       active_effects: [],
       game_log: [],
       start_time: new Date().toISOString(),
+      phase: "intermission"
     });
 
     if (initError) return { error: "Failed to insert game state: " + initError.message };

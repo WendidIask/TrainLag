@@ -192,6 +192,7 @@ export async function startRun(gameId: string) {
         const updatedState = {
             ...gameState,
             phase: 'running',
+            game_log: [gameState.runner_node],
             start_time: new Date().toISOString(),
             updated_at: new Date().toISOString(),
         };
@@ -288,6 +289,9 @@ export async function clearCurse(gameId: string, curseId: string) {
 // New helper function to check and award points when all obstacles are cleared:
 
 async function checkAndAwardPoints(supabase: any, gameId: string, gameState: any) {
+    const { data: map } = await supabase.from("maps").select("*").eq("game_id", gameId);
+    if (!map) return { error: "Game not found" };
+
     const currentNode = gameState.runner_node;
     console.log(gameState.runner_node, gameState.game_log)
     if (!currentNode) return;
@@ -327,18 +331,24 @@ async function checkAndAwardPoints(supabase: any, gameId: string, gameState: any
     console.log(hasRemainingObstacles)
     // If no obstacles remain, award points and add to game_log
     if (!hasRemainingObstacles) {
-        gameState.runner_points = (gameState.runner_points || 0) + 10;
+        const mapInfo = map?.[0];
+        const path = mapInfo.edges.find((edge: any) => 
+            edge.from === gameState.game_log[gameState.game_log.length-1] && edge.to === gameState.runner_node
+        );
+        console.log(path)
+
+        gameState.runner_points = (gameState.runner_points || 0)+path.points;
         const gameLog = gameState.game_log || [];
         gameState.game_log = [...gameLog, gameState.runner_node];
         
-        const { data, error: pointsError, count } = await supabase
+        const { error: pointsError } = await supabase
             .from("game_state")
             .update(gameState)
             .eq("game_id", gameId);
-
-        console.log("Updated data:", data);
-        console.log("Rows affected:", count);
-        console.log("Update error:", pointsError);
+        
+        if (pointsError) {
+            console.error("Error updating points");
+        }
     }
 }
 
@@ -545,7 +555,7 @@ export async function endRun(gameId: string) {
                 active_effects: [], // Clear active effects
                 start_time: null, // Clear run start time
                 updated_at: new Date().toISOString(),
-                game_log: [gameState.runner_node], // Start new game log with current position
+                game_log: [], // Start new game log with current position
                 seeker_node: gameState.runner_node,
                 cards_in_hand: [] // Clear cards for transition
             })
