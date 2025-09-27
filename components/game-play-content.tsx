@@ -899,12 +899,12 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
                     {challenges.map((challenge: any) => (
                       <div
                         key={challenge.id}
-                        className="flex items-center justify-between p-2 bg-red-50 border border-red-200 rounded">
+                        className="flex items-center justify-between p-2 bg-orange-50 border border-orange-200 rounded">
                         <div className="flex items-center space-x-2">
-                          <Target className="w-4 h-4 text-red-600" />
+                          <Target className="w-4 h-4 text-orange-600" />
                           <span className="text-sm font-medium">Battle Challenge at {challenge.node_name}</span>
                         </div>
-                        <Badge variant="outline" className="text-xs text-red-600">
+                        <Badge variant="outline" className="text-xs text-orange-600">
                           Node Challenged
                         </Badge>
                       </div>

@@ -557,7 +557,7 @@ export async function endRun(gameId: string) {
             .eq("game_id", gameId);
 
         if (curseError) {
-            console.error("Failed to clear curses:", challengeError);
+            console.error("Failed to clear challenges:", challengeError);
         }
 
         // Update game state with new runner and enter waiting phase
