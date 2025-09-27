@@ -398,11 +398,18 @@ export async function playCard(gameId: string, cardId: string, targetPlayer?: st
 
         switch (cardToPlay.type) {
             case "battle":
-                activeEffects.push({
-                    cardId: cardToPlay.id,
-                    player: user.id,
-                    targetPlayer,
-                });
+                const { error: challengeError } = await supabase
+                    .from("battlechallenge")
+                    .insert({
+                        game_id: gameId,
+                        node_name: gameState.seeker_node,
+                        placed_by: user.id,
+                        description: cardToPlay.description
+                    });
+                    
+                if (challengeError) {
+                    return { error: "Failed to place challenge: " + challengeError.message };
+                }
                 break;
 
             case "roadblock":
