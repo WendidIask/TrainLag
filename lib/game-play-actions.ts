@@ -551,6 +551,15 @@ export async function endRun(gameId: string) {
             console.error("Failed to clear curses:", curseError);
         }
 
+        const { error: challengeError } = await supabase
+            .from("battlechallenge")
+            .delete()
+            .eq("game_id", gameId);
+
+        if (curseError) {
+            console.error("Failed to clear curses:", challengeError);
+        }
+
         // Update game state with new runner and enter waiting phase
         const { error: gameStateError } = await supabase
             .from("game_state")
