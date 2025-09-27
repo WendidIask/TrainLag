@@ -57,6 +57,14 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
     const fetchGameData = async () => {
       if (!user) return;
       try {
+
+        const res = await fetch(`/api/game/${game.id}/state?ts=${Date.now()}`, {
+          cache: 'no-store', next: { revalidate: 0 }
+        });
+        console.log('[dbg] /state status', res.status);
+        let stateData = null;
+        try { stateData = await res.json(); } catch { /* 204/empty */ }
+        console.log('[dbg] /state payload', stateData);
         // Fetch game state
         const stateResponse = await fetch(`/api/game/${game.id}/state`);
         if (stateResponse.ok) {
@@ -924,11 +932,15 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
                       
                       {/* Runner's path history */}
                       {gameState.game_log && gameState.game_log.length > 1 && (() => {
+                        
                         const pathSegments = [];
                         
                         for (let i = 0; i < gameState.game_log.length-1; i++) {
                           const currentNode = gameState.game_log[i];
                           const nextNode = gameState.game_log[i + 1];
+                          
+                          const d = getSvgPathFromJson(currentNode, nextNode);
+                          if (!d) console.warn('No path for', currentNode, '→', nextNode);
 
                           const pathData = getSvgPathFromJson(currentNode, nextNode);
                           
@@ -1399,6 +1411,11 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
               </Card>
             )}
           </div>
+            {Array.isArray(gameState?.game_log) && gameState.game_log.length > 1 ? (
+              <div className="text-green-700">✅ hasHistory = true</div>
+            ) : (
+              <div className="text-red-700">❌ hasHistory = false</div>
+            )}
         </div>
       </main>
     </div>

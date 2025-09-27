@@ -4,8 +4,8 @@ import { createServerClient } from "@/lib/supabase/server";
 
 export async function moveToNode(gameId: string, newNode: string) {
     const supabase = await createServerClient();
-    const { data } = await supabase.auth.getSession();
-    const user = data?.session?.user;
+    const { data } = await supabase.auth.getUser();
+    const { user } = data;
     if (!user) return { error: "You must be logged in" };
 
     try {
@@ -94,8 +94,8 @@ export async function moveToNode(gameId: string, newNode: string) {
 
 export async function startPositioning(gameId: string) {
     const supabase = await createServerClient();
-    const { data } = await supabase.auth.getSession();
-    const user = data?.session?.user;
+    const { data } = await supabase.auth.getUser();
+    const { user } = data;
     if (!user) return { error: "You must be logged in" };
 
     try {
@@ -162,8 +162,8 @@ export async function startPositioning(gameId: string) {
 
 export async function startRun(gameId: string) {
     const supabase = await createServerClient();
-    const { data } = await supabase.auth.getSession();
-    const user = data?.session?.user;
+    const { data } = await supabase.auth.getUser();
+    const { user } = data;
     if (!user) return { error: "You must be logged in" };
 
     try {
@@ -212,8 +212,8 @@ export async function startRun(gameId: string) {
 
 export async function clearRoadblock(gameId: string, nodeId: string) {
     const supabase = await createServerClient();
-    const { data } = await supabase.auth.getSession();
-    const user = data?.session?.user;
+    const { data } = await supabase.auth.getUser();
+    const { user } = data;
     if (!user) return { error: "You must be logged in" };
 
     try {
@@ -252,8 +252,8 @@ export async function clearRoadblock(gameId: string, nodeId: string) {
 
 export async function clearCurse(gameId: string, curseId: string) {
     const supabase = await createServerClient();
-    const { data } = await supabase.auth.getSession();
-    const user = data?.session?.user;
+    const { data } = await supabase.auth.getUser();
+    const { user } = data;
     if (!user) return { error: "You must be logged in" };
 
     try {
@@ -348,8 +348,8 @@ async function checkAndAwardPoints(supabase: any, gameId: string, gameState: any
 
 export async function playCard(gameId: string, cardId: string, targetPlayer?: string, targetNode?: string) {
     const supabase = await createServerClient();
-    const { data } = await supabase.auth.getSession();
-    const user = data?.session?.user;
+    const { data } = await supabase.auth.getUser();
+    const { user } = data;
     if (!user) return { error: "You must be logged in" };
 
     try {
@@ -496,8 +496,8 @@ export async function playCard(gameId: string, cardId: string, targetPlayer?: st
 export async function endRun(gameId: string) {
     const supabase = await createServerClient();
     
-    const { data } = await supabase.auth.getSession();
-    const user = data?.session?.user;
+    const { data } = await supabase.auth.getUser();
+    const { user } = data;
     if (!user) return { error: "You must be logged in" };
 
     try {

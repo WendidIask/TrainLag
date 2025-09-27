@@ -5,8 +5,8 @@ export async function updateSession(req: NextRequest) {
     const response = NextResponse.next();
 
     const supabase = await createServerClientReadOnly();
-    const { data } = await supabase.auth.getSession();
-    const user = data?.session?.user;
+    const { data } = await supabase.auth.getUser();
+    const { user } = data;
 
     const pathname = req.nextUrl.pathname.match(/\/(.*)\//);
     const protectedRoutes = new Set(["dashboard", "game", "create-game"]);

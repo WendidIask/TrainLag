@@ -4,8 +4,8 @@ import AuthForm from "@/components/auth-form";
 
 export default async function HomePage() {
     const supabase = await createServerClientReadOnly();
-    const { data } = await supabase.auth.getSession();
-    const user = data?.session?.user;
+    const { data } = await supabase.auth.getUser();
+    const user = data?.user;
     if (user) redirect("/dashboard");
 
     return (
