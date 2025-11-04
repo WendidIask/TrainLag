@@ -9,8 +9,8 @@ import { Input } from "@/components/ui/input";
 // prettier-ignore
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, Clock, MapPin, Target, Users, Zap, AlertTriangle, Play, Trash2, Search, ShieldAlert } from "lucide-react";
-import { moveToNode, playCard, endRun, clearRoadblock, clearCurse, startRun, startPositioning } from "@/lib/game-play-actions";
+import { ArrowLeft, Clock, MapPin, Target, Users, Zap, AlertTriangle, Play, Trash2, Search, ShieldAlert, Eye, Globe } from "lucide-react";
+import { moveToNode, playCard, endRun, clearRoadblock, clearCurse, startRun, startPositioning, placeRoadblockWithEffects, placeCurseWithEffects, discardCards, getPendingActions } from "@/lib/game-play-actions";
 import MapSvg from "./data/GameMap.svg";
 import mapNodes from "./data/map-nodes.json";
 import Link from 'next/link'
@@ -29,12 +29,19 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
   const [showStartPositioningDialog, setShowStartPositioningDialog] = useState(false);
   const [targetPlayer, setTargetPlayer] = useState<string>("");
   const [targetNode, setTargetNode] = useState<string>("");
+  const [targetNode2, setTargetNode2] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
   const [elapsedTime, setElapsedTime] = useState(0);
   const [runTime, setRunTime] = useState(0);
   const [positioningTime, setPositioningTime] = useState(0);
   const [roadblocks, setRoadblocks] = useState([]);
   const [curses, setCurses] = useState([]);
+  const [pendingActions, setPendingActions] = useState([]);
+  const [selectedCardsToDiscard, setSelectedCardsToDiscard] = useState<string[]>([]);
+  const [showDiscardDialog, setShowDiscardDialog] = useState(false);
+  const [showPlaceRoadblockDialog, setShowPlaceRoadblockDialog] = useState(false);
+  const [showPlaceCurseDialog, setShowPlaceCurseDialog] = useState(false);
+  const [placementNode, setPlacementNode] = useState<string>("");
   const router = useRouter();
 
   const [scale, setScale] = useState(1);
@@ -57,7 +64,6 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
     const fetchGameData = async () => {
       if (!user) return;
       try {
-
         const res = await fetch(`/api/game/${game.id}/state?ts=${Date.now()}`, {
           cache: 'no-store', next: { revalidate: 0 }
         });
@@ -65,6 +71,7 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
         let stateData = null;
         try { stateData = await res.json(); } catch { /* 204/empty */ }
         console.log('[dbg] /state payload', stateData);
+        
         // Fetch game state
         const stateResponse = await fetch(`/api/game/${game.id}/state`);
         if (stateResponse.ok) {
@@ -84,6 +91,12 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
         if (cursesResponse.ok) {
           const cursesData = await cursesResponse.json();
           if (isMounted) setCurses(cursesData);
+        }
+
+        // Fetch pending actions
+        const pendingResult = await getPendingActions(game.id);
+        if (pendingResult?.success && isMounted) {
+          setPendingActions(pendingResult.pendingActions);
         }
       } catch (err) {
         console.error("Failed to fetch game data:", err);
@@ -106,7 +119,6 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
 
   // Helper function to get SVG path from JSON for cursed paths
   const getSvgPathFromJson = (startNode: string, endNode: string) => {
-    // Access the JSON data from the first document
     const mapData = game.maps?.[0];
     if (mapData?.edges) {
       const edge = mapData.edges.find((e: any) => 
@@ -364,6 +376,68 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
     curse.end_node.toLowerCase() === gameState.game_log[gameState.game_log.length-1]?.toLowerCase() && curse.start_node.toLowerCase() === gameState.runner_node?.toLowerCase()
   ) : [];
 
+  // Utility card effect handlers
+  const handleDiscardCards = async () => {
+    if (selectedCardsToDiscard.length !== 2) {
+      alert("You must select exactly 2 cards to discard");
+      return;
+    }
+
+    setIsLoading(true);
+    const result = await discardCards(game.id, selectedCardsToDiscard);
+
+    if (result?.error) {
+      alert(result.error);
+    } else {
+      setSelectedCardsToDiscard([]);
+      setShowDiscardDialog(false);
+      window.location.reload();
+    }
+
+    setIsLoading(false);
+  };
+
+  const handlePlaceRoadblockWithEffects = async () => {
+    if (!placementNode) {
+      alert("Please select a node to place the roadblock");
+      return;
+    }
+
+    setIsLoading(true);
+    const result = await placeRoadblockWithEffects(game.id, placementNode);
+
+    if (result?.error) {
+      alert(result.error);
+    } else {
+      setPlacementNode("");
+      setShowPlaceRoadblockDialog(false);
+      window.location.reload();
+    }
+
+    setIsLoading(false);
+  };
+
+  const handlePlaceCurseWithEffects = async () => {
+    if (!targetNode) {
+      alert("Please select at least one target node for the curse");
+      return;
+    }
+
+    setIsLoading(true);
+    const result = await placeCurseWithEffects(game.id, targetNode, targetNode2 || undefined);
+
+    if (result?.error) {
+      alert(result.error);
+    } else {
+      setTargetNode("");
+      setTargetNode2("");
+      setShowPlaceCurseDialog(false);
+      window.location.reload();
+    }
+
+    setIsLoading(false);
+  };
+
   const handleMove = async () => {
     if (!selectedDestination) return;
 
@@ -435,9 +509,9 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
     setIsLoading(false);
   };
 
-  const handlePlayCard = async (card: any, target?: string, node?: string) => {
+  const handlePlayCard = async (card: any, target?: string, node?: string, node2?: string) => {
     setIsLoading(true);
-    const result = await playCard(game.id, card.id, target, node);
+    const result = await playCard(game.id, card.id, target, node, node2);
 
     if (result?.error) {
       alert(result.error);
@@ -448,6 +522,7 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
     setIsLoading(false);
     setTargetPlayer("");
     setTargetNode("");
+    setTargetNode2("");
   };
 
   const handleEndRun = async () => {
@@ -502,6 +577,23 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
         return "bg-blue-100 text-blue-800 border-blue-200";
       default:
         return "bg-gray-100 text-gray-800 border-gray-200";
+    }
+  };
+
+  const getEffectIcon = (effectType: string) => {
+    switch (effectType) {
+      case "discard_two":
+        return <Trash2 className="w-4 h-4" />;
+      case "misdirection":
+        return <Target className="w-4 h-4" />;
+      case "see_double":
+        return <Eye className="w-4 h-4" />;
+      case "hidden_roadblock":
+        return <ShieldAlert className="w-4 h-4" />;
+      case "global_placement":
+        return <Globe className="w-4 h-4" />;
+      default:
+        return <Zap className="w-4 h-4" />;
     }
   };
 
@@ -595,6 +687,42 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Game Status */}
           <div className="lg:col-span-2 space-y-6">
+            {/* Pending Actions Alert */}
+            {pendingActions.length > 0 && (
+              <Card className="border-amber-200 bg-amber-50">
+                <CardHeader>
+                  <CardTitle className="flex items-center text-amber-800">
+                    <AlertTriangle className="w-5 h-5 mr-2" />
+                    Action Required
+                  </CardTitle>
+                  <CardDescription className="text-amber-700">
+                    You have pending actions that must be completed.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    {pendingActions.map((action: any, index: number) => (
+                      <div key={index} className="flex items-center justify-between p-3 bg-amber-100 border border-amber-200 rounded">
+                        <div className="flex items-center space-x-2">
+                          {getEffectIcon(action.type)}
+                          <span className="text-sm font-medium text-amber-800">{action.description}</span>
+                        </div>
+                        {action.type === "discard_two" && (
+                          <Button
+                            size="sm"
+                            onClick={() => setShowDiscardDialog(true)}
+                            className="bg-amber-600 hover:bg-amber-700 text-white"
+                          >
+                            Select Cards
+                          </Button>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
             {/* NEW: Waiting for Positioning Phase */}
             {isWaitingForPositioning && (
               <Card className="border-yellow-200 bg-yellow-50">
@@ -760,16 +888,21 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
                 <CardHeader>
                   <CardTitle className="flex items-center">
                     <Zap className="w-5 h-5 mr-2" />
-                    Active Effects
+                    Your Active Effects
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-2">
-                    {activeEffects.map((index: number) => (
+                    {activeEffects.map((effect: any, index: number) => (
                       <div
                         key={index}
-                        className="flex items-center justify-between p-2 bg-yellow-50 border border-yellow-200 rounded">
-                        <Badge variant="outline" className="text-xs">
+                        className="flex items-center justify-between p-3 bg-blue-50 border border-blue-200 rounded"
+                      >
+                        <div className="flex items-center space-x-2">
+                          {getEffectIcon(effect.type)}
+                          <span className="text-sm font-medium text-blue-800">{effect.description}</span>
+                        </div>
+                        <Badge variant="outline" className="text-xs text-blue-600">
                           Active
                         </Badge>
                       </div>
@@ -778,6 +911,361 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
                 </CardContent>
               </Card>
             )}
+
+            {/* Enhanced Placement Actions for Seekers */}
+            {!isRunner && !isPositioningPhase && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <Target className="w-5 h-5 mr-2" />
+                    Enhanced Actions
+                  </CardTitle>
+                  <CardDescription>
+                    Use your active effects to place obstacles strategically.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Enhanced Roadblock Placement */}
+                    <Dialog open={showPlaceRoadblockDialog} onOpenChange={setShowPlaceRoadblockDialog}>
+                      <DialogTrigger asChild>
+                        <Button variant="outline" className="flex items-center space-x-2">
+                          <AlertTriangle className="w-4 h-4" />
+                          <span>Place Roadblock</span>
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>Place Enhanced Roadblock</DialogTitle>
+                          <DialogDescription>
+                            {(() => {
+                              const hasMisdirection = activeEffects.some((effect: any) => effect.type === "misdirection");
+                              const hasGlobalPlacement = activeEffects.some((effect: any) => effect.type === "global_placement");
+                              
+                              if (hasGlobalPlacement) {
+                                return "With global placement active, you can place your roadblock anywhere on the map.";
+                              } else if (hasMisdirection) {
+                                return "With Misdirection active, you can place your roadblock on your current node or any adjacent node.";
+                              } else {
+                                return "Place a roadblock at your current location.";
+                              }
+                            })()}
+                          </DialogDescription>
+                        </DialogHeader>
+                        
+                        <div className="space-y-4">
+                          {/* Current Position Display */}
+                          <div className="p-3 bg-gray-50 border border-gray-200 rounded">
+                            <div className="flex items-center space-x-2">
+                              <MapPin className="w-4 h-4 text-gray-600" />
+                              <span className="text-sm font-medium">Your Current Position: <strong>{gameState.seeker_node}</strong></span>
+                            </div>
+                          </div>
+
+                          {/* Show active effects that affect roadblock placement */}
+                          {activeEffects.filter((effect: any) => 
+                            effect.type === "misdirection" || 
+                            effect.type === "global_placement" || 
+                            effect.type === "hidden_roadblock"
+                          ).map((effect: any, index: number) => (
+                            <div key={index} className="p-3 bg-blue-50 border border-blue-200 rounded text-sm">
+                              <div className="flex items-center space-x-2">
+                                {getEffectIcon(effect.type)}
+                                <span className="font-medium text-blue-800">{effect.description}</span>
+                              </div>
+                            </div>
+                          ))}
+
+                          {/* Node Selection with Enhanced Logic */}
+                          <div className="space-y-2">
+                            <label className="text-sm font-medium">Target Node:</label>
+                            <Select value={placementNode} onValueChange={setPlacementNode}>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select target node" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {(() => {
+                                  const hasGlobalPlacement = activeEffects.some((effect: any) => effect.type === "global_placement");
+                                  const hasMisdirection = activeEffects.some((effect: any) => effect.type === "misdirection");
+                                  
+                                  if (hasGlobalPlacement) {
+                                    // Can place anywhere on the map
+                                    return mapNodes.map((node: any) => (
+                                      <SelectItem key={node.name} value={node.name}>
+                                        <div className="flex items-center justify-between w-full">
+                                          <span>{node.name}</span>
+                                          {node.name === gameState.seeker_node && (
+                                            <Badge variant="outline" className="ml-2 text-xs">Current</Badge>
+                                          )}
+                                        </div>
+                                      </SelectItem>
+                                    ));
+                                  } else if (hasMisdirection) {
+                                    // Can place on current node OR adjacent nodes
+                                    const adjacentNodes = mapInfo?.edges?.filter((edge: any) => 
+                                      edge.from.toLowerCase() === gameState.seeker_node?.toLowerCase()
+                                    )?.map((edge: any) => edge.to) || [];
+                                    
+                                    // Combine current position and adjacent nodes, remove duplicates
+                                    const availableNodes = [gameState.seeker_node, ...adjacentNodes]
+                                      .filter((node, index, self) => self.indexOf(node) === index);
+                                    
+                                    return availableNodes.map((node: string) => (
+                                      <SelectItem key={node} value={node}>
+                                        <div className="flex items-center justify-between w-full">
+                                          <span>{node}</span>
+                                          {node === gameState.seeker_node ? (
+                                            <Badge variant="outline" className="ml-2 text-xs">Current</Badge>
+                                          ) : (
+                                            <Badge variant="outline" className="ml-2 text-xs text-blue-600">Adjacent</Badge>
+                                          )}
+                                        </div>
+                                      </SelectItem>
+                                    ));
+                                  } else {
+                                    // Normal placement - only current node
+                                    return (
+                                      <SelectItem value={gameState.seeker_node}>
+                                        <div className="flex items-center justify-between w-full">
+                                          <span>{gameState.seeker_node}</span>
+                                          <Badge variant="outline" className="ml-2 text-xs">Current</Badge>
+                                        </div>
+                                      </SelectItem>
+                                    );
+                                  }
+                                })()}
+                              </SelectContent>
+                            </Select>
+
+                            {/* Help text showing available options */}
+                            <div className="text-xs text-gray-500 mt-2">
+                              <p className="font-medium mb-1">Available placement options:</p>
+                              <ul className="list-disc list-inside ml-2 space-y-1">
+                                <li><strong>{gameState.seeker_node}</strong> - Your current position</li>
+                                {(() => {
+                                  const hasMisdirection = activeEffects.some((effect: any) => effect.type === "misdirection");
+                                  const hasGlobalPlacement = activeEffects.some((effect: any) => effect.type === "global_placement");
+                                  
+                                  if (hasGlobalPlacement) {
+                                    return <li><strong>Any node</strong> - Global placement effect</li>;
+                                  } else if (hasMisdirection) {
+                                    const adjacentNodes = mapInfo?.edges?.filter((edge: any) => 
+                                      edge.from.toLowerCase() === gameState.seeker_node?.toLowerCase()
+                                    )?.map((edge: any) => edge.to) || [];
+                                    
+                                    return adjacentNodes.map((node: string) => (
+                                      <li key={node}>
+                                        <strong>{node}</strong> - Adjacent node (Misdirection effect)
+                                      </li>
+                                    ));
+                                  }
+                                  return null;
+                                })()}
+                              </ul>
+                            </div>
+                          </div>
+
+                          {/* Hidden Roadblock Notice */}
+                          {activeEffects.some((effect: any) => effect.type === "hidden_roadblock") && (
+                            <div className="p-2 bg-purple-50 border border-purple-200 rounded text-sm">
+                              <div className="flex items-center space-x-2">
+                                <ShieldAlert className="w-4 h-4 text-purple-600" />
+                                <span className="font-medium text-purple-800">This roadblock will be hidden from the runner</span>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+
+                        <DialogFooter>
+                          <Button variant="outline" onClick={() => setShowPlaceRoadblockDialog(false)}>
+                            Cancel
+                          </Button>
+                          <Button 
+                            onClick={handlePlaceRoadblockWithEffects}
+                            disabled={isLoading || !placementNode}
+                          >
+                            {isLoading ? "Placing..." : "Place Roadblock"}
+                          </Button>
+                        </DialogFooter>
+                      </DialogContent>
+                    </Dialog>
+
+                    {/* Enhanced Curse Placement */}
+                    <Dialog open={showPlaceCurseDialog} onOpenChange={setShowPlaceCurseDialog}>
+                      <DialogTrigger asChild>
+                        <Button variant="outline" className="flex items-center space-x-2">
+                          <Zap className="w-4 h-4" />
+                          <span>Place Curse</span>
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>Place Enhanced Curse</DialogTitle>
+                          <DialogDescription>
+                            Place a curse using your active effects for enhanced targeting options.
+                          </DialogDescription>
+                        </DialogHeader>
+                        <div className="space-y-4">
+                          {/* Show active effects that affect curse placement */}
+                          {activeEffects.filter((effect: any) => 
+                            effect.type === "see_double" || 
+                            effect.type === "global_placement"
+                          ).map((effect: any, index: number) => (
+                            <div key={index} className="p-2 bg-purple-50 border border-purple-200 rounded text-sm">
+                              <div className="flex items-center space-x-2">
+                                {getEffectIcon(effect.type)}
+                                <span className="font-medium text-purple-800">{effect.description}</span>
+                              </div>
+                            </div>
+                          ))}
+
+                          <div className="space-y-2">
+                            <label className="text-sm font-medium">First Target Node:</label>
+                            <Select value={targetNode} onValueChange={setTargetNode}>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select first target" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {(() => {
+                                  const hasGlobalPlacement = activeEffects.some((effect: any) => effect.type === "global_placement");
+                                  
+                                  if (hasGlobalPlacement) {
+                                    // Can target anywhere
+                                    return mapNodes.map((node: any) => (
+                                      <SelectItem key={node.name} value={node.name}>
+                                        {node.name}
+                                      </SelectItem>
+                                    ));
+                                  } else {
+                                    // Normal placement - only adjacent nodes
+                                    const adjacentNodes = mapInfo?.edges?.filter((edge: any) => 
+                                      edge.from.toLowerCase() === gameState.seeker_node?.toLowerCase()
+                                    )?.map((edge: any) => edge.to) || [];
+                                    
+                                    return adjacentNodes.map((node: string) => (
+                                      <SelectItem key={node} value={node}>
+                                        {node}
+                                      </SelectItem>
+                                    ));
+                                  }
+                                })()}
+                              </SelectContent>
+                            </Select>
+                          </div>
+
+                          {/* Second target for See Double effect */}
+                          {activeEffects.some((effect: any) => effect.type === "see_double") && (
+                            <div className="space-y-2">
+                              <label className="text-sm font-medium">Second Target Node (Optional - See Double):</label>
+                              <Select value={targetNode2} onValueChange={setTargetNode2}>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select second target" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {(() => {
+                                    const hasGlobalPlacement = activeEffects.some((effect: any) => effect.type === "global_placement");
+                                    
+                                    if (hasGlobalPlacement) {
+                                      // Can target anywhere
+                                      return mapNodes.map((node: any) => (
+                                        <SelectItem key={node.name} value={node.name}>
+                                          {node.name}
+                                        </SelectItem>
+                                      ));
+                                    } else {
+                                      // Normal placement - only adjacent nodes
+                                      const adjacentNodes = mapInfo?.edges?.filter((edge: any) => 
+                                        edge.from.toLowerCase() === gameState.seeker_node?.toLowerCase()
+                                      )?.map((edge: any) => edge.to) || [];
+                                      
+                                      return adjacentNodes.map((node: string) => (
+                                        <SelectItem key={node} value={node}>
+                                          {node}
+                                        </SelectItem>
+                                      ));
+                                    }
+                                  })()}
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          )}
+                        </div>
+                        <DialogFooter>
+                          <Button variant="outline" onClick={() => setShowPlaceCurseDialog(false)}>
+                            Cancel
+                          </Button>
+                          <Button 
+                            onClick={handlePlaceCurseWithEffects}
+                            disabled={isLoading || !targetNode}
+                          >
+                            {isLoading ? "Placing..." : "Place Curse"}
+                          </Button>
+                        </DialogFooter>
+                      </DialogContent>
+                    </Dialog>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Forced Discard Dialog */}
+            <Dialog open={showDiscardDialog} onOpenChange={setShowDiscardDialog}>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Discard Two Cards</DialogTitle>
+                  <DialogDescription>
+                    You must discard exactly 2 cards from your hand (Faithless Looting effect).
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="space-y-4">
+                  <div className="grid grid-cols-1 gap-2 max-h-60 overflow-y-auto">
+                    {currentPlayerHand.map((card: any) => (
+                      <div
+                        key={card.id}
+                        className={`p-3 border rounded cursor-pointer transition-colors ${
+                          selectedCardsToDiscard.includes(card.id)
+                            ? 'bg-red-100 border-red-300'
+                            : 'bg-gray-50 border-gray-200 hover:bg-gray-100'
+                        }`}
+                        onClick={() => {
+                          if (selectedCardsToDiscard.includes(card.id)) {
+                            setSelectedCardsToDiscard(prev => prev.filter(id => id !== card.id));
+                          } else if (selectedCardsToDiscard.length < 2) {
+                            setSelectedCardsToDiscard(prev => [...prev, card.id]);
+                          }
+                        }}
+                      >
+                        <div className="flex items-center space-x-2">
+                          {getCardTypeIcon(card.type)}
+                          <div>
+                            <p className="font-medium text-sm">{card.name}</p>
+                            <p className="text-xs text-gray-600 capitalize">{card.type}</p>
+                          </div>
+                          {selectedCardsToDiscard.includes(card.id) && (
+                            <Badge variant="destructive" className="ml-auto">Selected</Badge>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <p className="text-sm text-gray-600">
+                    Selected: {selectedCardsToDiscard.length} / 2 cards
+                  </p>
+                </div>
+                <DialogFooter>
+                  <Button variant="outline" onClick={() => setShowDiscardDialog(false)}>
+                    Cancel
+                  </Button>
+                  <Button 
+                    onClick={handleDiscardCards}
+                    disabled={selectedCardsToDiscard.length !== 2 || isLoading}
+                    variant="destructive"
+                  >
+                    {isLoading ? "Discarding..." : "Discard Cards"}
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
 
             {/* Runner Obstacles at Current Location - Only during run phase */}
             {isRunner && isRunPhase && (currentNodeRoadblocks.length > 0 || currentNodeCurses.length > 0) && (
@@ -796,11 +1284,19 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
                     {currentNodeRoadblocks.map((roadblock: any) => (
                       <div
                         key={roadblock.id}
-                        className="flex flex-col space-y-3 p-3 bg-red-50 border border-red-200 rounded">
+                        className="flex flex-col space-y-3 p-3 bg-red-50 border border-red-200 rounded"
+                      >
                         <div className="flex items-start space-x-3">
                           <AlertTriangle className="w-5 h-5 text-red-600 mt-1" />
                           <div className="flex-1">
-                            <p className="font-medium text-red-800">Roadblock at {roadblock.node_name}</p>
+                            <p className="font-medium text-red-800">
+                              Roadblock at {roadblock.node_name}
+                              {roadblock.is_hidden && (
+                                <Badge variant="outline" className="ml-2 text-xs text-purple-600">
+                                  Hidden
+                                </Badge>
+                              )}
+                            </p>
                             {roadblock.description && (
                               <p className="text-sm text-red-600 mt-1">{roadblock.description}</p>
                             )}
@@ -820,7 +1316,8 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
                     {currentNodeCurses.map((curse: any) => (
                       <div
                         key={curse.id}
-                        className="flex flex-col space-y-3 p-3 bg-purple-50 border border-purple-200 rounded">
+                        className="flex flex-col space-y-3 p-3 bg-purple-50 border border-purple-200 rounded"
+                      >
                         <div className="flex items-start space-x-3">
                           <Zap className="w-5 h-5 text-purple-600 mt-1" />
                           <div className="flex-1">
@@ -862,10 +1359,18 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
                     {roadblocks.map((roadblock: any) => (
                       <div
                         key={roadblock.id}
-                        className="flex items-center justify-between p-2 bg-red-50 border border-red-200 rounded">
+                        className="flex items-center justify-between p-2 bg-red-50 border border-red-200 rounded"
+                      >
                         <div className="flex items-center space-x-2">
                           <AlertTriangle className="w-4 h-4 text-red-600" />
-                          <span className="text-sm font-medium">Roadblock at {roadblock.node_name}</span>
+                          <span className="text-sm font-medium">
+                            Roadblock at {roadblock.node_name}
+                            {roadblock.is_hidden && !isRunner && (
+                              <Badge variant="outline" className="ml-2 text-xs text-purple-600">
+                                Hidden
+                              </Badge>
+                            )}
+                          </span>
                         </div>
                         <Badge variant="outline" className="text-xs text-red-600">
                           Node Blocked
@@ -875,7 +1380,8 @@ export default function GamePlayContent({ game, user }: GamePlayContentProps) {
                     {curses.map((curse: any) => (
                       <div
                         key={curse.id}
-                        className="flex items-center justify-between p-2 bg-purple-50 border border-purple-200 rounded">
+                        className="flex items-center justify-between p-2 bg-purple-50 border border-purple-200 rounded"
+                      >
                         <div className="flex items-center space-x-2">
                           <Zap className="w-4 h-4 text-purple-600" />
                           <span className="text-sm font-medium">Cursed path: {curse.start_node} ↔ {curse.end_node}</span>

@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Loader2 } from "lucide-react";
-import { signIn, signUp } from "@/lib/actions";
+import { signIn, signUp } from "@/lib/auth-actions";
 
 function SubmitButton({ children, ...props }: { children: React.ReactNode }) {
   const { pending } = useFormStatus();
