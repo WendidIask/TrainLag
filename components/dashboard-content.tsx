@@ -100,10 +100,6 @@ export default function DashboardContent({ user, games }: DashboardContentProps)
                 <h3 className="text-xl font-semibold mb-2">No games yet</h3>
                 <p>Create your first game to get started!</p>
               </div>
-              <Button onClick={createNewGame} className="bg-blue-600 hover:bg-blue-700">
-                <Plus className="w-4 h-4 mr-2" />
-                Create Your First Game
-              </Button>
             </CardContent>
           </Card>
         ) : (
