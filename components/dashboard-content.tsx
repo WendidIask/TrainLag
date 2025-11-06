@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Plus, Play, Users, Clock, LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { signOut } from "@/lib/actions";
+import { signOut } from "@/lib/auth-actions";
 import Link from 'next/link'
 
 interface Game {

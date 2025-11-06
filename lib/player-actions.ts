@@ -246,8 +246,6 @@ export async function clearRoadblock(gameId: string, nodeId: string) {
     }
 }
 
-// Modified clearCurse function to award points when obstacles are cleared:
-
 export async function clearCurse(gameId: string, curseId: string) {
     const supabase = await createServerClient();
     const { data } = await supabase.auth.getUser();
@@ -285,8 +283,6 @@ export async function clearCurse(gameId: string, curseId: string) {
         return { error: "An unexpected error occurred" };
     }
 }
-
-// New helper function to check and award points when all obstacles are cleared:
 
 async function checkAndAwardPoints(supabase: any, gameId: string, gameState: any) {
     const { data: map } = await supabase.from("maps").select("*").eq("game_id", gameId);
@@ -352,7 +348,7 @@ async function checkAndAwardPoints(supabase: any, gameId: string, gameState: any
     }
 }
 
-export async function playCard(gameId: string, cardId: string, targetPlayer?: string, targetNode?: string) {
+export async function playCard(gameId: string, cardId: string, targetPlayer?: string, targetNode?: string, targetNode2?: string) {
     const supabase = await createServerClient();
     const { data } = await supabase.auth.getUser();
     const { user } = data;
@@ -466,24 +462,138 @@ export async function playCard(gameId: string, cardId: string, targetPlayer?: st
                 break;
 
             case "utility":
-                // Draw 2 additional cards
-                const { data: availableCards } = await supabase
-                    .from("cards")
-                    .select("*")
-                    .eq("game_id", gameId);
+                // Handle specific utility card effects based on card name
+                switch (cardToPlay.name) {
+                    case "Faithless Looting":
+                        // Draw two cards, then discard two cards
+                        const { data: availableCards1 } = await supabase
+                            .from("cards")
+                            .select("*")
+                            .eq("game_id", gameId);
 
-                if (availableCards && availableCards.length > 0) {
-                    const newCards = [];
-                    for (let i = 0; i < 2; i++) {
-                        const randomCard = availableCards[Math.floor(Math.random() * availableCards.length)];
-                        newCards.push({
-                            id: `${randomCard.id}_${Date.now()}_${i}_${Math.random()}`,
-                            name: randomCard.name,
-                            type: randomCard.type,
-                            description: randomCard.description,
+                        if (availableCards1 && availableCards1.length > 0) {
+                            const newCards = [];
+                            for (let i = 0; i < 2; i++) {
+                                const randomCard = availableCards1[Math.floor(Math.random() * availableCards1.length)];
+                                newCards.push({
+                                    id: `${randomCard.id}_${Date.now()}_${i}_${Math.random()}`,
+                                    name: randomCard.name,
+                                    type: randomCard.type,
+                                    description: randomCard.description,
+                                });
+                            }
+                            updatedState.cards_in_hand = [...updatedHand, ...newCards];
+                        }
+                        
+                        // Add effect to force discarding 2 cards on next turn
+                        activeEffects.push({
+                            type: "discard_two",
+                            description: "Must discard two cards"
                         });
-                    }
-                    updatedState.cards_in_hand = [...updatedHand, ...newCards];
+                        break;
+
+                    case "Misdirection":
+                        // When placing your next roadblock, you may mark the position as an adjacent node instead
+                        activeEffects.push({
+                            type: "misdirection",
+                            description: "Next roadblock can be placed on an adjacent node"
+                        });
+                        break;
+
+                    case "See Double":
+                        // The next curse you cast can target two separate paths
+                        activeEffects.push({
+                            type: "see_double",
+                            description: "Next curse can target two separate paths"
+                        });
+                        break;
+
+                    case "Wheel of Fortune":
+                        // Discard your hand and draw three cards
+                        const { data: availableCards2 } = await supabase
+                            .from("cards")
+                            .select("*")
+                            .eq("game_id", gameId);
+
+                        if (availableCards2 && availableCards2.length > 0) {
+                            const newCards = [];
+                            for (let i = 0; i < 3; i++) {
+                                const randomCard = availableCards2[Math.floor(Math.random() * availableCards2.length)];
+                                newCards.push({
+                                    id: `${randomCard.id}_${Date.now()}_${i}_${Math.random()}`,
+                                    name: randomCard.name,
+                                    type: randomCard.type,
+                                    description: randomCard.description,
+                                });
+                            }
+                            // Replace entire hand with 3 new cards
+                            updatedState.cards_in_hand = newCards;
+                        }
+                        break;
+
+                    case "Yarus, Roar of the Old Gods":
+                        // You may place your next roadblock without informing the runner of its location
+                        activeEffects.push({
+                            type: "hidden_roadblock",
+                            description: "Next roadblock placement is hidden from runner"
+                        });
+                        break;
+
+                    case "Gamble":
+                        // Search the deck for a card that you would like, then discard a card at random
+                        const { data: availableCards3 } = await supabase
+                            .from("cards")
+                            .select("*")
+                            .eq("game_id", gameId);
+
+                        if (availableCards3 && availableCards3.length > 0 && updatedHand.length > 0) {
+                            // For now, randomly select a card from deck (in real implementation, player would choose)
+                            const chosenCard = availableCards3[Math.floor(Math.random() * availableCards3.length)];
+                            const newCard = {
+                                id: `${chosenCard.id}_${Date.now()}_${Math.random()}`,
+                                name: chosenCard.name,
+                                type: chosenCard.type,
+                                description: chosenCard.description,
+                            };
+                            
+                            // Remove a random card from hand and add the chosen card
+                            const randomIndex = Math.floor(Math.random() * updatedHand.length);
+                            const newHand = [...updatedHand];
+                            newHand.splice(randomIndex, 1);
+                            newHand.push(newCard);
+                            updatedState.cards_in_hand = newHand;
+                        }
+                        break;
+
+                    case "Goblin Charbelcher":
+                        // The next roadblock or curse that you play can be placed anywhere
+                        activeEffects.push({
+                            type: "global_placement",
+                            description: "Next roadblock or curse can be placed anywhere on the map"
+                        });
+                        break;
+
+                    default:
+                        // Default utility behavior - draw 2 cards
+                        const { data: availableCardsDefault } = await supabase
+                            .from("cards")
+                            .select("*")
+                            .eq("game_id", gameId);
+
+                        if (availableCardsDefault && availableCardsDefault.length > 0) {
+                            const newCards = [];
+                            for (let i = 0; i < 2; i++) {
+                                const randomCard = availableCardsDefault[Math.floor(Math.random() * availableCardsDefault.length)];
+                                newCards.push({
+                                    id: `${randomCard.id}_${Date.now()}_${i}_${Math.random()}`,
+                                    name: randomCard.name,
+                                    type: randomCard.type,
+                                    description: randomCard.description,
+                                });
+                            }
+                            updatedState.cards_in_hand = [...updatedHand, ...newCards];
+                        }
+                        break;
                 }
                 break;
 
@@ -502,6 +612,272 @@ export async function playCard(gameId: string, cardId: string, targetPlayer?: st
         return { success: true };
     } catch (error) {
         console.error("Play card error:", error);
+        return { error: "An unexpected error occurred" };
+    }
+}
+
+// Enhanced roadblock placement with utility card effects
+export async function placeRoadblockWithEffects(gameId: string, nodeId: string) {
+    const supabase = await createServerClient();
+    const { data } = await supabase.auth.getUser();
+    const { user } = data;
+    if (!user) return { error: "You must be logged in" };
+
+    try {
+        const { data: gameState } = await supabase.from("game_state").select("*").eq("game_id", gameId).single();
+        const { data: map } = await supabase.from("maps").select("*").eq("game_id", gameId);
+        if (!gameState || !map) return { error: "Game not found" };
+
+        const activeEffects = gameState.active_effects || [];
+        
+        let placementNode = nodeId;
+        let isHidden = false;
+        
+        // Check for active effects
+        const misdirectionEffect = activeEffects.find((effect: any) => effect.type === "misdirection");
+        const globalPlacementEffect = activeEffects.find((effect: any) => effect.type === "global_placement");
+        const hiddenRoadblockEffect = activeEffects.find((effect: any) => effect.type === "hidden_roadblock");
+        
+        // Validate placement based on effects
+        if (globalPlacementEffect) {
+            // Can place anywhere - no validation needed
+        } else if (misdirectionEffect) {
+            // Can place on adjacent nodes to seeker's position
+            const mapInfo = map?.[0];
+            const adjacentNodes = mapInfo?.edges?.filter((edge: any) => 
+                edge.from.toLowerCase() === gameState.seeker_node?.toLowerCase()
+            )?.map((edge: any) => edge.to) || [];
+            
+            if (!adjacentNodes.includes(nodeId) && nodeId !== gameState.seeker_node) {
+                return { error: "With Misdirection, you can only place roadblocks on your current node or adjacent nodes" };
+            }
+        } else {
+            // Normal placement - must be on seeker's current node
+            if (nodeId !== gameState.seeker_node) {
+                return { error: "You can only place roadblocks on your current node" };
+            }
+        }
+        
+        // Check if placement should be hidden
+        if (hiddenRoadblockEffect) {
+            isHidden = true;
+        }
+
+        const { error: roadblockError } = await supabase
+            .from("roadblocks")
+            .insert({
+                game_id: gameId,
+                node_name: placementNode,
+                placed_by: user.id,
+                is_hidden: isHidden,
+                description: "Roadblock"
+            });
+            
+        if (roadblockError) {
+            return { error: "Failed to place roadblock: " + roadblockError.message };
+        }
+
+        // Remove used effects
+        const updatedEffects = activeEffects.filter((effect: any) => 
+              (effect.type === "misdirection" || 
+               effect.type === "global_placement" || 
+               effect.type === "hidden_roadblock")
+        );
+
+        const { error: effectError } = await supabase
+            .from("game_state")
+            .update({ active_effects: updatedEffects })
+            .eq("game_id", gameId);
+
+        if (effectError) {
+            console.error("Failed to update effects:", effectError);
+        }
+
+        return { success: true };
+    } catch (error) {
+        console.error("Place roadblock error:", error);
+        return { error: "An unexpected error occurred" };
+    }
+}
+
+// Enhanced curse placement with utility card effects
+export async function placeCurseWithEffects(gameId: string, targetNode: string, targetNode2?: string) {
+    const supabase = await createServerClient();
+    const { data } = await supabase.auth.getUser();
+    const { user } = data;
+    if (!user) return { error: "You must be logged in" };
+
+    try {
+        const { data: gameState } = await supabase.from("game_state").select("*").eq("game_id", gameId).single();
+        const { data: map } = await supabase.from("maps").select("*").eq("game_id", gameId);
+        if (!gameState || !map) return { error: "Game not found" };
+
+        const activeEffects = gameState.active_effects || [];
+        
+        // Check for active effects
+        const seeDoubleEffect = activeEffects.find((effect: any) => effect.type === "see_double");
+        const globalPlacementEffect = activeEffects.find((effect: any) => effect.type === "global_placement");
+        
+        const mapInfo = map?.[0];
+        const adjacentNodes = mapInfo?.edges?.filter((edge: any) => 
+            edge.from.toLowerCase() === gameState.seeker_node?.toLowerCase()
+        )?.map((edge: any) => edge.to) || [];
+
+        // Validate first target
+        if (!globalPlacementEffect && !adjacentNodes.some((node: string) => node.toLowerCase() === targetNode.toLowerCase())) {
+            return { error: "You can only curse paths to adjacent nodes" };
+        }
+
+        // Place first curse
+        const { error: curseError1 } = await supabase
+            .from("curses")
+            .insert({
+                game_id: gameId,
+                start_node: gameState.seeker_node,
+                end_node: targetNode,
+                description: "Curse"
+            });
+            
+        if (curseError1) {
+            return { error: "Failed to place curse: " + curseError1.message };
+        }
+
+        // Place second curse if See Double is active and target provided
+        if (seeDoubleEffect && targetNode2) {
+            if (!globalPlacementEffect && !adjacentNodes.some((node: string) => node.toLowerCase() === targetNode2.toLowerCase())) {
+                return { error: "Second curse target must also be adjacent (unless using global placement)" };
+            }
+
+            const { error: curseError2 } = await supabase
+                .from("curses")
+                .insert({
+                    game_id: gameId,
+                    start_node: gameState.seeker_node,
+                    end_node: targetNode2,
+                    description: "Curse (See Double)"
+                });
+                
+            if (curseError2) {
+                console.error("Failed to place second curse:", curseError2);
+                // Don't fail the whole operation if second curse fails
+            }
+        }
+
+        // Remove used effects
+        const updatedEffects = activeEffects.filter((effect: any) => 
+            (effect.type === "see_double" || effect.type === "global_placement")
+        );
+
+        const { error: effectError } = await supabase
+            .from("game_state")
+            .update({ active_effects: updatedEffects })
+            .eq("game_id", gameId);
+
+        if (effectError) {
+            console.error("Failed to update effects:", effectError);
+        }
+
+        return { success: true };
+    } catch (error) {
+        console.error("Place curse error:", error);
+        return { error: "An unexpected error occurred" };
+    }
+}
+
+// Function to handle forced discard from Faithless Looting
+export async function discardCards(gameId: string, cardIds: string[]) {
+    const supabase = await createServerClient();
+    const { data } = await supabase.auth.getUser();
+    const { user } = data;
+    if (!user) return { error: "You must be logged in" };
+
+    try {
+        const { data: gameState } = await supabase.from("game_state").select("*").eq("game_id", gameId).single();
+        if (!gameState) return { error: "Game state not found" };
+
+        const playerHand = gameState.cards_in_hand || [];
+        const activeEffects = gameState.active_effects || [];
+        
+        // Check if player has discard effect active
+        const discardEffect = activeEffects.find((effect: any) => 
+            effect.type === "discard_two"
+        );
+        
+        if (!discardEffect) {
+            return { error: "No discard effect active" };
+        }
+
+        if (cardIds.length !== 2) {
+            return { error: "You must discard exactly 2 cards" };
+        }
+
+        // Validate cards are in hand
+        for (const cardId of cardIds) {
+            if (!playerHand.find((card: any) => card.id === cardId)) {
+                return { error: "One or more cards not found in your hand" };
+            }
+        }
+
+        // Remove cards from hand
+        const updatedHand = playerHand.filter((card: any) => !cardIds.includes(card.id));
+        
+        // Add to discard pile
+        const discardPile = gameState.discard_pile || [];
+        const cardsToDiscard = playerHand.filter((card: any) => cardIds.includes(card.id));
+        discardPile.push(...cardsToDiscard.map((card: any) => ({
+            ...card,
+            discardedBy: user.id,
+            discardedAt: new Date().toISOString(),
+        })));
+
+        // Remove discard effect
+        const updatedEffects = activeEffects.filter((effect: any) => 
+            effect.type === "discard_two"
+        );
+
+        const { error } = await supabase
+            .from("game_state")
+            .update({
+                cards_in_hand: updatedHand,
+                discard_pile: discardPile,
+                active_effects: updatedEffects,
+                updated_at: new Date().toISOString(),
+            })
+            .eq("game_id", gameId);
+
+        if (error) {
+            return { error: "Failed to discard cards: " + error.message };
+        }
+
+        return { success: true };
+    } catch (error) {
+        console.error("Discard cards error:", error);
+        return { error: "An unexpected error occurred" };
+    }
+}
+
+// Function to check if player has pending actions (like forced discard)
+export async function getPendingActions(gameId: string) {
+    const supabase = await createServerClient();
+    const { data } = await supabase.auth.getUser();
+    const { user } = data;
+    if (!user) return { error: "You must be logged in" };
+
+    try {
+        const { data: gameState } = await supabase.from("game_state").select("*").eq("game_id", gameId).single();
+        if (!gameState) return { error: "Game state not found" };
+
+        const activeEffects = gameState.active_effects || [];
+        
+        const pendingActions = activeEffects.map((effect: any) => ({
+            type: effect.type,
+            description: effect.description,
+            required: effect.type === "discard_two" // Some effects are mandatory
+        }));
+
+        return { success: true, pendingActions };
+    } catch (error) {
+        console.error("Get pending actions error:", error);
         return { error: "An unexpected error occurred" };
     }
 }
@@ -549,15 +925,6 @@ export async function endRun(gameId: string) {
 
         if (curseError) {
             console.error("Failed to clear curses:", curseError);
-        }
-
-        const { error: challengeError } = await supabase
-            .from("battlechallenge")
-            .delete()
-            .eq("game_id", gameId);
-
-        if (curseError) {
-            console.error("Failed to clear challenges:", challengeError);
         }
 
         // Update game state with new runner and enter waiting phase
