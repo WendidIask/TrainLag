@@ -44,12 +44,8 @@ export function GameDate({ dateString }: { dateString: string }) {
 export default function DashboardContent({ user, games }: DashboardContentProps) {
   const router = useRouter();
 
-  const createNewGame = () => {
-    router.push("/game/create");
-  };
-
   const joinGame = (gameId: string, active: boolean) => {
-    if (active) router.push(`/game/${gameId}/play`);
+    if (active) <Link href="/game/${gameId}/play"></Link>;
     else router.push(`/game/${gameId}/setup`);
   };
 
@@ -86,9 +82,11 @@ export default function DashboardContent({ user, games }: DashboardContentProps)
             <h2 className="text-3xl font-bold text-gray-900">Your Games</h2>
             <p className="text-gray-600 mt-1">Create new games or continue existing ones</p>
           </div>
-          <Button onClick={createNewGame} className="bg-blue-600 hover:bg-blue-700">
-            <Plus className="w-4 h-4 mr-2" />
-            New Game
+          <Button className="bg-blue-600 hover:bg-blue-700" asChild>
+            <Link href="/game/create">
+              <Plus className="w-4 h-4 mr-2" />
+              New Game
+            </Link>
           </Button>
         </div>
 
@@ -123,7 +121,6 @@ export default function DashboardContent({ user, games }: DashboardContentProps)
                         {game.game_players.length} players
                       </span>
                       <span className="flex items-center">
-                        <Clock className="w-4 h-4 mr-1" />
                         <GameDate dateString={game.created_at} />
                       </span>
                     </div>
@@ -131,7 +128,6 @@ export default function DashboardContent({ user, games }: DashboardContentProps)
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-2">
-                    <p className="text-sm text-gray-600">Created by: {game.profiles.username}</p>
                     <Button
                       onClick={() => joinGame(game.id, game.status === "active")}
                       className="w-full"

@@ -1,6 +1,6 @@
 import { createServerClientReadOnly } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
-import GameSetupContent from "@/components/game-setup-content";
+import GameSetupContent from "@/archive/Snake/game-setup-content";
 
 export default async function GameSetup({ params }: { params: Promise<{ id: string }> }) {
     const resolvedParams = await params;
@@ -9,6 +9,7 @@ export default async function GameSetup({ params }: { params: Promise<{ id: stri
     const { data } = await supabase.auth.getUser();
     const { user } = data;
     if (!user) redirect("/");
+    
     const { data: game } = await supabase
         .from("games")
         .select(

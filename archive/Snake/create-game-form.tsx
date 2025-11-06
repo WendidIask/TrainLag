@@ -20,22 +20,23 @@ interface Player {
 
 interface Challenge {
   id: string;
-  region: string;
   name: string;
   description: string;
+  region: int;
 }
 
-interface Bonus {
-  id: string;
-  region: string;
+interface MapData {
   name: string;
-  description: string;
+  nodes: string[];
+  edges: { from: string; to: string }[];
 }
 
 interface SubmitButtonProps {
   handleClick: () => void;
   pending?: boolean;
 }
+
+type CardType = "battle" | "roadblock" | "curse" | "utility";
 
 export function SubmitButton({ handleClick, pending }: SubmitButtonProps) {
   return (
@@ -65,10 +66,19 @@ export default function CreateGameForm({ user }: CreateGameFormProps) {
   const [playerCheckLoading, setPlayerCheckLoading] = useState(false);
   const [playerCheckError, setPlayerCheckError] = useState<string | null>(null);
 
-  const [challenges, setChallenges] = useState<Challenge[]>([]);
+  const [cards, setCards] = useState<Card[]>([]);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [selectedType, setSelectedType] = useState<CardType>("utility");
+  const [isOpen, setIsOpen] = useState(false);
+  const [expandedTypes, setExpandedTypes] = useState<Record<CardType, boolean>>({
+    battle: false,
+    roadblock: false,
+    curse: false,
+    utility: false,
+  });
 
   const cardInputRef = useRef<HTMLInputElement | null>(null);
+  const [mapData, setMapData] = useState<MapData | null>(null);
   const [state, formAction] = useActionState(createGame, null);
   const [pending, setPending] = useState(false);
   const router = useRouter();
@@ -88,7 +98,8 @@ export default function CreateGameForm({ user }: CreateGameFormProps) {
     formData.append("gameName", gameName);
     formData.append("gameDescription", gameDescription);
     formData.append("players", JSON.stringify(players));
-    formData.append("challenges", JSON.stringify(challenges));
+    formData.append("cards", JSON.stringify(cards));
+    formData.append("mapData", JSON.stringify(mapData));
 
     startTransition(() => {
       formAction(formData);
@@ -139,14 +150,14 @@ export default function CreateGameForm({ user }: CreateGameFormProps) {
   };
 
   /** ---------------------------
-   ** Challenges Upload
+   ** Card Upload
    ** --------------------------- */
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) setSelectedFile(file);
   };
 
-  const handleChallengesSubmit = (e?: React.FormEvent) => {
+  const handleCardSubmit = (e?: React.FormEvent) => {
     e?.preventDefault();
     if (!selectedFile) {
       alert("Please upload a card file first.");
@@ -159,12 +170,12 @@ export default function CreateGameForm({ user }: CreateGameFormProps) {
         const content = e.target?.result as string;
         const lines = content.split("\n").filter((line) => line.trim());
 
-        const newChallenges: Challenge[] = lines.map((line) => {
-          const [name, description, region] = line.split("|").map((s) => s.trim());
-          return { id: crypto.randomUUID(), region, name, description };
+        const newCards: Card[] = lines.map((line) => {
+          const [name, description] = line.split("|").map((s) => s.trim());
+          return { id: crypto.randomUUID(), name, description: description || "", type: selectedType };
         });
 
-        setChallenges(newChallenges);
+        setCards((prev) => [...prev, ...newCards]);
         setSelectedFile(null);
         if (cardInputRef.current) cardInputRef.current.value = "";
       } catch (error) {
@@ -175,16 +186,65 @@ export default function CreateGameForm({ user }: CreateGameFormProps) {
     reader.readAsText(selectedFile);
   };
 
+  const removeCard = (cardId: string) => {
+    setCards((prev) => prev.filter((c) => c.id !== cardId));
+  };
+
+  /** ---------------------------
+   ** Map Upload
+   ** --------------------------- */
+  const handleMapUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const content = e.target?.result as string;
+        const data = JSON.parse(content);
+        setMapData(data);
+      } catch {
+        alert("Error parsing map file. Please ensure it's valid JSON.");
+      }
+    };
+    reader.readAsText(file);
+  };
+
+  const getCardTypeColor = (type: CardType) => {
+    switch (type) {
+      case "battle":
+        return "bg-red-100 text-red-800";
+      case "roadblock":
+        return "bg-yellow-100 text-yellow-800";
+      case "curse":
+        return "bg-purple-100 text-purple-800";
+      case "utility":
+        return "bg-blue-100 text-blue-800";
+      default:
+        return "bg-gray-100 text-gray-800";
+    }
+  };
+
+  /** ---------------------------
+   ** Group cards by type
+   ** --------------------------- */
+  const cardsByType: Record<CardType, Card[]> = {
+    battle: [],
+    roadblock: [],
+    curse: [],
+    utility: [],
+  };
+  cards.forEach((c) => cardsByType[c.type].push(c));
+
   return (
     <div className="min-h-screen bg-gray-50">
       <header className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center h-16">
             <Button variant="ghost" onClick={() => router.push("/dashboard")} className="mr-4">
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              <span className="hidden sm:inline">Back to Dashboard</span>
+              <ArrowLeft className="w-4 h-4 mr-2" /> Back to Dashboard
             </Button>
-            <h1 className="text-2xl font-bold text-gray-900">Create New Game - Showdown</h1>
+            <h1 className="text-2xl font-bold text-gray-900">Create New Game</h1>
           </div>
         </div>
       </header>
@@ -203,7 +263,7 @@ export default function CreateGameForm({ user }: CreateGameFormProps) {
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <Label htmlFor="game-name">Name</Label>
+                <Label htmlFor="game-name">Game Name</Label>
                 <Input id="game-name" value={gameName} onChange={(e) => setGameName(e.target.value)} required />
               </div>
               <div>
@@ -248,22 +308,85 @@ export default function CreateGameForm({ user }: CreateGameFormProps) {
             </CardContent>
           </Card>
 
-          {/* Step 3: Challenges */}
+          {/* Step 3: Cards */}
           <Card>
             <CardHeader>
-              <CardTitle>Challenges</CardTitle>
-              <CardDescription>Add challenges for each region</CardDescription>
+              <CardTitle>Cards</CardTitle>
+              <CardDescription>Upload cards for your game</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
+              <Label htmlFor="card-upload">Upload Cards (Optional)</Label>
               <div className="flex space-x-2 items-start">
                 <Input id="card-upload" type="file" accept=".txt,.csv" onChange={handleFileSelect} ref={cardInputRef} className="cursor-pointer flex-1" />
+                <DropdownMenu onOpenChange={(open) => setIsOpen(open)}>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" className="w-32 capitalize flex items-center justify-between">
+                      {selectedType} {isOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-32">
+                    {(["battle","roadblock","curse","utility"] as CardType[]).map((type) => (
+                      <DropdownMenuItem key={type} onClick={() => setSelectedType(type)}>{type}</DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
                 {selectedFile && (
-                  <Button type="button" variant="default" onClick={handleChallengesSubmit}>
+                  <Button type="button" variant="default" onClick={handleCardSubmit}>
                     <Plus className="w-4 h-4 mr-2" /> Add
                   </Button>
                 )}
               </div>
-              <p className="text-sm text-gray-500 mt-1">Format per line: Region | Challenge Name | Description </p>
+              <p className="text-sm text-gray-500 mt-1">Format per line: Card Name | Description (optional)</p>
+
+              {/* Cards Preview by Type */}
+              {(["battle","roadblock","curse","utility"] as CardType[]).map((type) => {
+                const list = cardsByType[type];
+                if (!list.length) return null;
+                const showAll = expandedTypes[type];
+                return (
+                  <div key={type} className="mt-2">
+                    <div className="flex items-center justify-between mb-1">
+                      <Badge className={getCardTypeColor(type)}>{type}</Badge>
+                      {list.length > 2 && (
+                        <Button type="button" size="sm" variant="link" onClick={() => setExpandedTypes(prev => ({ ...prev, [type]: !prev[type] }))}>
+                          {showAll ? "Show Less" : `Show All (${list.length})`}
+                        </Button>
+                      )}
+                    </div>
+                    <div className="space-y-1">
+                      {(showAll ? list : list.slice(0,2)).map((card) => (
+                        <div key={card.id} className="flex items-center justify-between p-2 border rounded-md bg-white">
+                          <div>
+                            <p className="font-medium">{card.name}</p>
+                            {card.description && <p className="text-sm text-gray-500">{card.description}</p>}
+                          </div>
+                          <Button type="button" variant="ghost" size="sm" onClick={() => removeCard(card.id)}><X className="w-4 h-4" /></Button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+            </CardContent>
+          </Card>
+
+          {/* Step 4: Map */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Game Map</CardTitle>
+              <CardDescription>Upload the map with nodes and edge connections</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <Input type="file" accept=".json" onChange={handleMapUpload} className="cursor-pointer" />
+              {mapData && (
+                <div className="p-3 border rounded-lg bg-green-50 flex items-center space-x-2">
+                  <Upload className="w-4 h-4 text-green-600" />
+                  <div>
+                    <p className="font-medium text-green-800">{mapData.name}</p>
+                    <p className="text-sm text-green-600">{mapData.nodes.length} nodes, {mapData.edges.length} connections</p>
+                  </div>
+                </div>
+              )}
             </CardContent>
           </Card>
 

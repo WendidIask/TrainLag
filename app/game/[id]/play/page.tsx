@@ -6,11 +6,7 @@ export default async function GamePlay({ params }: { params: Promise<{ id: strin
     const { id } = await params;
 
     const supabase = await createServerClientReadOnly();
-
-    // Get session (cheaper than getUser spam)
-    const {
-        data: { session },
-    } = await supabase.auth.getSession();
+    const { data: { session } } = await supabase.auth.getSession();
 
     const user = session?.user;
     if (!user) redirect("/");
